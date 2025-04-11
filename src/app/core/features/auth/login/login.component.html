@@ -1,0 +1,52 @@
+<div class="container vh-100 d-flex justify-content-center align-items-center bg-light">
+  <div class="card shadow p-4 rounded-4 w-100" style="max-width: 800px;">
+    <div class="row g-0">
+      <!-- Logo Section -->
+      <div class="col-md-6 d-flex align-items-center justify-content-center bg-primary rounded-start">
+        <img src="/logo.png" alt="Logo" class="img-fluid p-1"  />
+      </div>
+
+      <!-- Form Section -->
+      <div class="col-md-6 p-4">
+        <h2 class="mb-3 text-center">Login</h2>
+        <p class="text-muted text-center mb-4">Access to your dashboard</p>
+
+        <form (ngSubmit)="onLogin()" #loginForm="ngForm" novalidate>
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              [(ngModel)]="username"
+              class="form-control"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="password"
+              class="form-control"
+              placeholder="Enter password"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary w-100"
+            [disabled]="!loginForm.valid"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+  <div class="container">
+    <a
+      class="navbar-brand align-middle d-flex align-items-center me-lg-4"
+      href="#"
+    >
+      <img width="50" src="/assets/imgs/shopping-bag.png" alt="" />
+      <span class="fw-bold mainColor fs-4 d-none d-md-block">VerdiShop</span>
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" routerLink="/home"
+            >Home</a
+          >
+        </li>
+
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products">Products</a>
+        </li>
+
+        <!-- WhisList -->
+        <li class="nav-item d-flex align-items-center WishList text-center">
+          <a
+            routerLink="/wishlist"
+            class="text-black-50 p-1 text-decoration-none"
+            aria-current="page"
+          >
+            <i class="d-lg-none">Patients</i>
+            <i class="fa-solid fa-heart fs-4 px-2"></i>
+          </a>
+        </li>
+
+        <!-- Cart -->
+        <li class="nav-item d-flex align-items-center Cart">
+          <a
+            routerLink="/cart"
+            class="position-relative text-black-50 p-1 text-decoration-none"
+            aria-current="page"
+          >
+            <i class="d-lg-none">Cart</i>
+            <i class="fa-solid fa-cart-shopping fs-4 p-xs-2"></i>
+            <span
+              class="position-absolute top-0 d-sm-none d-xs-none d-md-block start-100 translate-middle badge rounded-circle bg-danger cart"
+            >
+              <!-- {{ cartCount() }} -->
+            </span>
+          </a>
+        </li>
+      </ul>
+      <!-- END OF THE FIRST UNORDERED LIST -->
+
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li *ngIf="authService.isLoggedIn()" class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              *ngIf="authService.getUserData()?.ProfileImg"
+              [src]="authService.getUserData().ProfileImg"
+              class="rounded-circle"
+              width="50px"
+              height="50px"
+              alt="User Profile"
+            />
+
+            <i
+              *ngIf="!authService.getUserData()?.ProfileImg"
+              class="fa-regular fa-circle-user fs-4"
+            ></i>
+
+            {{ authService.getUserData()?.Name }}
+          </a>
+
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>
+              <a class="dropdown-item" routerLink="/order-history">Orders</a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <button class="dropdown-item" (click)="authService.logout()">
+                Logout
+              </button>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" *ngIf="!authService.isLoggedIn()">
+          <a class="nav-link" routerLink="/login">Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
