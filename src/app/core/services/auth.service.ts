@@ -12,7 +12,8 @@ import { jwtDecode } from 'jwt-decode';
 export class AuthService {
 
 
-  private LoginEndPoint = `${environment.apiUrl}/Auth/login`;
+  private AuthEndPoint = `${environment.apiUrl}/Account`;
+
   private RegisterEndPoint = `${environment.apiUrl}/Auth/register`;
 
 
@@ -21,10 +22,10 @@ export class AuthService {
 
   login(LoginObj: ILoginUser): Observable<any> {
     console.log(LoginObj);
-    return this.http.post(this.LoginEndPoint, LoginObj);
+    return this.http.post(`${this.AuthEndPoint}/login`, LoginObj);
   }
 
-  register(RegisterObj: FormData): Observable<any> {
+  createAdmin(RegisterObj: FormData): Observable<any> {
     console.log(RegisterObj);
     return this.http.post(this.RegisterEndPoint, RegisterObj);
   }
