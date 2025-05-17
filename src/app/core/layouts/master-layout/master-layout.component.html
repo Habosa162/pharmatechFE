@@ -1,11 +1,15 @@
-<div class="container-fluid">
-  <div class="row">
-    <app-sidebar class="col-md-3 col-lg-2 d-none d-md-block"></app-sidebar>
-
-    <main class="col-md-9 col-lg-10 ms-sm-auto px-4 ">
-      <router-outlet class="bg-light p-3"></router-outlet>
-    </main>
+<div class="app-container">
+  <app-sidebar></app-sidebar>
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <main class="col-md-12 px-0">
+          <div class="router-container bg-light p-3">
+            <router-outlet></router-outlet>
+          </div>
+        </main>
+      </div>
+    </div>
   </div>
+  <!-- <app-footer class="bg-dark text-white py-3"></app-footer> -->
 </div>
-
-<app-footer class="bg-dark text-white py-3 mt-4"></app-footer>

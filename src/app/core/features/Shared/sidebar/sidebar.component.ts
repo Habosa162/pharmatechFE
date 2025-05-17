@@ -1,12 +1,27 @@
-import { NgFor } from '@angular/common';
+// sidebar.component.ts
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule,NgFor],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
+  // Track collapsed states
+  constructor(private authService:AuthService){}
+  menuStates = {
+    mainMenu: true,
+    managementMenu: true,
+    reportsMenu: false,
+    systemMenu: false
+  };
+
+  // toggleMenu(menu: string) {
+  //   this.menuStates[menu] = !this.menuStates[menu];
+  // }
+
+  logout() {
+    this.authService.logout() ; 
+  }
 }

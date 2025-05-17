@@ -1,0 +1,77 @@
+/* sidebar.component.css */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: all 0.3s;
+}
+
+.sidebar-menu {
+  padding: 10px 0;
+}
+
+.menu-section {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-toggle {
+  color: white;
+  padding: 12px 20px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.menu-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-toggle .toggle-icon {
+  transition: transform 0.3s;
+  font-size: 12px;
+}
+
+.menu-toggle[aria-expanded="false"] .toggle-icon {
+  transform: rotate(-90deg);
+}
+
+.submenu {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.submenu .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px 10px 35px;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.submenu .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.submenu .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-left: 3px solid white;
+  color: white;
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  
+  .sidebar-menu {
+    max-height: 300px;
+  }
+}

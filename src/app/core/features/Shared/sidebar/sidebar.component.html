@@ -1,112 +1,121 @@
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-inner slimscroll">
-<div id="sidebar-menu" class="sidebar-menu">
-<ul>
-<li class="menu-title">
-  <span>Main</span>
-</li>
-<li class="active">
-  <a href="index.html"><i class="fe fe-home"></i> <span>Dashboard</span></a>
-</li>
-<li>
-  <a routerLink="/appointments"><i class="fe fe-layout"></i> <span>Appointments</span></a>
-</li>
-<li>
-  <a href="specialities.html"><i class="fe fe-users"></i> <span>Specialities</span></a>
-</li>
-<li>
-  <a href="doctor-list.html"><i class="fe fe-user-plus"></i> <span>Doctors</span></a>
-</li>
-<li>
-  <a routerLink="patients"><i class="fe fe-user"></i> <span>Patients</span></a>
-</li>
-<li>
-  <a href="reviews.html"><i class="fe fe-star-o"></i> <span>Reviews</span></a>
-</li>
-<li>
-  <a href="transactions-list.html"><i class="fe fe-activity"></i> <span>Transactions</span></a>
-</li>
-<li>
-  <a href="settings.html"><i class="fe fe-vector"></i> <span>Settings</span></a>
-</li>
-<li class="submenu">
-  <a href="#"><i class="fe fe-document"></i> <span> Reports</span> <span class="menu-arrow"></span></a>
-  <ul style="display: none;">
-    <li><a href="invoice-report.html">Invoice Reports</a></li>
-  </ul>
-</li>
-<li class="menu-title">
-  <span>Pages</span>
-</li>
-<li>
-  <a href="profile.html"><i class="fe fe-user-plus"></i> <span>Profile</span></a>
-</li>
-<li class="submenu">
-  <a href="#"><i class="fe fe-document"></i> <span> Authentication </span> <span class="menu-arrow"></span></a>
-  <ul style="display: none;">
-    <li><a href="login.html"> Login </a></li>
-    <li><a href="register.html"> Register </a></li>
-    <li><a href="forgot-password.html"> Forgot Password </a></li>
-    <li><a href="lock-screen.html"> Lock Screen </a></li>
-  </ul>
-</li>
-<li class="submenu">
-  <a href="#"><i class="fe fe-warning"></i> <span> Error Pages </span> <span class="menu-arrow"></span></a>
-  <ul style="display: none;">
-    <li><a href="error-404.html">404 Error </a></li>
-    <li><a href="error-500.html">500 Error </a></li>
-  </ul>
-</li>
-<li>
-  <a href="blank-page.html"><i class="fe fe-file"></i> <span>Blank Page</span></a>
-</li>
-<li class="menu-title">
-  <span>UI Interface</span>
-</li>
-<li>
-  <a href="components.html"><i class="fe fe-vector"></i> <span>Components</span></a>
-</li>
-<li class="submenu">
-  <a href="#"><i class="fe fe-layout"></i> <span> Forms </span> <span class="menu-arrow"></span></a>
-  <ul style="display: none;">
-    <li><a href="form-basic-inputs.html">Basic Inputs </a></li>
-    <li><a href="form-input-groups.html">Input Groups </a></li>
-    <li><a href="form-horizontal.html">Horizontal Form </a></li>
-    <li><a href="form-vertical.html"> Vertical Form </a></li>
-    <li><a href="form-mask.html"> Form Mask </a></li>
-    <li><a href="form-validation.html"> Form Validation </a></li>
-  </ul>
-</li>
-<li class="submenu">
-  <a href="#"><i class="fe fe-table"></i> <span> Tables </span> <span class="menu-arrow"></span></a>
-  <ul style="display: none;">
-    <li><a href="tables-basic.html">Basic Tables </a></li>
-    <li><a href="data-tables.html">Data Table </a></li>
-  </ul>
-</li>
-<li class="submenu">
-  <a href="javascript:void(0);"><i class="fe fe-code"></i> <span>Multi Level</span> <span class="menu-arrow"></span></a>
-  <ul style="display: none;">
-    <li class="submenu">
-      <a href="javascript:void(0);"> <span>Level 1</span> <span class="menu-arrow"></span></a>
-      <ul style="display: none;">
-        <li><a href="javascript:void(0);"><span>Level 2</span></a></li>
-        <li class="submenu">
-          <a href="javascript:void(0);"> <span> Level 2</span> <span class="menu-arrow"></span></a>
-          <ul style="display: none;">
-            <li><a href="javascript:void(0);">Level 3</a></li>
-            <li><a href="javascript:void(0);">Level 3</a></li>
+<!-- sidebar.component.html -->
+<div class="sidebar bg-primary d-flex flex-column flex-shrink-0" id="sidebar" style="width: 250px; height: 100vh;">
+  <!-- Sidebar Header (Optional) -->
+  <div class="sidebar-header p-3 text-white border-bottom border-white border-opacity-10">
+    <h5 class="mb-0">Admin Panel</h5>
+  </div>
+
+  <!-- Scrollable Menu Content -->
+  <div class="sidebar-menu flex-grow-1 overflow-auto">
+    <ul class="nav flex-column">
+      <!-- Main Section -->
+      <li class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center" 
+           data-bs-toggle="collapse" href="#mainMenu">
+          <span><i class="fe fe-grid me-2"></i> Main</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse show" id="mainMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-home me-2"></i> Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/appointment-list" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-calendar me-2"></i> Appointments
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/doctor-list" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-user-plus me-2"></i> Doctors
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-list" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-users me-2"></i> Patients
+              </a>
+            </li>
           </ul>
-        </li>
-        <li><a href="javascript:void(0);"> <span>Level 2</span></a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="javascript:void(0);"> <span>Level 1</span></a>
-    </li>
-  </ul>
-</li>
-</ul>
-</div>
+        </div>
+      </li>
+
+      <!-- Management Section -->
+      <li class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center" 
+           data-bs-toggle="collapse" href="#managementMenu">
+          <span><i class="fe fe-settings me-2"></i> Management</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse show" id="managementMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/specialities" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-layers me-2"></i> Specialities
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/reviews" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-star me-2"></i> Reviews
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/transactions-list" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-credit-card me-2"></i> Transactions
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Reports Section -->
+      <li class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center" 
+           data-bs-toggle="collapse" href="#reportsMenu">
+          <span><i class="fe fe-file-text me-2"></i> Reports</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="reportsMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/invoice-report" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file me-2"></i> Invoice Reports
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- System Section -->
+      <li class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center" 
+           data-bs-toggle="collapse" href="#systemMenu">
+          <span><i class="fe fe-tool me-2"></i> System</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="systemMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-sliders me-2"></i> Settings
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/profile" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-user me-2"></i> Profile
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Fixed Logout Button at Bottom -->
+  <div class="sidebar-footer p-3 border-top border-white border-opacity-10">
+    <button (click)="logout()" class="btn btn-light w-100">
+      <i class="fe fe-log-out me-2"></i> Logout
+    </button>
   </div>
 </div>
