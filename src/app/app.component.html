@@ -1,2 +1,5 @@
-
-<app-main-layout></app-main-layout>
+<ng-container [ngSwitch]="authService.getUserRole()">
+<app-main-layout *ngSwitchCase="'Employee'"></app-main-layout>
+<app-admin-layout *ngSwitchCase="'Admin'"></app-admin-layout>
+<app-master-layout *ngSwitchCase="'Master'"></app-master-layout>
+</ng-container>

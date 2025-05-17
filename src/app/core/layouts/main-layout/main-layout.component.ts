@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { RouterModule } from '@angular/router';
-import { FooterComponent } from '../../shared/components/footer/footer.component';
-import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
+import { FooterComponent } from '../../features/Shared/footer/footer.component';
+import { SidebarComponent } from '../../features/Shared/sidebar/sidebar.component';
+import { NavBarComponent } from '../../features/Shared/nav-bar/nav-bar.component';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [NavbarComponent,RouterModule,FooterComponent,SidebarComponent],
+  imports: [NavBarComponent,RouterModule,FooterComponent],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css'
 })

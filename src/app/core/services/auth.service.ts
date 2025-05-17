@@ -80,9 +80,9 @@ export class AuthService {
 
     getUserRole(): string | null {
       const decodedToken = this.getDecodedToken();
-      if (!decodedToken) return null;
+      if (!decodedToken) return "Employee";
       const role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-      if (!role) return "Customer";
+      if (!role) return "Employee";
       try {
         return role ;
       } catch (error) {
