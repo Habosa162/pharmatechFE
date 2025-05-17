@@ -1,8 +1,10 @@
+import { ILoginUser } from './../../../Models/auth.models';
 import { CommonModule } from '@angular/common';
 import { HttpContext } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {  Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +16,15 @@ export class LoginComponent {
   username = '';
   password = '';
 
-  constructor(private router:Router) {}
+  constructor(private router:Router,private authService:AuthService) {}
     onLogin() {
       console.log('Logging in with', this.username, this.password);
-      // TODO: Call authService and validate login
-      // this.router.navigate(['/dashboard']); // just a placeholder route
+     this.authService.login({username : this.username,password :  this.password}).subscribe((res)=>{
+        localStorage.setItem('token', res.token); 
+        console.log(res);
+     },(err)=>{
+      console.log(err);
+      
+     })
     }
 }

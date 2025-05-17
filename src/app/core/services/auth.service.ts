@@ -14,20 +14,21 @@ export class AuthService {
 
   private AuthEndPoint = `${environment.apiUrl}/Account`;
 
-  private RegisterEndPoint = `${environment.apiUrl}/Auth/register`;
 
 
   constructor(private http :HttpClient , private routerService:Router) { }
 
 
   login(LoginObj: ILoginUser): Observable<any> {
-    console.log(LoginObj);
-    return this.http.post(`${this.AuthEndPoint}/login`, LoginObj);
+    return this.http.post(`${this.AuthEndPoint}/login`, {
+      usernameoremail : LoginObj.username,
+      loginPassword : LoginObj.password
+    });
   }
 
   createAdmin(RegisterObj: FormData): Observable<any> {
     console.log(RegisterObj);
-    return this.http.post(this.RegisterEndPoint, RegisterObj);
+    return this.http.post(this.AuthEndPoint, RegisterObj);
   }
 
   getToken(): string | null {
