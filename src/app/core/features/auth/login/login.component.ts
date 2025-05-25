@@ -17,7 +17,7 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, protected authService: AuthService) {}
 
   onLogin() {
     const loginData: ILoginUser = {

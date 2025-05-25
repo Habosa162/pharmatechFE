@@ -1,4 +1,4 @@
-ul {
+/* ul {
   margin: 0px;
   padding: 0px;
 }
@@ -233,7 +233,7 @@ ul {
   }
 }
 
-/*social icons*/
+
 .footer-social-icon .button {
   cursor: pointer;
   width: 50px;
@@ -291,4 +291,7 @@ ul {
 .footer-social-icon .button:hover::before {
   width: 0px;
   height: 0px;
+} */
+a {
+  text-decoration: none;
 }

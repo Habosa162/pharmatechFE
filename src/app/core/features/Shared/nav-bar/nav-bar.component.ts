@@ -11,10 +11,9 @@ import { RouterModule } from '@angular/router';
 })
 export class NavBarComponent {
 
-  constructor(protected authService:AuthService){} 
+  constructor(protected authService:AuthService){}
   logout(){
     this.authService.logout();
   }
 
-  
 }
