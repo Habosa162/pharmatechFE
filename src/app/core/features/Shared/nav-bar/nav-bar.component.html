@@ -45,7 +45,7 @@
 					</div>
 					<div class="main-menu-wrapper">
 						<div class="menu-header">
-							<a href="index-2.html" class="menu-logo">
+							<a routerLink="/patients" class="menu-logo">
 								<img src="./img/logo.png" class="img-fluid" alt="Logo">
 
 							</a>
@@ -53,7 +53,7 @@
 								<i class="fas fa-times"></i>
 							</a>
 						</div>
-						<ul class="main-nav" *ngIf="authService.isLoggedIn()">
+						<ul class="main-nav" *ngIf="!authService.isLoggedIn()">
 							<li class="active">
 								<a href="index-2.html">Home</a>
 							</li>
@@ -88,7 +88,7 @@
 								</ul>
 							</li>
 							<li class="has-submenu">
-								<a href="#">Pages <i class="fas fa-chevron-down"></i></a>
+								<a routerLink="">Pages <i class="fas fa-chevron-down"></i></a>
 								<ul class="submenu">
 									<li><a href="voice-call.html">Voice Call</a></li>
 									<li><a href="video-call.html">Video Call</a></li>
@@ -103,14 +103,14 @@
 										</ul>
 									</li>
 									<li><a href="blank-page.html">Starter Page</a></li>
-									<li><a href="login.html">Login</a></li>
+									<li><a routerLink="/login" routerLinkActive="active">Login</a></li>
 									<li><a href="register.html">Register</a></li>
 									<li><a href="forgot-password.html">Forgot Password</a></li>
 								</ul>
 							</li>
-							<li>
+							<!-- <li>
 								<a href="admin/index.html" target="_blank">Admin</a>
-							</li>
+							</li> -->
 							<!-- <li class="login-link">
 								<a href="login.html">Login / Signup</a>
 							</li> -->

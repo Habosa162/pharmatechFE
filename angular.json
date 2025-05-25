@@ -23,19 +23,19 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "src/assets"
+                "input": "public/assets"
               }
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/assets/CSS/style.css"
+              "public/assets/CSS/style.css"
             ],
             "scripts": [
-              "src/assets/JS/jquery.min.js",
-              "src/assets/JS/popper.min.js",
+              "node_modules/jquery/dist/jquery.min.js",
+              "public/assets/JS/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
-              "src/assets/JS/slick.js",
-              "src/assets/JS/script.js"
+              "public/assets/JS/slick.js",
+              "public/assets/JS/script.js"
             ]
           },
           "configurations": {
