@@ -1,15 +1,72 @@
-<div class="app-container">
-  <app-sidebar></app-sidebar>
-  <div class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <main class="col-md-12 px-0">
-          <div class="router-container bg-light p-3">
-            <router-outlet></router-outlet>
-          </div>
-        </main>
+<app-nav-bar></app-nav-bar>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar with blue theme -->
+    <div class="col-md-3 col-lg-2 px-0">
+      <div class="sidebar" style="background-color: #005C99; min-height: calc(100vh - 70px);">
+        <div class="sidebar-menu p-3">
+          <ul class="nav flex-column">
+            <!-- Dashboard -->
+            <li class="nav-item">
+              <a routerLink="/admin" routerLinkActive="active" class="nav-link text-white d-flex align-items-center mb-3">
+                <i class="fas fa-home me-2"></i> Dashboard
+              </a>
+            </li>
+
+            <!-- User Management -->
+            <li class="nav-item mb-2">
+              <a class="nav-link text-white d-flex align-items-center" 
+                data-bs-toggle="collapse" href="#userManagement">
+                <i class="fas fa-users me-2"></i>
+                <span>User Management</span>
+                <i class="fas fa-chevron-down ms-auto"></i>
+              </a>
+              <div class="collapse show" id="userManagement">
+                <ul class="nav flex-column ms-3 mt-2">
+                  <li class="nav-item">
+                    <a routerLink="/admin/admins" routerLinkActive="active" 
+                      class="nav-link text-white-50 py-2 d-flex align-items-center">
+                      <i class="fas fa-user-shield me-2"></i> Admins
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a routerLink="/admin/owners" routerLinkActive="active" 
+                      class="nav-link text-white-50 py-2 d-flex align-items-center">
+                      <i class="fas fa-user-tie me-2"></i> Owners
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a routerLink="/admin/doctors" routerLinkActive="active" 
+                      class="nav-link text-white-50 py-2 d-flex align-items-center">
+                      <i class="fas fa-user-md me-2"></i> Doctors
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a routerLink="/admin/employees" routerLinkActive="active" 
+                      class="nav-link text-white-50 py-2 d-flex align-items-center">
+                      <i class="fas fa-user-friends me-2"></i> Employees
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="p-3 mt-auto">
+          <button (click)="logout()" class="btn btn-light w-100 d-flex align-items-center justify-content-center">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- Main Content Area -->
+    <main class="col-md-9 col-lg-10 ms-sm-auto px-4 py-3">
+      <router-outlet></router-outlet>
+    </main>
   </div>
-  <!-- <app-footer class="bg-dark text-white py-3"></app-footer> -->
 </div>
+
+<app-footer class="bg-dark text-white py-3"></app-footer>
