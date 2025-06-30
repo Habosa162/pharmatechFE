@@ -1,10 +1,11 @@
 /* sidebar.component.css */
  .sidebar {
-  /* position: fixed;
+   position: sticky;
   top: 0;
-  left: 0; */
+  left: 0;
   z-index: 1000;
-  height: auto;
+  min-height: 100vh;
+  max-height: auto;
   /* width: 162px; */
   background-color: #005C99;
   transition: all 0.3s;
