@@ -70,11 +70,11 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  /* .sidebar {
-    width: 100%;
+  .sidebar {
+    /* width: 100%; */
     height: auto;
     position: relative;
-  } */
+  }
 
   /* .sidebar-menu {
     max-height: 300px;
