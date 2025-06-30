@@ -28,6 +28,18 @@ export const routes: Routes = [
   },
 
   {
+    path: 'owner',
+    canActivate: [AuthGuard],
+    data: { role: 'Owner' },
+    children: [
+      {
+        path: '',
+        component:AdminDashboardComponent
+      },
+    ]
+  },
+
+  {
     path: 'master',
     canActivate: [AuthGuard],
     data: { role: 'Master' },

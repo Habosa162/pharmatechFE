@@ -1,19 +1,20 @@
 <app-nav-bar></app-nav-bar>
+
 <div class="container-fluid">
   <div class="row">
     <!-- Sidebar with blue theme -->
-    <div class="col-md-3 col-lg-2 px-0">
+    <!-- <div class="col-md-3 col-lg-2 px-0">
       <div class="sidebar" style="background-color: #005C99; min-height: calc(100vh - 70px);">
         <div class="sidebar-menu p-3">
           <ul class="nav flex-column">
-            <!-- Dashboard -->
+
             <li class="nav-item">
               <a routerLink="/admin" routerLinkActive="active" class="nav-link text-white d-flex align-items-center mb-3">
                 <i class="fas fa-home me-2"></i> Dashboard
               </a>
             </li>
 
-            <!-- User Management -->
+
             <li class="nav-item mb-2">
               <a class="nav-link text-white d-flex align-items-center"
                 data-bs-toggle="collapse" href="#userManagement">
@@ -23,18 +24,22 @@
               </a>
               <div class="collapse show" id="userManagement">
                 <ul class="nav flex-column ms-3 mt-2">
-                  <li class="nav-item">
+
+
+                   <li class="nav-item">
                     <a routerLink="/admin/admins" routerLinkActive="active"
                       class="nav-link text-white-50 py-2 d-flex align-items-center">
                       <i class="fas fa-user-shield me-2"></i> Admins
                     </a>
                   </li>
-                  <li class="nav-item">
+                   <li class="nav-item">
                     <a routerLink="/admin/owners" routerLinkActive="active"
                       class="nav-link text-white-50 py-2 d-flex align-items-center">
                       <i class="fas fa-user-tie me-2"></i> Owners
                     </a>
                   </li>
+
+
                   <li class="nav-item">
                     <a routerLink="/admin/doctors" routerLinkActive="active"
                       class="nav-link text-white-50 py-2 d-flex align-items-center">
@@ -53,20 +58,20 @@
           </ul>
         </div>
 
-        <!-- Logout Button -->
+
         <div class="p-3 mt-auto">
           <button (click)="Logout()" class="btn btn-light w-100 d-flex align-items-center justify-content-center">
             <i class="fas fa-sign-out-alt me-2"></i> Logout
           </button>
         </div>
       </div>
-    </div>
-
+    </div> -->
+    <app-sidebar class="col-sm-3 col-lg-2 px-0"></app-sidebar>
     <!-- Main Content Area -->
-    <main class="col-md-9 col-lg-10 ms-sm-auto px-4 py-3">
+    <main class="col-sm-9 col-lg-10 ms-sm-auto px-4 py-3">
       <router-outlet></router-outlet>
     </main>
   </div>
 </div>
 
-<app-footer class="bg-dark text-white py-3"></app-footer>
+<app-footer></app-footer>

@@ -1,54 +1,55 @@
 /* Main layout styles */
 .app-container {
-  min-height: 100vh;
+  /* min-height: 100vh; */
 }
 
 .wrapper {
-  flex: 1 0 auto; /* This makes sure the wrapper grows to push footer down */
+  /* flex: 1 0 auto; */
+   /* This makes sure the wrapper grows to push footer down */
 }
 
 .sidebar {
-  width: 250px;
+  /* width: 250px;
   height: 100vh;
   position: sticky;
   top: 0;
-  overflow-y: auto;
+  overflow-y: auto; */
 }
 
 .content {
-  overflow-y: auto;
-  height: 100vh;
+  /* overflow-y: auto;
+  height: 100vh; */
 }
 
 .router-container {
-  min-height: calc(100vh - 56px); /* Adjust based on your header/footer height */
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  /* min-height: calc(100vh - 56px); /* Adjust based on your header/footer height */
+  /* border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);  */
 }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  .sidebar {
+  /* .sidebar {
     width: 220px;
-  }
+  } */
 }
 
 @media (max-width: 768px) {
-  .wrapper {
+  /* .wrapper {
     flex-direction: column;
-  }
-  
-  .sidebar {
+  } */
+
+  /* .sidebar {
     width: 100%;
     height: auto;
     position: relative;
-  }
-  
-  .content {
+  } */
+
+  /* .content {
     height: auto;
   }
-  
+
   .router-container {
     min-height: auto;
-  }
+  } */
 }

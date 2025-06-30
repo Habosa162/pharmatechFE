@@ -1,9 +1,12 @@
 /* sidebar.component.css */
-.sidebar {
-  position: fixed;
+ .sidebar {
+  /* position: fixed;
   top: 0;
-  left: 0;
+  left: 0; */
   z-index: 1000;
+  height: auto;
+  /* width: 162px; */
+  background-color: #005C99;
   transition: all 0.3s;
 }
 
@@ -12,7 +15,7 @@
 }
 
 .menu-section {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .menu-toggle {
@@ -27,6 +30,7 @@
 }
 
 .menu-toggle .toggle-icon {
+  /* color: white; */
   transition: transform 0.3s;
   font-size: 12px;
 }
@@ -65,13 +69,13 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .sidebar {
+  /* .sidebar {
     width: 100%;
     height: auto;
     position: relative;
-  }
-  
-  .sidebar-menu {
+  } */
+
+  /* .sidebar-menu {
     max-height: 300px;
-  }
+  } */
 }
