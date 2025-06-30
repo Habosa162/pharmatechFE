@@ -24,7 +24,7 @@ export class LoginComponent {
       username: this.username,
       password: this.password
     };
-
+ 
     this.authService.login(loginData).subscribe({
       next: (res) => {
         localStorage.setItem('token', res.token);

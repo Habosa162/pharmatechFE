@@ -82,16 +82,16 @@ export class AuthService {
     getUserRole(): string | null {
       const decodedToken = this.getDecodedToken();
       console.log("decoded token is",decodedToken);
-      if (!decodedToken) return "Employee";
+      if (!decodedToken) return "null";
       // const role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/roles'];
 
       const rolesJson = decodedToken['roles'];
 
       const roles = typeof rolesJson === 'string' ? JSON.parse(rolesJson) : rolesJson;
       console.log('role is',roles);
-      if (!roles) return "Employee";
+      if (!roles) return "null";
       try {
-         if (roles.includes("Master")) {
+        if (roles.includes("Master")) {
     return "Master";
   } else if (roles.includes("Owner")) {
     return "Owner";
@@ -100,7 +100,7 @@ export class AuthService {
     return "Admin";
   } else {
         return "Employee" ;
-      } 
+      }
     }
       catch (error) {
         return null;
