@@ -3,7 +3,7 @@
    position: sticky;
   top: 0;
   left: 0;
-  z-index: 1000;
+  /* z-index: 1000; */
   min-height: 100vh;
   max-height: auto;
   /* width: 162px; */
@@ -72,8 +72,8 @@
 @media (max-width: 768px) {
   .sidebar {
     /* width: 100%; */
-    height: auto;
-    position: relative;
+    /* height: auto; */
+    /* position: sticky; */
   }
 
   /* .sidebar-menu {

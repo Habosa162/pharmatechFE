@@ -8,11 +8,13 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { AdminDashboardComponent } from './core/features/dashboard/admin-dashboard/admin-dashboard.component';
 import { MasterDashboadrComponent } from './core/features/Master/master-dashboadr/master-dashboadr.component';
 import { EmployeeComponent } from './core/features/employees/employee/employee.component';
+import { PatientProfileComponent } from './core/features/patients/patient-profile/patient-profile.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {path:'appointments', component: AppointmentComponent},
   {path:'patients',component:PatientListComponent},
+  {path:'patient',component:PatientProfileComponent},
 
 
   {
