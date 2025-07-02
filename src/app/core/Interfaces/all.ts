@@ -12,6 +12,30 @@ export interface Appointment {
     medicalRecord: MedicalRecord;
 }
 
+
+export interface CreateAppointmentDTO {
+  appointmentDate: string; // ISO 8601 format e.g., "2025-07-01T14:30:00"
+  notes: string;
+  patientId: number;
+  doctorDepartmentId: number;
+}
+
+export interface UpdateAppointmentDTO extends CreateAppointmentDTO {
+  id: number;
+}
+
+export interface AppointmentDetails {
+  id: number;
+  patientId: number;
+  name: string;
+  prescriptions: string[][]; // array of prescription medication names per prescription
+  departmentName: string;
+  doctorName: string;
+  appointmentDate: string;
+  notes: string;
+  status: string;
+}
+
 export enum AppointmentStatus {
     Scheduled = 0,
     Completed = 1,
@@ -47,6 +71,29 @@ export interface Clinic {
     owner: AppUser | null;
     departments: Department[];
 }
+
+export interface ClinicViewDTO {
+  id: number;
+  name: string;
+  address?: string;
+  phone?: string;
+  isActive: boolean;
+  ownerName?: string;
+  departments: string[];
+}
+
+export interface CreateClinicDTO {
+  name: string;
+  address?: string;
+  phone?: string;
+  ownerId?: string;
+}
+
+export interface UpdateClinicDTO extends CreateClinicDTO {
+  id: number;
+}
+
+
 export interface Department {
     id: number;
     name: string;
@@ -55,6 +102,33 @@ export interface Department {
     isActive: boolean;
     departmentDoctors: DoctorDepartment[];
 }
+
+
+export interface DepartmentViewDTO {
+  id: number;
+  name: string;
+  clinicName: string;
+  doctorNames: DoctorInDepartmentViewDTO[];
+}
+
+export interface DoctorInDepartmentViewDTO {
+  id: number;
+  fullName: string;
+  specialization: string;
+}
+
+export interface CreateDepartmentDTO {
+  name: string;
+  clinicId: number;
+}
+
+export interface UpdateDepartmentDTO extends CreateDepartmentDTO {
+  id: number;
+}
+
+
+
+
 export interface Doctor {
     id: number;
     name: string;
