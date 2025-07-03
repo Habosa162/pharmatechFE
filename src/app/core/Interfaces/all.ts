@@ -1,3 +1,9 @@
+import { InvoiceDTO } from "./appointment/invoices/invoice";
+import { PositionDto } from "./employee/positions/position";
+import { Medicalrecord } from "./patient/medicalrecords/medicalrecord";
+import { PatientDto } from "./patient/patients/patient";
+import { SurgeryDTO } from "./patient/surgeries/surgery";
+
 export interface Appointment {
     id: number;
     appointmentDate: string;
@@ -5,11 +11,11 @@ export interface Appointment {
     status: AppointmentStatus;
     notes: string;
     patientId: number;
-    patient: Patient;
+    patient: PatientDto;
     doctorDepartmentId: number;
     doctorDepartment: DoctorDepartment;
-    invoice: Invoice;
-    medicalRecord: MedicalRecord;
+    invoice: InvoiceDTO;
+    medicalRecord: Medicalrecord;
 }
 
 export enum AppointmentStatus {
@@ -18,16 +24,7 @@ export enum AppointmentStatus {
     Cancelled = 2,
     NoShow = 3
 }
-export interface Invoice {
-    id: number;
-    createdAt: string;
-    totalAmount: number;
-    paidAmount: number;
-    isPaid: boolean;
-    paymentMethod: PaymentMethod;
-    appointmentId: number;
-    appointment: Appointment;
-}
+
 
 export enum PaymentMethod {
     Cash = 0,
@@ -67,7 +64,7 @@ export interface Doctor {
     appUserId: string | null;
     appUser: AppUser | null;
     doctorDepartments: DoctorDepartment[];
-    surgeries: Surgery[];
+    surgeries: SurgeryDTO[];
 }
 
 
@@ -82,15 +79,7 @@ export interface DoctorDepartment {
 }
 
 
-export interface Medication {
-    id: number;
-    name: string;
-    dosage: string | null;
-    frequency: string | null;
-    duration: string | null;
-    notes: string | null;
-    prescriptionMedications: PrescriptionMedication[];
-}
+
 
 
 export interface Employee {
@@ -105,16 +94,11 @@ export interface Employee {
     appUserId: string | null;
     appUser: AppUser | null;
     positionId: number;
-    position: Position;
+    position: PositionDto;
 }
 
 
-export interface Position {
-    id: number;
-    name: string;
-    departmentId: number;
-    department: Department;
-}
+
 
 export interface InventoryCategory {
     id: number;
@@ -163,37 +147,11 @@ export enum InventoryTransactionType {
     Purchase = 8,
     Other = 9
 }
-export interface LabTest {
-    id: number;
-    name: string;
-    result: string;
-    testDate: string;
-    medicalRecordId: number;
-    medicalRecord: MedicalRecord;
-}
 
-export interface MedicalRecord {
-    id: number;
-    visitDate: string;
-    notes: string | null;
-    appointmentId: number;
-    appointment: Appointment;
-    patientId: number;
-    patient: Patient;
-    prescriptions: Prescription[];
-    labTests: LabTest[];
-}
 
-export interface Patient {
-    id: number;
-    name: string;
-    phoneNumber: string;
-    dateOfBirth: string;
-    gender: Gender;
-    medicalRecords: MedicalRecord[];
-    appointments: Appointment[];
-    surgeries: Surgery[];
-}
+
+
+
 
 export enum Gender {
     male = 0,
@@ -201,34 +159,11 @@ export enum Gender {
 }
 
 
-export interface Prescription {
-    id: number;
-    diagnosis: string;
-    prescriptionDate: string;
-    followUpDate: string;
-    medicalRecordId: number;
-    medicalRecord: MedicalRecord;
-    prescriptionMedications: PrescriptionMedication[];
-}
 
-export interface PrescriptionMedication {
-    id: number;
-    prescriptionId: number;
-    prescription: Prescription;
-    medicationId: number;
-    medication: Medication;
-}
 
-export interface Surgery {
-    id: number;
-    name: string;
-    description: string | null;
-    surgeryDate: string;
-    patientId: number;
-    patient: Patient;
-    doctorId: number;
-    doctor: Doctor;
-}
+
+
+
 
 export interface Transaction {
     id: number;
