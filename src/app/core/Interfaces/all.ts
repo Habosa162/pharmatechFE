@@ -144,6 +144,49 @@ export interface Doctor {
     surgeries: Surgery[];
 }
 
+export interface LoginDTO {
+  usernameoremail: string;
+  loginPassword: string;
+}
+
+export interface RefreshTokenDTO {
+  userName: string;
+  refreshToken: string;
+}
+
+export interface CreateDoctorDTO {
+  name: string;
+  specialization: string;
+  phoneNumber: string;
+  startDate: string; // ISO string (yyyy-mm-dd)
+  appUserId: string;
+}
+
+export interface UpdateDoctorDTO {
+  id: number;
+  name: string;
+  specialization: string;
+  phoneNumber: string;
+}
+
+export interface CreateEmployeeDTO {
+  name: string;
+  phoneNumber: string;
+  salary: number;
+  appUserId?: string;
+  positionId: number;
+}
+
+export interface UpdateEmployeeDTO {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  salary: number;
+  positionId: number;
+  endDate?: string;
+}
+
+
 
 export interface DoctorDepartment {
     id: number;
