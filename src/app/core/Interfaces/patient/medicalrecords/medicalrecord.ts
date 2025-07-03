@@ -1,12 +1,12 @@
-import { Prescription } from "../prescriptions/prescription";
+import { PrescriptionDto } from "../prescriptions/prescription";
 
 
-export interface Medicalrecord {
+export interface MedicalrecordDto {
   visitDate: string; // ISO 8601 format, e.g., "2025-07-03T14:30:00Z"
   notes?: string; // optional
   doctorName: string;
   patientName: string;
-  prescriptions: Prescription[];
+  prescriptions: PrescriptionDto[];
   labtestsCount: number;
 }
 

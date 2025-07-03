@@ -1,13 +1,13 @@
-import { MedicationDTO } from "../../clinic/medications/medication";
+import { MedicationDto } from "../../clinic/medications/medication";
 
-export interface Prescription {
+export interface PrescriptionDto {
   diagnosis: string;
   prescriptionDate: string; // ISO 8601 format, e.g., "2025-07-03T12:00:00Z"
   followUpDate: string;     // Same format as above
   patientName: string;
   doctorName: string;
   clinicName: string;
-  medications: MedicationDTO[];
+  medications: MedicationDto[];
 }
 
 export interface AllPrescriptions {
@@ -28,7 +28,7 @@ export interface PrescriptionMedication {
   patientName: string;
   doctorName: string;
   clinicName: string;
-  medications: MedicationDTO[];
+  medications: MedicationDto[];
 }
 
 export interface CreatePrescription {

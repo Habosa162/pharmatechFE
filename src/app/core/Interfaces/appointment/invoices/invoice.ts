@@ -1,6 +1,6 @@
 import { PaymentMethod } from "../../all";
 
-export interface InvoiceDTO {
+export interface InvoiceDto {
   createdAt: string;          // ISO 8601 date string, e.g., "2025-07-03T15:00:00Z"
   totalAmount: number;        // decimal → number
   paidAmount: number;         // decimal → number

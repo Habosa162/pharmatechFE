@@ -1,5 +1,5 @@
 
-export interface Labtest {
+export interface LabtestDto {
   id: number;
   name: string;
   result: string;

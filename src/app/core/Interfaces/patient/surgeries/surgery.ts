@@ -1,4 +1,4 @@
-export interface SurgeryDTO {
+export interface SurgeryDto {
   id: number;
   name: string;
   surgeryDate?: string;  // optional because of default value in C#

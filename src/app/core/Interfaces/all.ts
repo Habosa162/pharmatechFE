@@ -1,8 +1,8 @@
-import { InvoiceDTO } from "./appointment/invoices/invoice";
+import { InvoiceDto } from "./appointment/invoices/invoice";
 import { PositionDto } from "./employee/positions/position";
-import { Medicalrecord } from "./patient/medicalrecords/medicalrecord";
+import { Allmedicalrecords} from "./patient/medicalrecords/medicalrecord";
 import { PatientDto } from "./patient/patients/patient";
-import { SurgeryDTO } from "./patient/surgeries/surgery";
+import { SurgeryDto } from "./patient/surgeries/surgery";
 
 export interface Appointment {
     id: number;
@@ -14,8 +14,8 @@ export interface Appointment {
     patient: PatientDto;
     doctorDepartmentId: number;
     doctorDepartment: DoctorDepartment;
-    invoice: InvoiceDTO;
-    medicalRecord: Medicalrecord;
+    invoice: InvoiceDto;
+    medicalRecord: Allmedicalrecords;
 }
 
 
@@ -138,7 +138,7 @@ export interface Doctor {
     appUserId: string | null;
     appUser: AppUser | null;
     doctorDepartments: DoctorDepartment[];
-    surgeries: SurgeryDTO[];
+    surgeries: SurgeryDto[];
 }
 
 
