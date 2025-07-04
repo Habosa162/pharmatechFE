@@ -1,1 +1,173 @@
-<p>master-dashboadr works!</p>
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Clinic Master Dashboard</h1>
+
+  <!-- Statistics Cards -->
+  <div class="statistics-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <h3>Total Patients</h3>
+        <p class="stat-number">{{totalPatients}}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <h3>Total Revenue</h3>
+        <p class="stat-number">${{totalRevenue | number:'1.2-2'}}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📄</div>
+      <div class="stat-content">
+        <h3>Total Invoices</h3>
+        <p class="stat-number">{{totalInvoices}}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💊</div>
+      <div class="stat-content">
+        <h3>Medications</h3>
+        <p class="stat-number">{{totalMedications}}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🏥</div>
+      <div class="stat-content">
+        <h3>Surgeries</h3>
+        <p class="stat-number">{{totalSurgeries}}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🔬</div>
+      <div class="stat-content">
+        <h3>Lab Tests</h3>
+        <p class="stat-number">{{totalLabTests}}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👨‍⚕️</div>
+      <div class="stat-content">
+        <h3>Staff Positions</h3>
+        <p class="stat-number">{{totalPositions}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Lists -->
+  <div class="dashboard-sections">
+    <!-- Recent Transactions Section -->
+    <section class="dashboard-section">
+      <h2>Recent Transactions</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of recentTransactions.slice(0, 5)">
+              <td>{{transaction.date | date:'short'}}</td>
+              <td>{{transaction.description}}</td>
+              <td>${{transaction.amount | number:'1.2-2'}}</td>
+              <td>
+                <span [class]="'status-badge ' + transaction.status.toLowerCase()">
+                  {{transaction.status}}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Recent Invoices Section -->
+    <section class="dashboard-section">
+      <h2>Recent Invoices</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Patient</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let invoice of recentInvoices.slice(0, 5)">
+              <td>{{invoice.invoiceNumber}}</td>
+              <td>{{invoice.patientName}}</td>
+              <td>${{invoice.amount | number:'1.2-2'}}</td>
+              <td>
+                <span [class]="'status-badge ' + invoice.status.toLowerCase()">
+                  {{invoice.status}}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Medications Section -->
+    <section class="dashboard-section">
+      <h2>Recent Medications</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let med of medications.slice(0, 5)">
+              <td>{{med.name}}</td>
+              <!-- <td>{{med.category}}</td>
+              <td>{{med.stock}}</td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Surgeries Section -->
+    <section class="dashboard-section">
+      <h2>Upcoming Surgeries</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let surgery of surgeries.slice(0, 5)">
+              <!-- <td>{{surgery.type}}</td>
+              <td>{{surgery.date | date:'short'}}</td> -->
+              <td>
+                <!-- <span [class]="'status-badge ' + surgery.status.toLowerCase()">
+                  {{surgery.status}}
+                </span> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

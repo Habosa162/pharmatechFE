@@ -10,7 +10,7 @@ import { CreatePosition, PositionDto, UpdatePosition } from '../../Interfaces/em
 export class PositionService {
 
 
-  private positionEndPoint = `${environment.apiUrl}/position`; // Replace with your actual endpoint
+  private positionEndPoint = `${environment.apiUrl}/positions`; // Replace with your actual endpoint
   constructor(private http: HttpClient) { }
 
   getAllPositions() : Observable<PositionDto[]>{
