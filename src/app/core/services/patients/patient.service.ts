@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../enviroment';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { PatientDto } from '../../Interfaces/patient/patients/patient';
+import { CreatePatient, PatientDto } from '../../Interfaces/patient/patients/patient';
 
 
 @Injectable({
@@ -37,8 +37,8 @@ export class PatientService {
     return this.http.get<PatientDto[]>(`${this.PatientEndPoint}patient/searchbypatientphonenumber/${phoneNumber}`);
   }
 
-  addpatient(patient: PatientDto): Observable<PatientDto> {
-    return this.http.post<PatientDto>(`${this.PatientEndPoint}patient`, patient);
+  addpatient(patient: CreatePatient): Observable<PatientDto> {
+    return this.http.post<PatientDto>(`${this.PatientEndPoint}patient/addpatient`, patient);
   }
   updatePatient(id: number, patient: PatientDto): Observable<PatientDto> {
     return this.http.put<PatientDto>(`${this.PatientEndPoint}patient/${id}`, patient);

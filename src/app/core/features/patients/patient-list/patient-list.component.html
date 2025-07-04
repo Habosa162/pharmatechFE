@@ -1,38 +1,171 @@
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <div class="table-responsive">
-            <table class="datatable table table-hover table-center mb-0">
-                <thead>
-                    <tr>
-                        <th>Patient ID</th>
-                        <th>Patient Name</th>
-                        <th>Age</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Last Visit</th>
-                        <th class="text-right">Paid</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#PT001</td>
-                        <td>
-                            <h2 class="table-avatar">
-                                <a routerLink="profile.html" class="avatar avatar-sm mr-2"><img class="avatar-img rounded-circle" src="assets/img/patients/patient1.jpg" ></a>
-                                <a routerLink="profile.html">Charlene Reed </a>
-                            </h2>
-                        </td>
-                        <td>29</td>
-                        <td>4417  Goosetown Drive, Taylorsville, North Carolina, 28681</td>
-                        <td>8286329170</td>
-                        <td>20 Oct 2019</td>
-                        <td class="text-right">$100.00</td>
-                    </tr>
-                    
-                </tbody>
-            </table>
-        </div>
-        </div>
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="row align-items-center">
+      <div class="col">
+        <h3 class="page-title">Patients</h3>
+      </div>
+      <div class="col-auto">
+        <a (click)="openModal()" class="btn btn-primary" >
+          <i class="fas fa-plus"></i> Add Patient
+        </a>
+      </div>
     </div>
+  </div>
+  <!-- /Page Header -->
+
+  <!-- Search Filter -->
+  <div class="card filter-card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <input type="text" class="form-control" [(ngModel)]="searchTerm" 
+                   (input)="search()" placeholder="Search by patient name...">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Search Filter -->
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-center mb-0">
+              <thead>
+                <tr>
+                  <th>Patient Name</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Phone</th>
+                  <!-- <th>Surgeries</th>
+                  <th>Medical Records</th>
+                  <th>Appointments</th> -->
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let patient of filteredPatients">
+                  <td>
+                    <h2 class="table-avatar">
+                            <a (click)="viewDetails(patient.id)">{{ patient.name }}</a>
+                    </h2>
+                  </td>
+                  <td>{{ calculateAge(patient.dateOfBirth) }}</td>
+                  <td>{{ getGenderName(patient.gender) }}</td>
+                  <td>{{ patient.phoneNumber }}</td>
+                  <!-- <td>{{ patient.surgeryCount }}</td>
+                  <td>{{ patient.medicalRecordsCount }}</td>
+                  <td>{{ patient.appointmentsCount }}</td> -->
+                  <td>
+                    <div class="actions">
+                      <a (click)="viewDetails(patient.id)" class="btn btn-sm btn-info mr-2">
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <a (click)="editPatient(patient.id)" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+
+<div class="modal" [class.show]="showModal" *ngIf="showModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Patient</h5>
+        <button type="button" class="close" (click)="closeModal()">
+          <span>&times;</span>
+        </button>
+      </div>
+     
+
+      <div class="modal-body">
+  <form #patientForm="ngForm" (ngSubmit)="createPatient()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" 
+             class="form-control" 
+             [class.is-invalid]="(submitted || nameInput.touched) && nameInput.invalid"
+             id="name"
+             [(ngModel)]="newPatient.name" 
+             name="name" 
+             #nameInput="ngModel"
+             pattern="^[A-Za-z\s]+$"
+             required>
+      <div class="invalid-feedback" *ngIf="(submitted || nameInput.touched) && nameInput.invalid">
+        {{ getErrorMessage('Name', nameInput) }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="phoneNumber">Phone Number</label>
+      <input type="tel" 
+             class="form-control" 
+             [class.is-invalid]="(submitted || phoneInput.touched) && phoneInput.invalid"
+             id="phoneNumber"
+             [(ngModel)]="newPatient.phoneNumber" 
+             name="phoneNumber" 
+             #phoneInput="ngModel"
+             pattern="^\d{10,12}$"
+             required>
+      <div class="invalid-feedback" *ngIf="(submitted || phoneInput.touched) && phoneInput.invalid">
+        {{ getErrorMessage('Phone Number', phoneInput) }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="dateofBirth">Date of Birth</label>
+      <input type="date" 
+             class="form-control" 
+             [class.is-invalid]="(submitted || dobInput.touched) && dobInput.invalid"
+             id="dateofBirth"
+             [(ngModel)]="newPatient.dateofBirth" 
+             name="dateofBirth" 
+             #dobInput="ngModel"
+             required>
+      <div class="invalid-feedback" *ngIf="(submitted || dobInput.touched) && dobInput.invalid">
+        {{ getErrorMessage('Date of Birth', dobInput) }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="gender">Gender</label>
+      <select class="form-control" 
+              [class.is-invalid]="(submitted || genderInput.touched) && genderInput.invalid"
+              id="gender"
+              [(ngModel)]="newPatient.gender" 
+              name="gender" 
+              #genderInput="ngModel"
+              required>
+        <option [ngValue]="0">Male</option>
+        <option [ngValue]="1">Female</option>
+      </select>
+      <div class="invalid-feedback" *ngIf="(submitted || genderInput.touched) && genderInput.invalid">
+        {{ getErrorMessage('Gender', genderInput) }}
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      <button type="submit" class="btn btn-primary">Save Patient</button>
+    </div>
+  </form>
+</div>
+     
+    </div>
+  </div>
+</div>
+

@@ -67,4 +67,5 @@ export const routes: Routes = [
 
 
   { path: '**', component: NotFoundComponent },
+  {path:'patients',component:PatientListComponent},
 ];

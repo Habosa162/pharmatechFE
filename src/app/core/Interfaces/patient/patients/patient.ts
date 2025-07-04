@@ -1,6 +1,7 @@
 import { Gender } from "../../all";
 
 export interface PatientDto {
+  id:number;
   name: string;
   phoneNumber: string;
   dateOfBirth: string; // Use ISO 8601 date string format (e.g., '1990-01-01')
