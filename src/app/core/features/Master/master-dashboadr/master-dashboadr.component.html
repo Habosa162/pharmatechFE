@@ -128,15 +128,15 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Category</th>
-              <th>Stock</th>
+              <th>Dosage</th>
+              <th>Duration</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let med of medications.slice(0, 5)">
               <td>{{med.name}}</td>
-              <!-- <td>{{med.category}}</td>
-              <td>{{med.stock}}</td> -->
+              <td>{{med.dosage}}</td>
+              <td>{{med.duration}}</td>
             </tr>
           </tbody>
         </table>
@@ -150,19 +150,19 @@
         <table>
           <thead>
             <tr>
-              <th>Type</th>
+              <th>Name</th>
               <th>Date</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let surgery of surgeries.slice(0, 5)">
-              <!-- <td>{{surgery.type}}</td>
-              <td>{{surgery.date | date:'short'}}</td> -->
+              <td>{{surgery.name}}</td>
+              <td>{{surgery.surgeryDate| date:'short'}}</td>
               <td>
-                <!-- <span [class]="'status-badge ' + surgery.status.toLowerCase()">
-                  {{surgery.status}}
-                </span> -->
+                <span [class]="'status-badge ' + surgery.doctorName.toLowerCase()">
+                  {{surgery.doctorName}}
+                </span>
               </td>
             </tr>
           </tbody>

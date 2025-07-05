@@ -1,0 +1,513 @@
+.admin-panel {
+  padding: 20px;
+  background-color: #f8f9fa;
+  position: relative;
+}
+
+.page-title {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.admin-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+  padding: 10px 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover, .tab-btn.active {
+  color: #3498db;
+}
+
+.tab-btn.active {
+  border-bottom: 3px solid #3498db;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.add-btn, .btn-primary {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+.add-btn:hover, .btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.edit-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+.delete-btn, .btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover, .btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #7f8c8d;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: #f0f5fa;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.data-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Modal styling - fixed */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 1060;
+  position: relative;
+}
+
+.modal-header {
+  padding: 1rem;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.confirm-message {
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.warning-message {
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+/* Table responsiveness */
+@media (max-width: 768px) {
+  .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+
+.admin-panel {
+  padding: 20px;
+  background-color: #f8f9fa;
+  position: relative; /* Ensure no interference with modals */
+}
+
+.page-title {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.admin-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tab-btn {
+  padding: 10px 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover,
+.tab-btn.active {
+  color: #3498db;
+}
+
+.tab-btn.active {
+  border-bottom: 3px solid #3498db;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.card-body {
+  padding: 15px;
+}
+
+.add-btn,
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+.add-btn:hover,
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.edit-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+.delete-btn,
+.btn-danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover,
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #7f8c8d;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: #f0f5fa;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.data-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Modal styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000; /* Increased z-index to ensure modals are on top */
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 10001; /* Ensure modal is above overlay */
+  position: relative;
+}
+
+.modal-header {
+  padding: 1rem;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.confirm-message {
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.warning-message {
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+/* Table responsiveness */
+@media (max-width: 768px) {
+  .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 1; /* Ensure overlay is fully visible */
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 10001;
+  position: relative;
+  display: block; /* Ensure modal is not hidden */
+  opacity: 1; /* Ensure modal is fully visible */
+  transform: translateY(0); /* Prevent off-screen positioning */
+  height:60%;
+
+}
+
+.modal-header {
+  padding: 1rem;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}

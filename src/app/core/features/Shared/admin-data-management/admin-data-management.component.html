@@ -1,0 +1,800 @@
+<div class="admin-panel">
+  <h1 class="page-title">Admin Data Management</h1>
+
+  <!-- Navigation tabs -->
+  <div class="admin-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'medications'" (click)="setActiveTab('medications')">
+      <i class="fas fa-list"></i> Medications
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'labtests'" (click)="setActiveTab('labtests')">
+      <i class="fas fa-sitemap"></i> Labtests
+    </button>
+
+        <button class="tab-btn" [class.active]="activeTab === 'surgeries'" (click)="setActiveTab('surgeries')">
+          <i class="fas fa-city"></i> Surgeries
+        </button>
+    <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setActiveTab('payments')">
+      <i class="fas fa-city"></i> Payment Methods
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'positions'" (click)="setActiveTab('positions')">
+      <i class="fas fa-code"></i> Positions
+        </button>
+  </div>
+
+  <!-- Medication Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'medications'">
+    <div class="card">
+      <div class="card-header">
+        <h2>Medications</h2>
+        <button class="add-btn" (click)="openAddMedicationModal()">
+          <i class="fas fa-plus"></i> Add Medication
+        </button>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let medicine of medications; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{medicine.name}}</td>
+              <td class="actions-cell">
+                <button class="action-btn edit-btn" (click)="selectMedicationForUpdate(medicine)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-btn" (click)="selectMedicationForDelete(medicine)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="medications.length === 0">
+              <td colspan="3" class="no-data">No medications found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Surgeries Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'surgeries'">
+    <div class="card">
+      <div class="card-header">
+        <h2>Surgeries</h2>
+        <button class="add-btn" (click)="openAddSurgeryModal()">
+          <i class="fas fa-plus"></i> Add Surgery
+        </button>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <!-- <th>Description</th> -->
+              <th>Date</th>
+              <th>Patient Id</th>
+              <th>Doctor Id</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let surg of surgeries; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{surg.name}}</td>
+
+              <td>
+                <div *ngIf="surgeries.length > 0">
+                  {{ surg.surgeryDate| date:'shortDate' }}
+                  <!-- {{ getCountryName(city.countryId) }} -->
+                </div>
+              </td>
+              <td>
+                <div *ngIf="surgeries.length > 0">
+                  {{ surg.patientName }}
+                  <!-- {{ getCountryName(city.countryId) }} -->
+                </div>
+              </td>
+              <td>
+                <div *ngIf="surgeries.length > 0">
+                  {{ surg.doctorName }}
+                  <!-- {{ getCountryName(city.countryId) }} -->
+                </div>
+              </td>
+              <td class="actions-cell">
+                <button class="action-btn edit-btn" (click)="selectSurgeryForUpdate(surg)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-btn" (click)="selectSurgeryForDelete(surg)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="surgeries.length === 0">
+              <td colspan="4" class="no-data">No surgeries found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Positions Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'positions'">
+    <div class="card">
+      <div class="card-header">
+        <h2>Positions</h2>
+        <button class="add-btn" (click)="openAddPositionModal()">
+          <i class="fas fa-plus"></i> Add Position
+        </button>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let posit of positions; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{posit.name}}</td>
+              <td>{{posit.departmentName}}</td>
+              <td class="actions-cell">
+                <button class="action-btn edit-btn" (click)="selectPositionForUpdate(posit)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-btn" (click)="selectPositionForDelete(posit)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="positions.length === 0">
+              <td colspan="4" class="no-data">No positions found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Labtests Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'labtests'">
+    <div class="card">
+      <div class="card-header">
+        <h2>Labtests</h2>
+        <button class="add-btn" (click)="openAddLabtestModal()">
+          <i class="fas fa-plus"></i> Add Labtest
+        </button>
+      </div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lab of labtests; let i = index">
+              <td>{{i + 1}}</td>
+              <td>{{lab.name}}</td>
+              <td class="actions-cell">
+                <button class="action-btn edit-btn" (click)="selectLabtestForUpdate(lab)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <!-- <button class="action-btn delete-btn" (click)="selectLabtestForDelete(lab)">
+                  <i class="fas fa-trash-alt"></i>
+                </button> -->
+              </td>
+            </tr>
+            <tr *ngIf="labtests.length === 0">
+              <td colspan="3" class="no-data">No labtests found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Add Medication Modal -->
+
+  <div class="modal-overlay" *ngIf="showAddMedicationModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Add Medication</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
+      </div>
+      <form #medicationForm="ngForm" (ngSubmit)="addMedication()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="categoryName">Medication Name</label>
+            <input
+              type="text"
+              id="medicationName"
+              name="medicationName"
+              [(ngModel)]="newMedication.name"
+              #medicationName="ngModel"
+              placeholder="Enter medication name"
+              required
+              minlength="1"
+              class="form-control"
+              [ngClass]="{'is-invalid': medicationName.invalid && (medicationName.dirty || medicationName.touched)}"
+            />
+            <div
+              *ngIf="medicationName.invalid && (medicationName.dirty || medicationName.touched)"
+              class="invalid-feedback"
+            >
+              Medication name is required.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="medicationForm.invalid"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Medication Modal -->
+  <!-- Update Category Modal -->
+<div class="modal-overlay" *ngIf="showUpdateMedicationModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <h3>Update Medication</h3>
+      <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
+    </div>
+    <!-- <form #updateCategoryForm="ngForm" (ngSubmit)="updateMedication()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="updateCategoryName">Medication Name</label>
+          <input
+            type="text"
+            id="updateCategoryName"
+            name="updateCategoryName"
+            [(ngModel)]="updateMedicationModel.name"
+            #updateMedicationName="ngModel"
+            placeholder="Enter medication name"
+            required
+            minlength="1"
+            class="form-control"
+            [ngClass]="{'is-invalid': updateMedicationName.invalid && (updateMedicationName.dirty || updateMedicationName.touched)}"
+          />
+          <div
+            *ngIf="updateMedicationName.invalid && (updateMedicationName.dirty || updateMedicationName.touched)"
+            class="invalid-feedback"
+          >
+            Medication name is required.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="updateMedicationName.invalid"
+        >
+          Update
+        </button>
+      </div>
+    </form> -->
+  </div>
+</div>
+  <!-- Delete Medication Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteMedicationModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Delete Medication</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message">Are you sure you want to delete the Medication "{{selectedMedication.id}}"?</p>
+        <p class="warning-message">This action cannot be undone!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteMedication()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Positions Modal -->
+  <div class="modal-overlay" *ngIf="showAddPositionModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Add Position</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="surgeryName">Position Name</label>
+          <input type="text" id="positionName" [(ngModel)]="newPosition.name" placeholder="Enter position name" required>
+        </div>
+        <div class="form-group">
+          <label for="departmentSelect">Parent Department</label>
+          <select id="Select" [(ngModel)]="newPosition.departmentId" required>
+            <option [ngValue]="0" disabled>Select a department</option>
+            <option *ngFor="let department of departments" [ngValue]="department.id">{{department.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="addPosition()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Positions Modal -->
+  <div class="modal-overlay" *ngIf="showUpdatePositionModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Update Position</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="updatePositionName">Position Name</label>
+          <input type="text" id="updatePositionName" [(ngModel)]="updatePositionModel.name" placeholder="Enter position name" required>
+        </div>
+        <div class="form-group">
+          <label for="updateDepartmentSelect">Parent Department</label>
+          <select id="updateDepartmentSelect" [(ngModel)]="updatePositionModel.departmentId" required>
+            <option [ngValue]="0" disabled>Select a department</option>
+            <option *ngFor="let department of departments" [ngValue]="department.id">{{department.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+        <!-- <button type="button" class="btn btn-primary" (click)="updatePosition()">Update</button> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Positions Modal -->
+  <div class="modal-overlay" *ngIf="showDeletePositionModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Delete Position</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message">Are you sure you want to delete the Position "{{selectedPosition?.name}}"?</p>
+        <p class="warning-message">This action cannot be undone!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deletePosition()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Surgeries Modal -->
+<!-- Add Country Modal -->
+<div class="modal-overlay" *ngIf="showAddSurgeryModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <h3>Add Surgery</h3>
+      <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
+    </div>
+    <form #surgeryForm="ngForm" (ngSubmit)="addSurgery()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="surgeryName">Surgery Name</label>
+          <input
+            type="text"
+            id="surgeryName"
+            name="surgeryName"
+            [(ngModel)]="newSurgery.name"
+            #surgeryName="ngModel"
+            placeholder="Enter surgery name"
+            required
+            minlength="1"
+            class="form-control"
+            [ngClass]="{'is-invalid': surgeryName.invalid && (surgeryName.dirty || surgeryName.touched)}"
+          />
+          <div
+            *ngIf="surgeryName.invalid && (surgeryName.dirty || surgeryName.touched)"
+            class="invalid-feedback"
+          >
+            Surgery name is required.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="surgeryForm.invalid"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Update Surgeries Modal -->
+
+<div class="modal-overlay" *ngIf="showUpdateSurgeryModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <h3>Update Surgery</h3>
+      <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
+    </div>
+    <!-- <form #updateSurgeryForm="ngForm" (ngSubmit)="updateSurgery()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="updateSurgeryName">Surgery Name</label>
+          <input
+            type="text"
+            id="updateSurgeryName"
+            name="updateSurgeryName"
+            [(ngModel)]="updateSurgeryModel.name"
+            #updateSurgeryName="ngModel"
+            placeholder="Enter surgery name"
+            required
+            minlength="1"
+            class="form-control"
+            [ngClass]="{'is-invalid': updateSurgeryName.invalid && (updateSurgeryName.dirty || updateSurgeryName.touched)}"
+          />
+          <div
+            *ngIf="updateSurgeryName.invalid && (updateSurgeryName.dirty || updateSurgeryName.touched)"
+            class="invalid-feedback"
+          >
+            Surgery name is required.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="updateSurgeryForm.invalid"
+        >
+          Update
+        </button>
+      </div>
+    </form> -->
+  </div>
+
+</div>
+
+<!-- Delete Surgries Modal -->
+
+<div class="modal-overlay" *ngIf="showDeleteSurgeryModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <h3>Delete Surgery</h3>
+      <button type="button" class="close-btn" (click)="closeAllModals()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-message">Are you sure you want to delete the surgery "{{selectedSurgery?.name}}"?</p>
+      <p class="warning-message">This action cannot be undone!</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="deleteSurgery()">Delete</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Add Labtest Modal -->
+  <div class="modal-overlay" *ngIf="showAddLabtestModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Add Labtest</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form #labtestForm="ngForm" (ngSubmit)="addLabtest()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="labtestName">Labtest Name</label>
+            <input
+              type="text"
+              id="labtestName"
+              name="labtestName"
+              [(ngModel)]="newLabtest.name"
+              #labtestName="ngModel"
+              placeholder="Enter labtest name"
+              required
+              minlength="1"
+              class="form-control"
+              [ngClass]="{'is-invalid': labtestName.invalid && (labtestName.dirty || labtestName.touched)}"
+            />
+            <div
+              *ngIf="labtestName.invalid && (labtestName.dirty || labtestName.touched)"
+              class="invalid-feedback"
+            >
+              labtest name is required.
+            </div>
+          </div>
+          <!-- <div class="form-group">
+            <label for="countrySelect">Parent Country</label>
+            <select
+              id="countrySelect"
+              name="countryId"
+              [(ngModel)]="newCity.countryId"
+              #countryId="ngModel"
+              required
+              class="form-control"
+              [ngClass]="{'is-invalid': countryId.invalid && (countryId.dirty || countryId.touched)}"
+            >
+              <option [ngValue]="null" disabled>Select a country</option>
+              <option *ngFor="let country of countries" [ngValue]="country.id">{{country.name}}</option>
+            </select>
+            <div
+              *ngIf="countryId.invalid && (countryId.dirty || countryId.touched)"
+              class="invalid-feedback"
+            >
+              Parent country is required.
+            </div>
+          </div> -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="labtestForm.invalid"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Labtest Modal -->
+  <div class="modal-overlay" *ngIf="showUpdateLabtestModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Update Labtest</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <!-- <form #updateLabtestForm="ngForm" (ngSubmit)="updateLabtest()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="updateLabtestName">Labtest Name</label>
+            <input
+              type="text"
+              id="updateLabtestName"
+              name="updateLabtestName"
+              [(ngModel)]="updateLabtestModel.name"
+              #labtestName="ngModel"
+              placeholder="Enter labtest name"
+              required
+              minlength="1"
+              class="form-control"
+              [ngClass]="{'is-invalid': labtestName.invalid && (labtestName.dirty || labtestName.touched)}"
+            />
+            <div
+              *ngIf="labtestName.invalid && (labtestName.dirty || labtestName.touched)"
+              class="invalid-feedback"
+            >
+              Labtest name is required.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="updateCountrySelect">Parent Country</label>
+            <select
+              id="updateCountrySelect"
+              name="countryId"
+              [(ngModel)]="updateCityModel.countryId"
+              #countryId="ngModel"
+              required
+              class="form-control"
+              [ngClass]="{'is-invalid': countryId.invalid && (countryId.dirty || countryId.touched)}"
+            >
+              <option [ngValue]="null" disabled>Select a country</option>
+              <option *ngFor="let country of countries" [ngValue]="country.id">{{country.name}}</option>
+            </select>
+            <div
+              *ngIf="countryId.invalid && (countryId.dirty || countryId.touched)"
+              class="invalid-feedback"
+            >
+              Parent country is required.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="updateLabtestForm.invalid"
+          >
+            Update
+          </button>
+        </div>
+      </form> -->
+    </div>
+  </div>
+
+  <!-- Delete Labtest Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteLabtestModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Delete Labtest</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message">Are you sure you want to delete the labtest "{{selectedLabtest?.name}}"?</p>
+        <p class="warning-message">This action cannot be undone!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteLabtest()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+  <!-- Add Skill Modal -->
+
+  <!-- <div class="modal-overlay" *ngIf="showAddSkillModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Add Skill</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
+      </div>
+      <form #skillForm="ngForm" (ngSubmit)="addSkill()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="skillName">Skill Name</label>
+            <input
+              type="text"
+              id="skillName"
+              name="skillName"
+              [(ngModel)]="newSkill.name"
+              #skillName="ngModel"
+              placeholder="Enter category name"
+              required
+              minlength="1"
+              class="form-control"
+              [ngClass]="{'is-invalid': skillName.invalid && (skillName.dirty || skillName.touched)}"
+            />
+            <div
+              *ngIf="skillName.invalid && (skillName.dirty || skillName.touched)"
+              class="invalid-feedback"
+            >
+              Skill name is required.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="skillForm.invalid"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div> -->
+
+  <!-- Update Category Modal -->
+  <!-- Update Category Modal -->
+<!-- <div class="modal-overlay" *ngIf="showUpdateSkillModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-header">
+      <h3>Update Skill</h3>
+      <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
+    </div>
+    <form #updateSkillForm="ngForm" (ngSubmit)="updateSkill()">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="updateSkillName">Skill Name</label>
+          <input
+            type="text"
+            id="updateSkillName"
+            name="updateSkillName"
+            [(ngModel)]="updateSkillModel.name"
+            #updateSkillName="ngModel"
+            placeholder="Enter Skill name"
+            required
+            minlength="1"
+            class="form-control"
+            [ngClass]="{'is-invalid': updateSkillName.invalid && (updateSkillName.dirty || updateSkillName.touched)}"
+          />
+          <div
+            *ngIf="updateSkillName.invalid && (updateSkillName.dirty || updateSkillName.touched)"
+            class="invalid-feedback"
+          >
+            Skill name is required.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="updateSkillForm.invalid"
+        >
+          Update
+        </button>
+      </div>
+    </form>
+  </div>
+</div> -->
+  <!-- Delete Skill Modal -->
+  <!-- <div class="modal-overlay" *ngIf="showDeleteSkillModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-header">
+        <h3>Delete Skill</h3>
+        <button type="button" class="close-btn" (click)="closeAllModals()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message">Are you sure you want to delete the Skill "{{selectedSkill.id}}"?</p>
+        <p class="warning-message">This action cannot be undone!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteSkill()">Delete</button>
+      </div>
+    </div>
+  </div> -->

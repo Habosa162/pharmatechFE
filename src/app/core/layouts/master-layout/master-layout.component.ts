@@ -5,10 +5,11 @@ import { Router, RouterOutlet } from '@angular/router';
 import { NavBarComponent } from "../../features/Shared/nav-bar/nav-bar.component";
 import { AuthService } from '../../services/auth.service';
 import { AdminSidebarComponent } from "../../features/Shared/admin-sidebar/admin-sidebar.component";
+import { AdminNavbarComponent } from "../../features/Shared/admin-navbar/admin-navbar.component";
 
 @Component({
   selector: 'app-master-layout',
-  imports: [SidebarComponent, RouterOutlet, NavBarComponent, FooterComponent, AdminSidebarComponent],
+  imports: [SidebarComponent, RouterOutlet, NavBarComponent, FooterComponent, AdminSidebarComponent, AdminNavbarComponent],
   templateUrl: './master-layout.component.html',
   styleUrl: './master-layout.component.css'
 })
