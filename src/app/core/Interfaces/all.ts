@@ -108,10 +108,20 @@ export interface DepartmentViewDTO {
   doctorNames: DoctorInDepartmentViewDTO[];
 }
 
+
+
 export interface DoctorInDepartmentViewDTO {
   id: number;
   fullName: string;
   specialization: string;
+}
+
+export interface DoctorDepartmentViewDTO {
+    id: number;
+    doctorId: number;
+    doctorName: string;
+    departmentId: number;
+    departmentName: string;
 }
 
 export interface CreateDepartmentDTO {

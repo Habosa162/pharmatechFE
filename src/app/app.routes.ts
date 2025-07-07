@@ -9,6 +9,7 @@ import { AdminDashboardComponent } from './core/features/dashboard/admin-dashboa
 import { MasterDashboadrComponent } from './core/features/Master/master-dashboadr/master-dashboadr.component';
 import { EmployeeComponent } from './core/features/employees/employee/employee.component';
 import { PatientProfileComponent } from './core/features/patients/patient-profile/patient-profile.component';
+import { PatientAppointmentsComponent } from './core/features/patients/patient-appointments/patient-appointments.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -65,6 +66,7 @@ export const routes: Routes = [
     ]
   },
 
+  { path: 'patientAppointments/:id', component: PatientAppointmentsComponent },
 
   { path: '**', component: NotFoundComponent },
   {path:'patients',component:PatientListComponent},

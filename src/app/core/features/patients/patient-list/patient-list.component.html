@@ -16,17 +16,23 @@
 
   <!-- Search Filter -->
   <div class="card filter-card">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-group">
-            <input type="text" class="form-control" [(ngModel)]="searchTerm" 
-                   (input)="search()" placeholder="Search by patient name...">
-          </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group">
+          <input type="text" class="form-control" [(ngModel)]="searchTerm" 
+                 (input)="search()" placeholder="Search by patient name...">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <input type="text" class="form-control" [(ngModel)]="searchPhone" 
+                 (input)="search()" placeholder="Search by phone number...">
         </div>
       </div>
     </div>
   </div>
+</div>
   <!-- /Search Filter -->
 
   <div class="row">
@@ -85,11 +91,11 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add New Patient</h5>
-        <button type="button" class="close" (click)="closeModal()">
-          <span>&times;</span>
-        </button>
-      </div>
+      <h5 class="modal-title">{{ editMode ? 'Edit Patient' : 'Add New Patient' }}</h5>
+      <button type="button" class="close" (click)="closeModal()">
+       <span>&times;</span>
+      </button>
+    </div>
      
 
       <div class="modal-body">
@@ -111,20 +117,20 @@
     </div>
 
     <div class="form-group">
-      <label for="phoneNumber">Phone Number</label>
-      <input type="tel" 
-             class="form-control" 
-             [class.is-invalid]="(submitted || phoneInput.touched) && phoneInput.invalid"
-             id="phoneNumber"
-             [(ngModel)]="newPatient.phoneNumber" 
-             name="phoneNumber" 
-             #phoneInput="ngModel"
-             pattern="^\d{10,12}$"
-             required>
-      <div class="invalid-feedback" *ngIf="(submitted || phoneInput.touched) && phoneInput.invalid">
-        {{ getErrorMessage('Phone Number', phoneInput) }}
-      </div>
-    </div>
+  <label for="phoneNumber">Phone Number</label>
+  <input type="tel" 
+         class="form-control" 
+         [class.is-invalid]="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))"
+         id="phoneNumber"
+         [(ngModel)]="newPatient.phoneNumber" 
+         name="phoneNumber" 
+         #phoneInput="ngModel"
+         pattern="^\d{10,12}$"
+         required>
+  <div class="invalid-feedback" *ngIf="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))">
+    {{ phoneInput.invalid ? getErrorMessage('Phone Number', phoneInput) : validatePhoneNumber(newPatient.phoneNumber) }}
+  </div>
+</div>
 
     <div class="form-group">
       <label for="dateofBirth">Date of Birth</label>

@@ -13,14 +13,16 @@ import { AppointmentDetails,UpdateAppointmentDTO,CreateAppointmentDTO } from '..
 })
 export class AppointmentService {
 
-  private apiUrl = `${environment.apiUrl}/appointment`;
+  private apiUrl = `${environment.apiUrl}/Appointment`;
 
   constructor(private http: HttpClient) { }
 
   getAppointments(): Observable<AppointmentDetails[]> {
     return this.http.get<AppointmentDetails[]>(`${this.apiUrl}`);
   }
-
+ getPatientAppointments(patiendid:number): Observable<AppointmentDetails[]> {
+    return this.http.get<AppointmentDetails[]>(`${this.apiUrl}/PatientAppointments/${patiendid}`);
+  }
   getAppointmentById(id: number): Observable<AppointmentDetails> {
     return this.http.get<AppointmentDetails>(`${this.apiUrl}/${id}`);
   }

@@ -67,9 +67,10 @@ export class PatientListComponent implements OnInit {
     });
   }
 
-  search(): void {
+    search(): void {
     this.filteredPatients = this.patients.filter(patient =>
-      patient.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+      patient.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
+      patient.phoneNumber.includes(this.searchPhone)
     );
   }
 
@@ -90,13 +91,26 @@ export class PatientListComponent implements OnInit {
   }
 
   editPatient(patientId: number): void {
-    this.router.navigate(['/patient/edit', patientId]);
+    const patient = this.patients.find(p => p.id === patientId);
+    if (patient) {
+      this.editMode = true;
+      this.editingPatientId = patientId;
+      this.newPatient = {
+        name: patient.name,
+        phoneNumber: patient.phoneNumber,
+        dateofBirth: patient.dateOfBirth,
+        gender: patient.gender
+      };
+      this.showModal = true;
+    }
   }
 
 
 openModal(): void {
     this.showModal = true;
     this.submitted = false;
+    this.editMode = false;
+    this.editingPatientId = null;
     this.newPatient = {
       name: '',
       phoneNumber: '',
@@ -108,6 +122,8 @@ openModal(): void {
     }
   }
 
+
+  
   
   closeModal(): void {
     this.showModal = false;
@@ -130,6 +146,16 @@ openModal(): void {
       isValid = false;
     }
 
+    // Check for duplicate phone number
+    const duplicatePhone = this.patients.find(p => 
+      p.phoneNumber === this.newPatient.phoneNumber && 
+      p.id !== this.editingPatientId
+    );
+    if (duplicatePhone) {
+      this.formErrors['phoneNumber'] = 'This phone number is already registered';
+      isValid = false;
+    }
+
     // Validate date of birth
     if (!this.newPatient.dateofBirth) {
       this.formErrors['dateofBirth'] = 'Date of birth is required';
@@ -142,19 +168,34 @@ openModal(): void {
   createPatient(): void {
     this.submitted = true;
     
-    if (this.patientForm.invalid) {
+    if (this.patientForm.invalid || !this.validateForm()) {
       return;
     }
 
-    this.patientService.addpatient(this.newPatient).subscribe({
-      next: (response) => {
-        this.loadPatients();
-        this.closeModal();
-      },
-      error: (error) => {
-        console.error('Error creating patient:', error);
-      }
-    });
+    if (this.editMode && this.editingPatientId) {
+      this.patientService.updatePatient(this.editingPatientId, this.newPatient).subscribe({
+        next: (response) => {
+          console.log("Patient was eedited")
+          this.loadPatients();
+          this.closeModal();
+        },
+        error: (error) => {
+          console.log("Patient wasnt eedited")
+
+          console.error('Error updating patient:', error);
+        }
+      });
+    } else {
+      this.patientService.addpatient(this.newPatient).subscribe({
+        next: (response) => {
+          this.loadPatients();
+          this.closeModal();
+        },
+        error: (error) => {
+          console.error('Error creating patient:', error);
+        }
+      });
+    }
   }
 
   getErrorMessage(fieldName: string, control: any): string {
@@ -173,6 +214,18 @@ openModal(): void {
           return 'Invalid format';
       }
     }
+    
+    // Check for duplicate phone number
+    if (fieldName === 'Phone Number' && this.newPatient.phoneNumber) {
+      const duplicatePhone = this.patients.find(p => 
+        p.phoneNumber === this.newPatient.phoneNumber && 
+        p.id !== this.editingPatientId
+      );
+      if (duplicatePhone) {
+        return 'This phone number is already registered';
+      }
+    }
+    
     return '';
   }
 
@@ -180,4 +233,23 @@ openModal(): void {
   getGenderName(gender: Gender): string {
     return Gender[gender].charAt(0).toUpperCase() + Gender[gender].slice(1);
   }
+
+
+  validatePhoneNumber(phoneNumber: string): string {
+    if (!phoneNumber) return '';
+    
+    const duplicatePhone = this.patients.find(p => 
+      p.phoneNumber === phoneNumber && 
+      p.id !== this.editingPatientId
+    );
+    return duplicatePhone ? 'This phone number is already registered' : '';
+  }
+
+  searchPhone: string = '';
+  editMode: boolean = false;
+  editingPatientId: number | null = null;
+
+
+
+
 }

@@ -1,0 +1,79 @@
+.card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.card-title {
+  margin-bottom: 0;
+  color: #333;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  padding: 1rem;
+}
+
+.table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.badge {
+  padding: 0.5em 0.75em;
+  font-size: 0.75em;
+  font-weight: 500;
+  border-radius: 0.25rem;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  margin: 2rem auto;
+}
+
+.alert {
+  margin-bottom: 1rem;
+}
+
+.table-responsive {
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* // ... existing styles ... */
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+  display: block;
+}
+
+.btn-close {
+  padding: 1rem;
+  margin: -1rem -1rem -1rem auto;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.invalid-feedback {
+  display: block;
+  margin-top: 0.25rem;
+}
