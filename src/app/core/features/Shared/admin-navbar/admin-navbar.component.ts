@@ -19,12 +19,14 @@ import { InventoryItemsComponent } from '../../inventory/inventory-items/invento
 import { InventoryTransactionsComponent } from '../../inventory/inventory-transactions/inventory-transactions.component';
 import { InvoiceListComponent } from '../../billing/invoice-list/invoice-list.component';
 import { MasterDashboadrComponent } from '../../Master/master-dashboadr/master-dashboadr.component';
+import { AppointmentComponent } from '../../appointments/appointment/appointment.component';
+import { PatientAppointmentsComponent } from "../../patients/patient-appointments/patient-appointments.component";
 
 
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, AdminDashboardComponent , AdminDataManagementComponent,AppointmentListComponent,DoctorListComponent,PatientListComponent,TransactionsListComponent,InventoryCategoryComponent,InventoryItemsComponent,InventoryTransactionsComponent,InvoiceListComponent,MasterDashboadrComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, AdminDashboardComponent, AdminDataManagementComponent, AppointmentListComponent, DoctorListComponent, PatientListComponent, TransactionsListComponent, InventoryCategoryComponent, InventoryItemsComponent, InventoryTransactionsComponent, InvoiceListComponent, MasterDashboadrComponent, AppointmentComponent, PatientAppointmentsComponent],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.css'
 })
