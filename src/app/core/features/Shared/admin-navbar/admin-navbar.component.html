@@ -1,0 +1,167 @@
+<div class="admin-layout mt-2">
+
+
+  <div class="profile-container mt-5">
+
+
+    <!-- Add Tab Navigation -->
+    <div class=" d-flex flex-row">
+      <div class="profile-tabs col-2">
+        <div class="container">
+          <ul class="nav nav-tabs d-flex flex-column" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
+          <li class="nav-item" >
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'admin-dashboard'"
+              (click)="setActiveTab('admin-dashboard')"
+            >
+              <i class="fa fa-folder"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item" >
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'appointments'"
+              (click)="setActiveTab('appointments')"
+            >
+              <i class="fa fa-folder"></i> Appointments
+            </a>
+          </li>
+          <li class="nav-item" >
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'doctors'"
+              (click)="setActiveTab('doctors')"
+            >
+              <i class="fa fa-briefcase"></i> Doctors
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'patients'"
+              (click)="setActiveTab('patients')"
+            >
+              <i class="fa fa-graduation-cap"></i> Patients
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'transactions'"
+              (click)="setActiveTab('transactions')"
+            >
+              <i class="fa fa-certificate"></i> Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'invoices'"
+              (click)="setActiveTab('invoices')"
+            >
+              <i class="fa fa-certificate"></i> Invoices
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'categories'"
+              (click)="setActiveTab('categories')"
+            >
+              <i class="fa fa-certificate"></i> Categories
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'items'"
+              (click)="setActiveTab('items')"
+            >
+              <i class="fa fa-certificate"></i> Items
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'inventorytransactions'"
+              (click)="setActiveTab('inventorytransactions')"
+            >
+              <i class="fa fa-certificate"></i> Inventory Transactions
+            </a>
+          </li>
+          <li class="nav-item" >
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'reviews'"
+              (click)="setActiveTab('reviews')"
+            >
+              <i class="fa fa-user"></i> Reviews
+            </a>
+          </li>
+          <li class="nav-item" >
+            <a
+              class="nav-link"
+              [class.active]="activeTab === 'admin-data-management'"
+              (click)="setActiveTab('admin-data-management')"
+            >
+              <i class="fa fa-user"></i> Admin data management
+            </a>
+          </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container col-10">
+      <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-12">
+          <div *ngIf="activeTab === 'admin-dashboard'">
+            <app-master-dashboadr></app-master-dashboadr>
+          </div>
+
+          <div *ngIf="activeTab === 'appointments'">
+            <app-appointment-list></app-appointment-list>
+          </div>
+
+          <div *ngIf="activeTab === 'doctors'">
+            <app-doctor-list></app-doctor-list>
+          </div>
+
+          <div *ngIf="activeTab === 'patients'">
+            <app-patient-list></app-patient-list>
+          </div>
+
+          <div *ngIf="activeTab === 'transactions'">
+            <app-transactions-list></app-transactions-list>
+          </div>
+
+          <div *ngIf="activeTab === 'categories'">
+            <app-inventory-category></app-inventory-category>
+          </div>
+
+          <div *ngIf="activeTab === 'items'">
+            <app-inventory-items></app-inventory-items>
+          </div>
+
+          <div *ngIf="activeTab === 'inventorytransactions'">
+            <app-inventory-transactions></app-inventory-transactions>
+          </div>
+
+          <!-- <div *ngIf="activeTab === 'reviews'">
+            <app-review-list></app-review-list>
+          </div> -->
+
+          <div *ngIf="activeTab === 'invoices'">
+            <app-invoice-list></app-invoice-list>
+          </div>
+
+          <div *ngIf="activeTab === 'admin-data-management'">
+            <app-admin-data-management></app-admin-data-management>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>

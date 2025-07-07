@@ -10,12 +10,13 @@ import { MasterDashboadrComponent } from './core/features/Master/master-dashboad
 import { EmployeeComponent } from './core/features/employees/employee/employee.component';
 import { PatientProfileComponent } from './core/features/patients/patient-profile/patient-profile.component';
 import { PatientAppointmentsComponent } from './core/features/patients/patient-appointments/patient-appointments.component';
+import { OwnerDashboardComponent } from './core/features/dashboard/owner-dashboard/owner-dashboard.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {path:'appointments', component: AppointmentComponent},
   {path:'patients',component:PatientListComponent},
-  {path:'patient',component:PatientProfileComponent},
+
 
 
   {
@@ -27,6 +28,7 @@ export const routes: Routes = [
         path: '',
         component:AdminDashboardComponent
       },
+      {path:'patient-profile/:id', component: PatientProfileComponent},
     ]
   },
 
@@ -37,7 +39,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component:AdminDashboardComponent
+        component:OwnerDashboardComponent
       },
     ]
   },
@@ -69,5 +71,4 @@ export const routes: Routes = [
   { path: 'patientAppointments/:id', component: PatientAppointmentsComponent },
 
   { path: '**', component: NotFoundComponent },
-  {path:'patients',component:PatientListComponent},
 ];
