@@ -7,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrl: './inventory-category.component.css'
 })
 export class InventoryCategoryComponent {
-
+  
 }
+
