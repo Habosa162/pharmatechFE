@@ -6,7 +6,7 @@
 
     <!-- Add Tab Navigation -->
     <div class=" d-flex flex-row">
-      <div class="profile-tabs col-2">
+      <div class="profile-tabs col-3">
         <div class="container">
           <ul class="nav nav-tabs d-flex flex-column" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
           <li class="nav-item" >
@@ -27,6 +27,41 @@
               <i class="fa fa-folder"></i> Appointments
             </a>
           </li>
+          <li class="nav-item submenu">
+          <a
+            class=" nav-link"
+            data-bs-toggle="collapse"
+            href="#Clinics"
+            role="button"
+            aria-expanded="false"
+            aria-controls="Clinics"
+          >
+            <!-- <i class="fa fa-certificate"></i> -->
+          <i class="fas fa-list"></i>
+             Clinic
+          </a>
+          <div class="collapse" id="Clinics">
+            <li>
+              <a
+              [class.active]="activeTab === 'departments'"
+              (click)="setActiveTab('departments')"
+               class="ps-5 nav-link">
+            <i class="fa fa-certificate"></i>
+                Departments
+              </a>
+            </li>
+            <li class="nav-item">
+            <a
+              class="ps-5 nav-link"
+              [class.active]="activeTab === 'employees'"
+              (click)="setActiveTab('employees')"
+            >
+              <i class="fa fa-certificate"></i>
+               Employees
+            </a>
+          </li>
+          </div>
+        </li>
           <li class="nav-item" >
             <a
               class="nav-link"
@@ -42,30 +77,65 @@
               [class.active]="activeTab === 'patients'"
               (click)="setActiveTab('patients')"
             >
-              <i class="fa fa-graduation-cap"></i> Patients
+              <!-- <i class="fa fa-graduation-cap"></i> -->
+              <i class="fa fa-user"></i>
+               Patients
             </a>
           </li>
-          <li class="nav-item">
+
+
+          <li class="nav-item submenu">
+          <a
+            class=" nav-link"
+            data-bs-toggle="collapse"
+            href="#Reports"
+            role="button"
+            aria-expanded="false"
+            aria-controls="Reports"
+          >
+            <!-- <i class="fa fa-certificate"></i> -->
+          <i class="fas fa-list"></i>
+
+             Reports
+          </a>
+          <div class="collapse" id="Reports">
+            <li>
+              <a
+              [class.active]="activeTab === 'invoices'"
+              (click)="setActiveTab('invoices')"
+               class="ps-5 nav-link">
+            <i class="fa fa-certificate"></i>
+                Invoice
+              </a>
+            </li>
+            <li class="nav-item">
             <a
-              class="nav-link"
+              class="ps-5 nav-link"
               [class.active]="activeTab === 'transactions'"
               (click)="setActiveTab('transactions')"
             >
-              <i class="fa fa-certificate"></i> Transactions
+              <i class="fa fa-certificate"></i>
+               Transactions
             </a>
           </li>
-          <li class="nav-item">
+          </div>
+        </li>
+          <li class="nav-item submenu">
+          <a
+            class=" nav-link"
+            data-bs-toggle="collapse"
+            role="button"
+            aria-expanded="false"
+            aria-controls="Inventory"
+            href="#Inventory"
+          >
+            <i class="fa fa-certificate"></i>
+             Inventory
+          </a>
+          <div class="collapse" id="Inventory">
+            <li class="nav-item">
             <a
-              class="nav-link"
-              [class.active]="activeTab === 'invoices'"
-              (click)="setActiveTab('invoices')"
-            >
-              <i class="fa fa-certificate"></i> Invoices
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
+              class=" ps-5 nav-link"
               [class.active]="activeTab === 'categories'"
               (click)="setActiveTab('categories')"
             >
@@ -74,7 +144,7 @@
           </li>
           <li class="nav-item">
             <a
-              class="nav-link"
+              class="ps-5 nav-link"
               [class.active]="activeTab === 'items'"
               (click)="setActiveTab('items')"
             >
@@ -83,20 +153,23 @@
           </li>
           <li class="nav-item">
             <a
-              class="nav-link"
+              class="ps-5 nav-link"
               [class.active]="activeTab === 'inventorytransactions'"
               (click)="setActiveTab('inventorytransactions')"
             >
               <i class="fa fa-certificate"></i> Inventory Transactions
             </a>
           </li>
+          </div>
+        </li>
           <li class="nav-item" >
             <a
               class="nav-link"
               [class.active]="activeTab === 'reviews'"
               (click)="setActiveTab('reviews')"
             >
-              <i class="fa fa-user"></i> Reviews
+              <i class="fa fa-user"></i>
+               Reviews
             </a>
           </li>
           <li class="nav-item" >
@@ -112,7 +185,7 @@
         </div>
       </div>
 
-      <div class="container col-10">
+      <div class="container col-9">
       <div class="row">
         <!-- Main Content -->
         <div class="col-lg-12">
@@ -121,7 +194,8 @@
           </div>
 
           <div *ngIf="activeTab === 'appointments'">
-            <app-appointment-list></app-appointment-list>
+            <!-- <app-appointment-list></app-appointment-list> -->
+             <app-patient-appointments></app-patient-appointments>
           </div>
 
           <div *ngIf="activeTab === 'doctors'">
