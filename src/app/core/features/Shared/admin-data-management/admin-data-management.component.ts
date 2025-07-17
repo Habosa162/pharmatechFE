@@ -6,11 +6,17 @@ import { CreatePosition, PositionDto, UpdatePosition } from '../../../Interfaces
 import { MedicationService } from '../../../services/clinics/medication.service';
 import { PositionService } from '../../../services/employees/position.service';
 import { SurgeryService } from '../../../services/patients/surgery.service';
-import { LabtestService } from '../../../services/patients/labtest.service';
+import { LabtestService } from '../../../services/clinics/labtest.service';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule } from '@angular/forms';
-import { DepartmentViewDTO } from '../../../Interfaces/all';
+import { DepartmentViewDTO, DoctorViewDTO } from '../../../Interfaces/all';
+// import { PatientDto } from '../../../Interfaces/patient/patient';
+import { PatientService } from '../../../services/patients/patient.service';
+// import { DoctorViewDTO } from '../../../Interfaces/employee/doctor';
+// import { DoctorService } from '../../../services/employees/doctor.service';
+import { AccountService } from '../../../services/account.service';
+import { PatientDto } from '../../../Interfaces/patient/patients/patient';
 
 @Component({
   selector: 'app-admin-data-management',
@@ -24,10 +30,11 @@ medications: MedicationDto[] = [];
   labtests: LabtestDto[] = [];
   positions:PositionDto[] = [];
   departments:DepartmentViewDTO[] = [];
+  updatedmedicationid:number=0;
   // skills:Skill[]=[];
   // Form models
-  newMedication: CreateMedication = { name: ''};
-  updateMedicationModel: CreateMedication = { name: ''};
+  newMedication: CreateMedication = { name: '',concentration:''};
+  updateMedicationModel: CreateMedication = { name: '', concentration:''};
 
   newSurgery:CreateSurgery ={name:'', description:'', surgeryDate : new Date(), patientId: 0, doctorId: 0};
   updateSurgeryModel:UpdateSurgery ={name:'', description:'', surgeryDate : new Date(), patientId: 0, doctorId: 0};
@@ -37,8 +44,8 @@ medications: MedicationDto[] = [];
   updatePositionModel: UpdatePosition = {name: '', departmentId: 0 };
 
 
-  newLabtest: AddLabtest = { name: '',result: '', testDate: new Date(), medicalRecordId: 0};
-  updateLabtestModel: UpdateLabtest = { name: '', result: '', testDate: new Date()};
+  newLabtest: AddLabtest = { name: '',reference: ''};
+  updateLabtestModel: UpdateLabtest = { name: '', reference: ''};
 
   // newCity: any = { name: '' };
   // updateCityModel: any = { id: 0, name: '' };
@@ -62,9 +69,12 @@ medications: MedicationDto[] = [];
   showAddPositionModal: boolean = false;
   showUpdatePositionModal: boolean = false;
   showDeletePositionModal: boolean = false;
+  
   // showAddCountryModal: boolean = false;
   // showUpdateCountryModal: boolean = false;
   // showDeleteCountryModal: boolean = false;
+  patients: PatientDto[] = [];
+  doctors: DoctorViewDTO[] = [];
   constructor(
     private medicationService: MedicationService,
     private positionService: PositionService,
@@ -72,11 +82,15 @@ medications: MedicationDto[] = [];
     // private httpClient: HttpClient,
     private cdr: ChangeDetectorRef,
     // private toastr: ToastrService,
-    private labtestService: LabtestService
+    private labtestService: LabtestService,
+    private patientService: PatientService,
+    private doctorService: AccountService
   ) {}
 
   ngOnInit(): void {
     this.loadAllData();
+    this.loadPatients();
+    this.loadDoctors();
   }
 
   ngAfterViewChecked(): void {
@@ -119,10 +133,10 @@ medications: MedicationDto[] = [];
       case 'deleteSurgery':
         this.showDeleteSurgeryModal = state;
         break;
-      case 'addLabTest':
+      case 'addLabtest':
         this.showAddLabtestModal = state;
         break;
-      case 'updateLabTest':
+      case 'updateLabtest':
         this.showUpdateLabtestModal = state;
         break;
       case 'deleteLabTest':
@@ -161,6 +175,7 @@ medications: MedicationDto[] = [];
     this.medicationService.getAllMedications().subscribe({
       next: (data) => {
         this.medications = data;
+        console.log(data,"allmedicationsuponloading")
       },
       error: (err) => {
         console.error('Error loading medications:', err);
@@ -171,6 +186,7 @@ medications: MedicationDto[] = [];
     this.surgeryService.getAllSurgeries().subscribe({
       next: (data) => {
         this.surgeries = data;
+        console.log("surgeries are here",data);
       },
       error: (err) => {
         console.error('Error loading categories:', err);
@@ -179,14 +195,12 @@ medications: MedicationDto[] = [];
   }
 
   addSurgery(): void {
-    if (!this.newSurgery.name.trim()) {
-      // this.toastr.error('Skill name is required');
+    if (!this.newSurgery.name.trim() || !this.newSurgery.patientId || !this.newSurgery.doctorId) {
       return;
     }
-
+    // surgeryDate is already a Date object
     this.surgeryService.addSurgery(this.newSurgery).subscribe({
       next: () => {
-
         this.loadSurgeries();
         this.toggleModal('addSurgery', false);
         this.newSurgery = { name: '', description: '', surgeryDate: new Date(), patientId: 0, doctorId: 0 };
@@ -202,28 +216,50 @@ medications: MedicationDto[] = [];
     });
   }
 
-  selectSurgeryForUpdate(surgery: any): void {
+  selectSurgeryForUpdate(surgery: SurgeryDto): void {
     this.selectedSurgery = surgery;
-    this.updateSurgeryModel = {name: surgery.name, description: surgery.description, surgeryDate: new Date(surgery.surgeryDate), patientId: surgery.patientId, doctorId: surgery.doctorId};
+    console.log(this.selectedSurgery,"this.selectedSurgery");
+    console.log(surgery.patientId,"surgerysurgery");
+
+    this.updateSurgeryModel = {
+      name: surgery.name,
+      description: surgery.description,
+      surgeryDate: surgery.surgeryDate ? new Date(surgery.surgeryDate) : new Date(),
+      patientId: surgery.patientId,
+      doctorId: surgery.doctorId
+    };
+    console.log("updateSurgeryModel",this.updateSurgeryModel);
     this.toggleModal('updateSurgery', true);
   }
 
 
-  // updateSurgery(): void {
-  //   console.log(this.updateSurgeryModel);
-  //   this.surgeryService.updateSurgery(this.updateSurgeryModel.id!,this.updateSurgeryModel).subscribe({
-  //     next: () => {
-  //       this.loadSurgeries();
-  //       this.toggleModal('updateSurgery', false);
-  //       this.selectedSurgery = null;
-  //       // this.toastr.success('surgery updated successfully');
-  //     },
-  //     error: (err) => {
-  //       console.error('Error updating surgery:', err);
-  //       alert('Failed to update surgery: ' + (err.message || 'Unknown error'));
-  //     }
-  //   });
-  // }
+  updateSurgery(): void {
+    if (!this.updateSurgeryModel.name.trim() || !this.updateSurgeryModel.patientId || !this.updateSurgeryModel.doctorId) {
+       return;
+     }
+     // Convert string to Date if needed
+     let surgeryDateValue: Date | undefined = undefined;
+     if (typeof this.updateSurgeryModel.surgeryDate === 'string') {
+       surgeryDateValue = new Date(this.updateSurgeryModel.surgeryDate);
+     } else {
+       surgeryDateValue = this.updateSurgeryModel.surgeryDate;
+     }
+     this.surgeryService.updateSurgery(this.selectedSurgery.id, {
+       ...this.updateSurgeryModel,
+       surgeryDate: surgeryDateValue
+     }).subscribe({
+       next: () => {
+         this.loadSurgeries();
+         this.toggleModal('updateSurgery', false);
+         this.selectedSurgery = null;
+         this.cdr.detectChanges();
+       },
+       error: (err) => {
+         console.error('Error updating surgery:', err);
+         alert('Failed to update surgery: ' + (err.message || 'Unknown error'));
+       }
+     });
+  }
 
   selectSurgeryForDelete(surgery: any): void {
     this.selectedSurgery = surgery;
@@ -252,9 +288,11 @@ medications: MedicationDto[] = [];
     });
   }
 
-  selectMedicationForUpdate(medication: any): void {
+  selectMedicationForUpdate(id:number,medication: any): void {
+    this.updatedmedicationid=id;
+    console.log(this.updatedmedicationid,'medicationiduponinsert')
     this.selectedMedication = medication;
-    this.updateMedicationModel = {name: medication.name};
+    this.updateMedicationModel = {name: medication.name,concentration:medication.concentration};
     this.toggleModal('updateMedication', true);
   }
 
@@ -270,7 +308,7 @@ medications: MedicationDto[] = [];
 
         this.loadMedications();
         this.toggleModal('addMedication', false);
-        this.newMedication = { name: ''};
+        this.newMedication = { name: '',concentration:''};
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -283,20 +321,23 @@ medications: MedicationDto[] = [];
     });
   }
 
-  // updateMedication(): void {
-  //   this.medicationService.updateMedication(this.updateMedicationModel.id,this.updateMedicationModel).subscribe({
-  //     next: () => {
-  //       this.loadMedications();
-  //       this.toggleModal('updateMedication', false);
-  //       this.selectedMedication = null;
-  //       // this.toastr.success('Medication updated successfully');
-  //     },
-  //     error: (err) => {
-  //       console.error('Error updating medication:', err);
-  //       // alert('Failed to update medication: ' + (err.message || 'Unknown error'));
-  //     }
-  //   });
-  // }
+  updateMedication(): void {
+    console.log(this.updatedmedicationid,this.updateMedicationModel,'updatingmedication');
+    this.medicationService.updateMedication(this.updatedmedicationid,this.updateMedicationModel).subscribe({
+      next: () => {
+        this.toggleModal('updateMedication', false);
+        this.selectedMedication = null;
+        this.updatedmedicationid=0;
+        this.closeAllModals();
+        this.loadMedications();
+        // this.toastr.success('Medication updated successfully');
+      },
+      error: (err) => {
+        console.error('Error updating medication:', err);
+        // alert('Failed to update medication: ' + (err.message || 'Unknown error'));
+      }
+    });
+  }
 
   selectMedicationForDelete(medication: any): void {
     this.selectedMedication = medication;
@@ -416,7 +457,7 @@ medications: MedicationDto[] = [];
       next: () => {
         this.loadLabtests();
         this.toggleModal('addLabtest', false);
-        this.newLabtest = { name: '', result: '', testDate: new Date(), medicalRecordId: 0 };
+        this.newLabtest = { name: '', reference: '' };
         // this.toastr.success('Labtest added successfully');
       },
       error: (err) => {
@@ -425,33 +466,33 @@ medications: MedicationDto[] = [];
     });
   }
 
-  selectLabtestForUpdate(labtest: UpdateLabtest): void {
+  selectLabtestForUpdate(id: number, labtest: UpdateLabtest): void {
     this.selectedLabtest = labtest;
+    this.updatinglabtestid = id;
     this.updateLabtestModel = {
       name: labtest.name,
-      result: labtest.result,
-      testDate: new Date(labtest.testDate) // Convert to Date object
+      reference: labtest.reference
     };
     this.toggleModal('updateLabtest', true);
   }
-
-  // updateLabtest(): void {
-  //   this.labtestService.updateLabtest(
-  //     this.updateLabtestModel.id,
-  //     this.updateLabtestModel
-  //   ).subscribe({
-  //     next: () => {
-  //       this.loadLabtests();
-  //       this.toggleModal('updatelabtests', false);
-  //       this.selectedLabtest = null;
-  //       // this.toastr.success('Subcategory updated successfully');
-  //     },
-  //     error: (err) => {
-  //       console.error('Error updating labtest:', err);
-  //       alert('Failed to update labtest: ' + (err.message || 'Unknown error'));
-  //     }
-  //   });
-  // }
+updatinglabtestid:number=0;
+  updateLabtest(): void {
+    this.labtestService.updateLabtest(
+      this.updatinglabtestid,
+      this.updateLabtestModel
+    ).subscribe({
+      next: () => {
+        this.loadLabtests();
+        this.toggleModal('updateLabtest', false);
+        this.selectedLabtest = null;
+        // this.toastr.success('Labtest updated successfully');
+      },
+      error: (err) => {
+        console.error('Error updating labtest:', err);
+        alert('Failed to update labtest: ' + (err.message || 'Unknown error'));
+      }
+    });
+  }
 
   deleteLabtest(): void {
     // Using the subcategory service's API URL
@@ -482,7 +523,7 @@ medications: MedicationDto[] = [];
   //   this.toggleModal('addSkill', true);
   // }
   openAddMedicationModal(): void {
-    this.newMedication = { name: ''};
+    this.newMedication = { name: '',concentration:''};
     this.toggleModal('addMedication', true);
   }
 
@@ -492,7 +533,7 @@ medications: MedicationDto[] = [];
   }
 
   openAddLabtestModal(): void {
-    this.newLabtest = { name: '', result: '', testDate: new Date(), medicalRecordId: 0 };
+    this.newLabtest = { name: '', reference: ''};
     this.toggleModal('addLabtest', true);
   }
 
@@ -500,9 +541,10 @@ medications: MedicationDto[] = [];
     this.newPosition = { name: '', departmentId: 0 };
     this.toggleModal('addPosition', true);
   }
-  openUpdateMedicationModal(medication: CreateMedication): void {
+  openUpdateMedicationModal(id:number,medication: CreateMedication): void {
+    this.updatedmedicationid=id;
     this.selectedMedication = medication;
-    this.updateMedicationModel = { name: medication.name };
+    this.updateMedicationModel = { name: medication.name,concentration:medication.concentration };
     this.toggleModal('updateMedication', true);
   }
   openUpdatePositionModal(position: UpdatePosition): void {
@@ -513,13 +555,14 @@ medications: MedicationDto[] = [];
 
   openUpdateLabtestModal(labtest: UpdateLabtest): void {
     this.selectedLabtest = labtest;
-    this.updateLabtestModel = {name: labtest.name, result: labtest.result, testDate: new Date(labtest.testDate)};
+    this.updateLabtestModel = {name: labtest.name, reference: labtest.reference};
     this.toggleModal('updateLabtest', true);
   }
 
   openUpdateSurgeryModal(surgery: any): void {
     this.selectedSurgery = surgery;
     this.updateSurgeryModel = {name: surgery.name, description: surgery.description, surgeryDate: new Date(surgery.surgeryDate), patientId: surgery.patientId, doctorId: surgery.doctorId};
+    console.log("updateSurgeryModel",this.updateSurgeryModel);
     this.toggleModal('updateSurgery', true);
   }
 
@@ -553,7 +596,32 @@ medications: MedicationDto[] = [];
   //   return country ? country.name : 'Unknown';
   // }
 
+  loadPatients(): void {
+    this.patientService.getAllPatients().subscribe({
+      next: (data) => { this.patients = data; },
+      error: (err) => { console.error('Error loading patients:', err); }
+    });
+  }
 
+  loadDoctors(): void {
+    this.doctorService.getAllDoctors().subscribe({
+      next: (data) => { this.doctors = data; },
+      error: (err) => { console.error('Error loading doctors:', err); }
+    });
+  }
+
+  get updateSurgeryDateString(): string {
+    if (!this.updateSurgeryModel.surgeryDate) return '';
+    const d = new Date(this.updateSurgeryModel.surgeryDate);
+    // Pad month and day with leading zeros
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${d.getFullYear()}-${month}-${day}`;
+  }
+
+  set updateSurgeryDateString(val: string) {
+    this.updateSurgeryModel.surgeryDate = val ? new Date(val) : new Date();
+  }
 
 
 }

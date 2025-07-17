@@ -4,6 +4,10 @@ export interface SurgeryDto {
   surgeryDate?: string;  // optional because of default value in C#
   patientName: string;
   doctorName: string;
+  patientId:number;
+  doctorId:number;
+  description?:string;
+
 }
 
 export interface CreateSurgery {
@@ -20,7 +24,7 @@ export interface CreateSurgery {
 export interface UpdateSurgery {
   name: string;
   description?: string;     // optional (nullable in C#)
-  surgeryDate?: Date;     // optional because of default value DateTime.Now
+  surgeryDate?: string | Date;     // allow string for input type=date
   patientId: number;
   doctorId: number;
   // clinicId?: number;     // uncomment if needed

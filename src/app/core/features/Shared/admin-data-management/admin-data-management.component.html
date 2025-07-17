@@ -37,6 +37,7 @@
             <tr>
               <th>#</th>
               <th>Name</th>
+              <th>Concentration</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -44,8 +45,9 @@
             <tr *ngFor="let medicine of medications; let i = index">
               <td>{{i + 1}}</td>
               <td>{{medicine.name}}</td>
+              <td>{{medicine.concentration}}</td>
               <td class="actions-cell">
-                <button class="action-btn edit-btn" (click)="selectMedicationForUpdate(medicine)">
+                <button class="action-btn edit-btn" (click)="selectMedicationForUpdate(medicine.id,medicine)">
                   <i class="fas fa-edit"></i>
                 </button>
                 <button class="action-btn delete-btn" (click)="selectMedicationForDelete(medicine)">
@@ -79,8 +81,8 @@
               <th>Name</th>
               <!-- <th>Description</th> -->
               <th>Date</th>
-              <th>Patient Id</th>
-              <th>Doctor Id</th>
+              <th>Patient</th>
+              <th>Doctor</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -182,6 +184,7 @@
             <tr>
               <th>#</th>
               <th>Name</th>
+              <th>Reference</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -189,8 +192,10 @@
             <tr *ngFor="let lab of labtests; let i = index">
               <td>{{i + 1}}</td>
               <td>{{lab.name}}</td>
+              <td>{{lab.reference}}</td>
+
               <td class="actions-cell">
-                <button class="action-btn edit-btn" (click)="selectLabtestForUpdate(lab)">
+                <button class="action-btn edit-btn" (click)="selectLabtestForUpdate(lab.id,lab)">
                   <i class="fas fa-edit"></i>
                 </button>
                 <!-- <button class="action-btn delete-btn" (click)="selectLabtestForDelete(lab)">
@@ -239,6 +244,34 @@
             >
               Medication name is required.
             </div>
+
+
+
+
+           
+          </div>
+          <div class="form-group">
+
+
+             <label for="medicationConcentration">Medication Concentration</label>
+            <input
+              type="text"
+              id="medicationConcentration"
+              name="medicationConcentration"
+              [(ngModel)]="newMedication.concentration"
+              #medicationConcentration="ngModel"
+              placeholder="Enter medication Concentration"
+              required
+              minlength="1"
+              class="form-control"
+              [ngClass]="{'is-invalid': medicationConcentration.invalid && (medicationConcentration.dirty || medicationConcentration.touched)}"
+            />
+            <div
+              *ngIf="medicationConcentration.invalid && (medicationConcentration.dirty || medicationConcentration.touched)"
+              class="invalid-feedback"
+            >
+              Medication Concentration is required.
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -265,14 +298,14 @@
       <h3>Update Medication</h3>
       <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
     </div>
-    <!-- <form #updateCategoryForm="ngForm" (ngSubmit)="updateMedication()">
+    <form #updateMedicationForm="ngForm" (ngSubmit)="updateMedication()">
       <div class="modal-body">
         <div class="form-group">
-          <label for="updateCategoryName">Medication Name</label>
+          <label for="updateMedicationName">Medication Name</label>
           <input
             type="text"
-            id="updateCategoryName"
-            name="updateCategoryName"
+            id="updateMedicationName"
+            name="updateMedicationName"
             [(ngModel)]="updateMedicationModel.name"
             #updateMedicationName="ngModel"
             placeholder="Enter medication name"
@@ -288,6 +321,29 @@
             Medication name is required.
           </div>
         </div>
+        
+
+         <div class="form-group">
+          <label for="updateMedicationConcentration">Medication Concentration</label>
+          <input
+            type="text"
+            id="updateMedicationConcentration"
+            name="updateMedicationConcentration"
+            [(ngModel)]="updateMedicationModel.concentration"
+            #updateMedicationConcentration="ngModel"
+            placeholder="Enter medication name"
+            required
+            minlength="1"
+            class="form-control"
+            [ngClass]="{'is-invalid': updateMedicationConcentration.invalid && (updateMedicationConcentration.dirty || updateMedicationConcentration.touched)}"
+          />
+          <div
+            *ngIf="updateMedicationConcentration.invalid && (updateMedicationConcentration.dirty || updateMedicationConcentration.touched)"
+            class="invalid-feedback"
+          >
+            Medication Concentration is required.
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
@@ -296,12 +352,12 @@
         <button
           type="submit"
           class="btn btn-primary"
-          [disabled]="updateMedicationName.invalid"
+          [disabled]="updateMedicationName.invalid||updateMedicationConcentration.invalid"
         >
           Update
         </button>
       </div>
-    </form> -->
+    </form>
   </div>
 </div>
   <!-- Delete Medication Modal -->
@@ -433,6 +489,53 @@
             Surgery name is required.
           </div>
         </div>
+        <div class="form-group">
+          <label for="surgeryDescription">Description</label>
+          <textarea
+            id="surgeryDescription"
+            name="surgeryDescription"
+            [(ngModel)]="newSurgery.description"
+            placeholder="Enter description"
+            class="form-control"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="surgeryDate">Surgery Date</label>
+          <input
+            type="date"
+            id="surgeryDate"
+            name="surgeryDate"
+            [(ngModel)]="newSurgery.surgeryDate"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="patientSelect">Patient</label>
+          <select
+            id="patientSelect"
+            name="patientId"
+            [(ngModel)]="newSurgery.patientId"
+            class="form-control"
+            required
+          >
+            <option [ngValue]="0" disabled>Select a patient</option>
+            <option *ngFor="let patient of patients" [ngValue]="patient.id">{{patient.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="doctorSelect">Doctor</label>
+          <select
+            id="doctorSelect"
+            name="doctorId"
+            [(ngModel)]="newSurgery.doctorId"
+            class="form-control"
+            required
+          >
+            <option [ngValue]="0" disabled>Select a doctor</option>
+            <option *ngFor="let doctor of doctors" [ngValue]="doctor.id">{{doctor.name}}</option>
+          </select>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
@@ -458,7 +561,7 @@
       <h3>Update Surgery</h3>
       <button type="button" class="close-btn" (click)="closeAllModals()">×</button>
     </div>
-    <!-- <form #updateSurgeryForm="ngForm" (ngSubmit)="updateSurgery()">
+    <form #updateSurgeryForm="ngForm" (ngSubmit)="updateSurgery()">
       <div class="modal-body">
         <div class="form-group">
           <label for="updateSurgeryName">Surgery Name</label>
@@ -481,6 +584,53 @@
             Surgery name is required.
           </div>
         </div>
+        <div class="form-group">
+          <label for="updateSurgeryDescription">Description</label>
+          <textarea
+            id="updateSurgeryDescription"
+            name="updateSurgeryDescription"
+            [(ngModel)]="updateSurgeryModel.description"
+            placeholder="Enter description"
+            class="form-control"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="updateSurgeryDate">Surgery Date</label>
+          <input
+            type="date"
+            id="updateSurgeryDate"
+            name="updateSurgeryDate"
+            [(ngModel)]="updateSurgeryDateString"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="updatePatientSelect">Patient</label>
+          <select
+            id="updatePatientSelect"
+            name="updatePatientId"
+            [(ngModel)]="updateSurgeryModel.patientId"
+            class="form-control"
+            required
+          >
+            <option [ngValue]="0" disabled>Select a patient</option>
+            <option *ngFor="let patient of patients" [ngValue]="patient.id">{{patient.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="updateDoctorSelect">Doctor</label>
+          <select
+            id="updateDoctorSelect"
+            name="updateDoctorId"
+            [(ngModel)]="updateSurgeryModel.doctorId"
+            class="form-control"
+            required
+          >
+            <option [ngValue]="0" disabled>Select a doctor</option>
+            <option *ngFor="let doctor of doctors" [ngValue]="doctor.id">{{doctor.name}}</option>
+          </select>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeAllModals()">
@@ -494,9 +644,8 @@
           Update
         </button>
       </div>
-    </form> -->
+    </form>
   </div>
-
 </div>
 
 <!-- Delete Surgries Modal -->
@@ -552,6 +701,27 @@
               labtest name is required.
             </div>
           </div>
+          <div class="form-group">
+            <label for="labtestReference">Labtest Reference</label>
+            <input
+              type="text"
+              id="labtestReference"
+              name="labtestReference"
+              [(ngModel)]="newLabtest.reference"
+              #labtestReference="ngModel"
+              placeholder="Enter labtest Reference"
+              required
+              minlength="1"
+              class="form-control"
+              [ngClass]="{'is-invalid': labtestReference.invalid && (labtestReference.dirty || labtestReference.touched)}"
+            />
+            <div
+              *ngIf="labtestReference.invalid && (labtestReference.dirty || labtestReference.touched)"
+              class="invalid-feedback"
+            >
+              labtest Reference is required.
+            </div>
+          </div>
           <!-- <div class="form-group">
             <label for="countrySelect">Parent Country</label>
             <select
@@ -597,7 +767,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <!-- <form #updateLabtestForm="ngForm" (ngSubmit)="updateLabtest()">
+      <form #updateLabtestForm="ngForm" (ngSubmit)="updateLabtest()">
         <div class="modal-body">
           <div class="form-group">
             <label for="updateLabtestName">Labtest Name</label>
@@ -606,53 +776,46 @@
               id="updateLabtestName"
               name="updateLabtestName"
               [(ngModel)]="updateLabtestModel.name"
-              #labtestName="ngModel"
+              #updateLabtestName="ngModel"
               placeholder="Enter labtest name"
               required
               minlength="1"
               class="form-control"
-              [ngClass]="{'is-invalid': labtestName.invalid && (labtestName.dirty || labtestName.touched)}"
+              [ngClass]="{'is-invalid': updateLabtestName.invalid && (updateLabtestName.dirty || updateLabtestName.touched)}"
             />
             <div
-              *ngIf="labtestName.invalid && (labtestName.dirty || labtestName.touched)"
+              *ngIf="updateLabtestName.invalid && (updateLabtestName.dirty || updateLabtestName.touched)"
               class="invalid-feedback"
             >
               Labtest name is required.
             </div>
           </div>
           <div class="form-group">
-            <label for="updateCountrySelect">Parent Country</label>
-            <select
-              id="updateCountrySelect"
-              name="countryId"
-              [(ngModel)]="updateCityModel.countryId"
-              #countryId="ngModel"
+            <label for="updateLabtestReference">Reference</label>
+            <input
+              type="text"
+              id="updateLabtestReference"
+              name="updateLabtestReference"
+              [(ngModel)]="updateLabtestModel.reference"
+              #updateLabtestReference="ngModel"
+              placeholder="Enter reference"
               required
               class="form-control"
-              [ngClass]="{'is-invalid': countryId.invalid && (countryId.dirty || countryId.touched)}"
-            >
-              <option [ngValue]="null" disabled>Select a country</option>
-              <option *ngFor="let country of countries" [ngValue]="country.id">{{country.name}}</option>
-            </select>
+              [ngClass]="{'is-invalid': updateLabtestReference.invalid && (updateLabtestReference.dirty || updateLabtestReference.touched)}"
+            />
             <div
-              *ngIf="countryId.invalid && (countryId.dirty || countryId.touched)"
+              *ngIf="updateLabtestReference.invalid && (updateLabtestReference.dirty || updateLabtestReference.touched)"
               class="invalid-feedback"
             >
-              Parent country is required.
+              Reference is required.
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="updateLabtestForm.invalid"
-          >
-            Update
-          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="updateLabtestForm.invalid">Update</button>
         </div>
-      </form> -->
+      </form>
     </div>
   </div>
 

@@ -5,14 +5,15 @@ import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CreatePosition, PositionDto } from '../../../Interfaces/employee/positions/position';
 import { CreateSurgery, SurgeryDto } from '../../../Interfaces/patient/surgeries/surgery';
-import { AddLabtest } from '../../../Interfaces/patient/labtests/labtest';
+import { AddLabtest, LabtestDto } from '../../../Interfaces/patient/labtests/labtest';
 import { PositionService } from '../../../services/employees/position.service';
 import { SurgeryService } from '../../../services/patients/surgery.service';
-import { LabtestService } from '../../../services/patients/labtest.service';
+// import { LabtestService } from '../../../services/patients/labtest.service';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../services/patients/patient.service';
 import { TransactionService } from '../../../services/transactions/transaction.service';
 import { InvoiceService } from '../../../services/appintments/invoice.service';
+import { LabtestService } from '../../../services/clinics/labtest.service';
 
 
 
@@ -37,7 +38,7 @@ export class MasterDashboadrComponent implements OnInit {
   // Lists for different entities
   medications: MedicationDto[] = [];
   surgeries: SurgeryDto[] = [];
-  labTests: AddLabtest[] = [];
+  labTests: LabtestDto[] = [];
   positions: PositionDto[] = [];
   recentTransactions: any[] = [];
   recentInvoices: any[] = [];

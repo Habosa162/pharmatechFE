@@ -151,6 +151,25 @@ export interface Doctor {
     surgeries: SurgeryDto[];
 }
 
+export interface DoctorViewDTO {
+    id: number;
+    name: string;
+    specialization: string;
+    phoneNumber: string;
+    isActive: boolean;
+    startDate: Date;
+    endDate: Date | null;
+    appUserId: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    fullName: string | null;
+    email: string | null;
+    profilePicture: string | null;
+    accountCreatedAt: string | null;
+    departments: string[];
+}
+
+
 export interface LoginDTO {
   usernameoremail: string;
   loginPassword: string;

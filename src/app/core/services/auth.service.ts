@@ -81,14 +81,14 @@ export class AuthService {
 
     getUserRole(): string | null {
       const decodedToken = this.getDecodedToken();
-      console.log("decoded token is",decodedToken);
+      // console.log("decoded token is",decodedToken);
       if (!decodedToken) return "null";
       // const role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/roles'];
 
       const rolesJson = decodedToken['roles'];
 
       const roles = typeof rolesJson === 'string' ? JSON.parse(rolesJson) : rolesJson;
-      console.log('role is',roles);
+      // console.log('role is',roles);
       if (!roles) return "null";
       try {
         if (roles.includes("Master")) {

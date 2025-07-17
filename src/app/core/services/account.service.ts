@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 // import { Environment } from '../../../base/environment';
 // import { CreateAccountDTO, LoginDTO, RefreshTokenDTO, CreateDoctorDTO, UpdateDoctorDTO, CreateEmployeeDTO, UpdateEmployeeDTO } from '../../Interfaces/AccountModels';
 import { environment } from './enviroment';
-import { LoginDTO, RefreshTokenDTO, CreateDoctorDTO, UpdateDoctorDTO, CreateEmployeeDTO, UpdateEmployeeDTO } from '../Interfaces/all';
+import { LoginDTO, RefreshTokenDTO, CreateDoctorDTO, UpdateDoctorDTO, CreateEmployeeDTO, UpdateEmployeeDTO, DoctorViewDTO } from '../Interfaces/all';
 
 @Injectable({
   providedIn: 'root'
@@ -70,8 +70,8 @@ export class AccountService {
     return this.http.post(`${this.apiUrl}DeleteEmployee/${id}`, {});
   }
 
-  getAllDoctors(): Observable<any> {
-    return this.http.get(`${this.apiUrl}AllDoctors`);
+  getAllDoctors(): Observable<DoctorViewDTO[]> {
+    return this.http.get<DoctorViewDTO[]>(`${this.apiUrl}AllDoctors`);
   }
 
   getDoctorById(id: number): Observable<any> {
