@@ -11,6 +11,7 @@ import { EmployeeComponent } from './core/features/employees/employee/employee.c
 import { PatientProfileComponent } from './core/features/patients/patient-profile/patient-profile.component';
 import { PatientAppointmentsComponent } from './core/features/patients/patient-appointments/patient-appointments.component';
 import { OwnerDashboardComponent } from './core/features/dashboard/owner-dashboard/owner-dashboard.component';
+import { DoctorAppointmentsComponent } from './core/features/doctors/doctor-appointments/doctor-appointments.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -65,10 +66,12 @@ export const routes: Routes = [
         path: '',
         component:EmployeeComponent
       }
+      
     ]
   },
 
   { path: 'patientAppointments/:id', component: PatientAppointmentsComponent },
+  { path: 'doctorAppointments/:id', component: DoctorAppointmentsComponent },
 
   { path: '**', component: NotFoundComponent },
 ];

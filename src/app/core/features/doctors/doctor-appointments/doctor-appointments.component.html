@@ -1,0 +1,90 @@
+<div class="doctor-appointments-container">
+  <div class="header">
+    <h1>My Appointments</h1>
+    <button class="refresh-btn" (click)="loadDoctorAppointments()" [disabled]="loading">
+      <span *ngIf="loading">Loading...</span>
+      <span *ngIf="!loading">Refresh</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading appointments...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">
+      <i class="error-icon">⚠️</i>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadDoctorAppointments()">Retry</button>
+    </div>
+  </div>
+
+  <!-- Appointments List -->
+  <div *ngIf="!loading && !error" class="appointments-container">
+    <div *ngIf="appointments.length === 0" class="no-appointments">
+      <div class="empty-state">
+        <i class="empty-icon">📅</i>
+        <h3>No Appointments Found</h3>
+        <p>You don't have any appointments scheduled at the moment.</p>
+      </div>
+    </div>
+
+    <div *ngIf="appointments.length > 0" class="appointments-grid">
+      <div *ngFor="let appointment of appointments" class="appointment-card">
+        <div class="appointment-header">
+          <div class="patient-info">
+            <h3>{{ appointment.name }}</h3>
+            <p class="patient-id">Patient ID: {{ appointment.patientId }}</p>
+          </div>
+          <div class="status-badge" [ngClass]="getStatusClass(appointment.status)">
+            {{ getStatusText(appointment.status) }}
+          </div>
+        </div>
+
+        <div class="appointment-details">
+          <div class="detail-row">
+            <span class="label">Appointment ID:</span>
+            <span class="value">{{ appointment.id }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Date & Time:</span>
+            <span class="value">{{ formatDate(appointment.appointmentDate) }}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="label">Department:</span>
+            <span class="value">{{ appointment.departmentName }}</span>
+          </div>
+
+          <div class="detail-row">
+            <span class="label">Doctor:</span>
+            <span class="value">{{ appointment.doctorName }}</span>
+          </div>
+
+          <div *ngIf="appointment.notes" class="detail-row">
+            <span class="label">Notes:</span>
+            <span class="value notes">{{ appointment.notes }}</span>
+          </div>
+
+          <div *ngIf="appointment.prescriptions && appointment.prescriptions.length > 0" class="prescriptions-section">
+            <span class="label">Prescriptions:</span>
+            <div class="prescriptions-list">
+              <div *ngFor="let prescription of appointment.prescriptions; let i = index" class="prescription-item">
+                <span class="prescription-number">Prescription {{ i + 1 }}:</span>
+                <div class="medications">
+                  <span *ngFor="let medication of prescription" class="medication-tag">
+                    {{ medication }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
