@@ -85,4 +85,8 @@ export class AccountService {
   getDoctorsByPatientId(patientId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}DoctorByPatientId/${patientId}`);
   }
+  getDoctoridByUserid(userid:string):Observable<any>
+  {
+        return this.http.get<any>(`${this.apiUrl}doctorId/${userid}`)
+  }
 }

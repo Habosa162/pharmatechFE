@@ -12,6 +12,8 @@ import { PatientProfileComponent } from './core/features/patients/patient-profil
 import { PatientAppointmentsComponent } from './core/features/patients/patient-appointments/patient-appointments.component';
 import { OwnerDashboardComponent } from './core/features/dashboard/owner-dashboard/owner-dashboard.component';
 import { DoctorAppointmentsComponent } from './core/features/doctors/doctor-appointments/doctor-appointments.component';
+import { MyAppointmentsComponent } from './core/features/appointments/my-appointments/my-appointments.component';
+import { DoctorSidebarComponent } from './core/features/doctors/doctor-sidebar';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -72,6 +74,9 @@ export const routes: Routes = [
 
   { path: 'patientAppointments/:id', component: PatientAppointmentsComponent },
   { path: 'doctorAppointments/:id', component: DoctorAppointmentsComponent },
+  { path: 'MyAppointments', component: MyAppointmentsComponent },
+  { path: 'doctorview', component: DoctorSidebarComponent },
+  
 
   { path: '**', component: NotFoundComponent },
 ];

@@ -1,0 +1,77 @@
+<div class="doctor-sidebar-layout">
+  <nav class="sidebar-list">
+    <ul>
+      <li [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">
+        <span class="icon">📅</span> Appointments
+      </li>
+      <li [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">
+        <span class="icon">👤</span> Patients
+      </li>
+      <li [class.active]="activeTab === 'surgeries'" (click)="setActiveTab('surgeries')">
+        <span class="icon">🩺</span> Surgeries
+      </li>
+      <li [class.active]="activeTab === 'labtests'" (click)="setActiveTab('labtests')">
+        <span class="icon">🧪</span> Labtests
+      </li>
+    </ul>
+  </nav>
+  <div class="main-content">
+    <ng-container [ngSwitch]="activeTab">
+      <div *ngSwitchCase="'appointments'">
+        <h3>Appointments</h3>
+        <div *ngIf="appointments.length; else noAppointments">
+          <div *ngFor="let appointment of appointments" class="card">
+            <div><b>ID:</b> {{ appointment.id }}</div>
+            <div><b>Name:</b> {{ appointment.name }}</div>
+            <div><b>Date:</b> {{ appointment.appointmentDate }}</div>
+            <div><b>Status:</b> {{ appointment.status }}</div>
+            <div><b>Notes:</b> {{ appointment.notes }}</div>
+          </div>
+        </div>
+        <ng-template #noAppointments>
+          <div class="empty-state">No appointments found.</div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'patients'">
+        <h3>Patients</h3>
+        <div *ngIf="patients.length; else noPatients">
+          <div *ngFor="let patient of patients" class="card">
+            <div><b>ID:</b> {{ patient.id }}</div>
+            <div><b>Name:</b> {{ patient.name }}</div>
+            <div><b>Email:</b> {{ patient.email }}</div>
+          </div>
+        </div>
+        <ng-template #noPatients>
+          <div class="empty-state">No patients found.</div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'surgeries'">
+        <h3>Surgeries</h3>
+        <div *ngIf="surgeries.length; else noSurgeries">
+          <div *ngFor="let surgery of surgeries" class="card">
+            <div><b>ID:</b> {{ surgery.id }}</div>
+            <div><b>Name:</b> {{ surgery.doctorName }}</div>
+            <div><b>Date:</b> {{ surgery.surgeryDate }}</div>
+            <div><b>Patient:</b> {{ surgery.patientName }}</div>
+          </div>
+        </div>
+        <ng-template #noSurgeries>
+          <div class="empty-state">No surgeries found.</div>
+        </ng-template>
+      </div>
+      <div *ngSwitchCase="'labtests'">
+        <h3>Labtests</h3>
+        <div *ngIf="labtests.length; else noLabtests">
+          <div *ngFor="let labtest of labtests" class="card">
+            <div><b>ID:</b> {{ labtest.id }}</div>
+            <div><b>Name:</b> {{ labtest.name }}</div>
+            <div><b>Reference:</b> {{ labtest.reference }}</div>
+          </div>
+        </div>
+        <ng-template #noLabtests>
+          <div class="empty-state">No labtests found.</div>
+        </ng-template>
+      </div>
+    </ng-container>
+  </div>
+</div> 
