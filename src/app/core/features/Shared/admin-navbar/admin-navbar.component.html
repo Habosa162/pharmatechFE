@@ -6,14 +6,14 @@
 
     <!-- Add Tab Navigation -->
     <div class=" d-flex flex-row">
-      <div class="profile-tabs col-3">
+      <div class="profile-tabs">
         <div class="container">
           <ul class="nav nav-tabs d-flex flex-column" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
           <li class="nav-item" >
             <a
               class="nav-link"
-              [class.active]="activeTab === 'admin-dashboard'"
-              (click)="setActiveTab('admin-dashboard')"
+              routerLink="/admin/admin-dashboard"
+              routerLinkActive="active"
             >
               <i class="fa fa-folder"></i> Dashboard
             </a>
@@ -21,8 +21,8 @@
           <li class="nav-item" >
             <a
               class="nav-link"
-              [class.active]="activeTab === 'appointments'"
-              (click)="setActiveTab('appointments')"
+              routerLink="/admin/appointments"
+              routerLinkActive="active"
             >
               <i class="fa fa-folder"></i> Appointments
             </a>
@@ -65,8 +65,8 @@
           <li class="nav-item" >
             <a
               class="nav-link"
-              [class.active]="activeTab === 'doctors'"
-              (click)="setActiveTab('doctors')"
+              routerLink="admin/doctors"
+              routerLinkActive="active"
             >
               <i class="fa fa-briefcase"></i> Doctors
             </a>
@@ -74,8 +74,8 @@
           <li class="nav-item">
             <a
               class="nav-link"
-              [class.active]="activeTab === 'patients'"
-              (click)="setActiveTab('patients')"
+              routerLink="/admin/patients"
+              routerLinkActive="active"
             >
               <!-- <i class="fa fa-graduation-cap"></i> -->
               <i class="fa fa-user"></i>
@@ -101,8 +101,8 @@
           <div class="collapse" id="Reports">
             <li>
               <a
-              [class.active]="activeTab === 'invoices'"
-              (click)="setActiveTab('invoices')"
+              routerLink="/admin/invoices"
+              routerLinkActive="active"
                class="ps-5 nav-link">
             <i class="fa fa-certificate"></i>
                 Invoice
@@ -111,8 +111,8 @@
             <li class="nav-item">
             <a
               class="ps-5 nav-link"
-              [class.active]="activeTab === 'transactions'"
-              (click)="setActiveTab('transactions')"
+              routerLink="/admin/transactions"
+              routerLinkActive="active"
             >
               <i class="fa fa-certificate"></i>
                Transactions
@@ -136,8 +136,8 @@
             <li class="nav-item">
             <a
               class=" ps-5 nav-link"
-              [class.active]="activeTab === 'categories'"
-              (click)="setActiveTab('categories')"
+              routerLink="/admin/inventorycategories"
+              routerLinkActive="active"
             >
               <i class="fa fa-certificate"></i> Categories
             </a>
@@ -145,8 +145,8 @@
           <li class="nav-item">
             <a
               class="ps-5 nav-link"
-              [class.active]="activeTab === 'items'"
-              (click)="setActiveTab('items')"
+              routerLink="/admin/inventoryitmes"
+              routerLinkActive="active"
             >
               <i class="fa fa-certificate"></i> Items
             </a>
@@ -154,8 +154,8 @@
           <li class="nav-item">
             <a
               class="ps-5 nav-link"
-              [class.active]="activeTab === 'inventorytransactions'"
-              (click)="setActiveTab('inventorytransactions')"
+              routerLink="/admin/inventorytransactions"
+              routerLinkActive="active"
             >
               <i class="fa fa-certificate"></i> Inventory Transactions
             </a>
@@ -175,8 +175,8 @@
           <li class="nav-item" >
             <a
               class="nav-link"
-              [class.active]="activeTab === 'admin-data-management'"
-              (click)="setActiveTab('admin-data-management')"
+              routerLink="/admin/admin-data-management"
+              routerLinkActive="active"
             >
               <i class="fa fa-user"></i> Admin data management
             </a>
@@ -185,16 +185,16 @@
         </div>
       </div>
 
-      <div class="container col-9">
+      <!-- <div class="container col-9">
       <div class="row">
-        <!-- Main Content -->
+
         <div class="col-lg-12">
           <div *ngIf="activeTab === 'admin-dashboard'">
             <app-master-dashboadr></app-master-dashboadr>
           </div>
 
           <div *ngIf="activeTab === 'appointments'">
-            <!-- <app-appointment-list></app-appointment-list> -->
+            <app-appointment-list></app-appointment-list>
              <app-patient-appointments></app-patient-appointments>
           </div>
 
@@ -222,9 +222,9 @@
             <app-inventory-transactions></app-inventory-transactions>
           </div>
 
-          <!-- <div *ngIf="activeTab === 'reviews'">
+          <div *ngIf="activeTab === 'reviews'">
             <app-review-list></app-review-list>
-          </div> -->
+          </div>
 
           <div *ngIf="activeTab === 'invoices'">
             <app-invoice-list></app-invoice-list>
@@ -235,7 +235,7 @@
           </div>
         </div>
       </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </div>

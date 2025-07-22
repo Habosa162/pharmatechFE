@@ -5,10 +5,11 @@ import { Router, RouterModule } from '@angular/router';
 import { NavBarComponent } from "../../features/Shared/nav-bar/nav-bar.component";
 import { AuthService } from '../../services/auth.service';
 import { AdminSidebarComponent } from "../../features/Shared/admin-sidebar/admin-sidebar.component";
+import { AdminNavbarComponent } from "../../features/Shared/admin-navbar/admin-navbar.component";
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [SidebarComponent, FooterComponent, RouterModule, NavBarComponent, AdminSidebarComponent],
+  imports: [SidebarComponent, FooterComponent, RouterModule, NavBarComponent, AdminSidebarComponent, AdminNavbarComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css'
 })

@@ -4,10 +4,11 @@ import { AuthService } from '../../services/auth.service';
 import { FooterComponent } from '../../features/Shared/footer/footer.component';
 import { NavBarComponent } from '../../features/Shared/nav-bar/nav-bar.component';
 import { SidebarComponent } from '../../features/Shared/sidebar/sidebar.component';
+import { DoctorSidebarComponent } from "../../features/doctors/doctor-sidebar";
 
 @Component({
   selector: 'app-user-layout',
-  imports: [SidebarComponent, FooterComponent, RouterModule, NavBarComponent],
+  imports: [SidebarComponent, FooterComponent, RouterModule, NavBarComponent, DoctorSidebarComponent],
   templateUrl: './user-layout.component.html',
   styleUrl: './user-layout.component.css'
 })

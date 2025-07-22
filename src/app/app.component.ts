@@ -5,10 +5,11 @@ import { MasterLayoutComponent } from './core/layouts/master-layout/master-layou
 import { AuthService } from './core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { UserLayoutComponent } from "./core/layouts/user-layout/user-layout.component";
+import { OwnerLayoutComponent } from "./core/layouts/owner-layout/owner-layout.component";
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, MainLayoutComponent, AdminLayoutComponent, MasterLayoutComponent, UserLayoutComponent],
+  imports: [CommonModule, MainLayoutComponent, AdminLayoutComponent, MasterLayoutComponent, UserLayoutComponent, OwnerLayoutComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

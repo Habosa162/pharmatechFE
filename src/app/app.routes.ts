@@ -14,11 +14,20 @@ import { OwnerDashboardComponent } from './core/features/dashboard/owner-dashboa
 import { DoctorAppointmentsComponent } from './core/features/doctors/doctor-appointments/doctor-appointments.component';
 import { MyAppointmentsComponent } from './core/features/appointments/my-appointments/my-appointments.component';
 import { DoctorSidebarComponent } from './core/features/doctors/doctor-sidebar';
+import { AppointmentListComponent } from './core/features/appointments/appointment-list/appointment-list.component';
+import { DoctorListComponent } from './core/features/doctors/doctor-list/doctor-list.component';
+import { InvoiceListComponent } from './core/features/billing/invoice-list/invoice-list.component';
+import { TransactionsListComponent } from './core/features/transactions/transactions-list/transactions-list.component';
+import { InventoryCategoryComponent } from './core/features/inventory/inventory-category/inventory-category.component';
+import { InventoryItemsComponent } from './core/features/inventory/inventory-items/inventory-items.component';
+import { InventoryTransactionsComponent } from './core/features/inventory/inventory-transactions/inventory-transactions.component';
+import { AdminDataManagementComponent } from './core/features/Shared/admin-data-management/admin-data-management.component';
+import { OwnerLayoutComponent } from './core/layouts/owner-layout/owner-layout.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  {path:'appointments', component: AppointmentComponent},
-  {path:'patients',component:PatientListComponent},
+  // {path:'appointments', component: AppointmentComponent},
+  // {path:'patients',component:PatientListComponent},
 
 
 
@@ -31,6 +40,20 @@ export const routes: Routes = [
         path: '',
         component:AdminDashboardComponent
       },
+      {
+        path: 'admin-dashboard',
+        component:AdminDashboardComponent
+      },
+      { path: 'appointments', component: AppointmentListComponent },
+      { path: 'doctors', component: DoctorListComponent },
+      { path: 'patients', component: PatientListComponent },
+      { path: 'appointments', component: AppointmentListComponent },
+      { path: 'invoices', component: InvoiceListComponent },
+      { path: 'transactions', component: TransactionsListComponent },
+      { path: 'inventorycategories', component: InventoryCategoryComponent },
+      { path: 'inventoryitmes', component: InventoryItemsComponent },
+      { path: 'inventorytransactions', component: InventoryTransactionsComponent },
+      { path: 'admin-data-management', component: AdminDataManagementComponent },
       {path:'patient-profile/:id', component: PatientProfileComponent},
     ]
   },
@@ -42,7 +65,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component:OwnerDashboardComponent
+        component:MasterDashboadrComponent
       },
     ]
   },
@@ -54,7 +77,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component:MasterDashboadrComponent
+        component:AdminDashboardComponent
       }
     ]
   },
@@ -68,7 +91,7 @@ export const routes: Routes = [
         path: '',
         component:EmployeeComponent
       }
-      
+
     ]
   },
 
@@ -76,7 +99,7 @@ export const routes: Routes = [
   { path: 'doctorAppointments/:id', component: DoctorAppointmentsComponent },
   { path: 'MyAppointments', component: MyAppointmentsComponent },
   { path: 'doctorview', component: DoctorSidebarComponent },
-  
+
 
   { path: '**', component: NotFoundComponent },
 ];
