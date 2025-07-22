@@ -1,0 +1,20 @@
+/* Minimal custom styles for Bootstrap-based design */
+.card {
+  border-radius: 1rem;
+}
+.table-responsive {
+  margin-top: 1.5rem;
+}
+.table th, .table td {
+  vertical-align: middle;
+}
+.alert {
+  font-size: 1rem;
+}
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
+.fas {
+  vertical-align: middle;
+} 

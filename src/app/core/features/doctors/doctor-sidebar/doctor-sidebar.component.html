@@ -21,11 +21,24 @@
         <h3>Appointments</h3>
         <div *ngIf="appointments.length; else noAppointments">
           <div *ngFor="let appointment of appointments" class="card">
-            <div><b>ID:</b> {{ appointment.id }}</div>
-            <div><b>Name:</b> {{ appointment.name }}</div>
-            <div><b>Date:</b> {{ appointment.appointmentDate }}</div>
-            <div><b>Status:</b> {{ appointment.status }}</div>
-            <div><b>Notes:</b> {{ appointment.notes }}</div>
+            <div class="appointment-header">
+              <div class="appointment-info">
+                <div><b>ID:</b> {{ appointment.id }}</div>
+                <div><b>Name:</b> {{ appointment.name }}</div>
+                <div><b>Date:</b> {{ appointment.appointmentDate }}</div>
+                <div><b>Status:</b> {{ appointment.status }}</div>
+                <div><b>Notes:</b> {{ appointment.notes }}</div>
+              </div>
+              <div class="appointment-actions">
+                <button 
+                  class="btn btn-primary btn-sm" 
+                  (click)="openExaminationModal(appointment)"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#examinationModal">
+                  <i class="fas fa-stethoscope"></i> Start Examination
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <ng-template #noAppointments>
@@ -73,5 +86,67 @@
         </ng-template>
       </div>
     </ng-container>
+  </div>
+</div>
+
+<!-- Examination Modal -->
+<div class="modal fade" id="examinationModal" tabindex="-1" aria-labelledby="examinationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="examinationModalLabel">
+          <i class="fas fa-stethoscope text-primary"></i>
+          Start Examination - {{ selectedAppointment?.name }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="medicalRecordForm" (ngSubmit)="createMedicalRecord()">
+          <div class="mb-3">
+            <label class="form-label">Visit Date</label>
+            <input 
+              class="form-control" 
+              type="datetime-local" 
+              formControlName="visitDate"
+              required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea 
+              class="form-control" 
+              rows="4" 
+              formControlName="notes"
+              placeholder="Enter examination notes..."></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Appointment ID</label>
+            <input 
+              class="form-control" 
+              type="number" 
+              formControlName="appointmentId"
+              readonly>
+          </div>
+        </form>
+        <div *ngIf="error" class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle"></i> {{ error }}
+        </div>
+        <div *ngIf="loading" class="text-center">
+          <div class="spinner-border text-primary" role="status"></div>
+          <span class="ms-2">Creating medical record...</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="createMedicalRecord()"
+          [disabled]="medicalRecordForm.invalid || loading">
+          <i class="fas fa-save"></i> Create Medical Record
+        </button>
+      </div>
+    </div>
   </div>
 </div> 

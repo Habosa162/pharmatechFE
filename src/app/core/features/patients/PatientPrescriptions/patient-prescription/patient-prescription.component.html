@@ -1,0 +1,94 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h4 class="card-title mb-3">
+            <i class="fas fa-prescription-bottle-alt text-primary"></i>
+            {{ editingId ? 'Edit Prescription' : 'Add Prescription' }}
+          </h4>
+          <form [formGroup]="prescriptionForm" (ngSubmit)="submitForm()">
+            <div class="mb-3">
+              <label class="form-label">Diagnosis</label>
+              <input class="form-control" formControlName="diagnosis" placeholder="Diagnosis">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Prescription Date</label>
+              <input class="form-control" type="datetime-local" formControlName="prescriptionDate">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Follow Up Date</label>
+              <input class="form-control" type="datetime-local" formControlName="followUpDate">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Medical Record ID</label>
+              <input class="form-control" type="number" formControlName="medicalRecordId" placeholder="Medical Record ID">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Medications IDs (comma separated)</label>
+              <input class="form-control" formControlName="medicationsIds" placeholder="e.g. 1,2,3">
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary" [disabled]="prescriptionForm.invalid">
+                <i class="fas fa-save"></i> {{ editingId ? 'Update' : 'Create' }}
+              </button>
+              <button type="button" class="btn btn-secondary" (click)="cancelEdit()" *ngIf="editingId">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+          <div *ngIf="error" class="alert alert-danger mt-3">
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div *ngIf="loading" class="text-center my-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <span class="ms-2">Loading prescriptions...</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Diagnosis</th>
+              <th>Prescription Date</th>
+              <th>Medical Record ID</th>
+              <th>Patient Name</th>
+              <th>Doctor Name</th>
+              <th>Clinic Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of prescriptions">
+              <td>{{ p.id }}</td>
+              <td>{{ p.diagnosis }}</td>
+              <td>{{ p.prescriptionDate }}</td>
+              <td>{{ p.medicalRecordId }}</td>
+              <td>{{ p.patientName }}</td>
+              <td>{{ p.doctorName }}</td>
+              <td>{{ p.clinicName }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-info me-1" (click)="editPrescription(p)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deletePrescription(p.id)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="!prescriptions.length && !loading">
+              <td colspan="8" class="text-center text-muted">No prescriptions found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

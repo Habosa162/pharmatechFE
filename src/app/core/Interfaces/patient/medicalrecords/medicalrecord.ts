@@ -23,13 +23,13 @@ export interface Createmedicalrecord{
   visitDate: string; // ISO 8601 format, e.g., "2025-07-03T14:30:00Z"
   notes?: string; // optional
   appointmentId: number;
-  patientId: number;
 }
 
 export interface Updatemedicalrecord{
   visitDate: string; // ISO 8601 format, e.g., "2025-07-03T14:30:00Z"
   notes?: string; // optional
-  doctorId: number;
+  appointmentId: number;
+  
 }
 
 

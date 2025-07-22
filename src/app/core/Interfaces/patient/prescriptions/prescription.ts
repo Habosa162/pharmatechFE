@@ -7,7 +7,7 @@ export interface PrescriptionDto {
   patientName: string;
   doctorName: string;
   clinicName: string;
-  medications: MedicationDto[];
+  medications: PrescriptionMedicationsDto[];
 }
 
 export interface AllPrescriptions {
@@ -44,4 +44,25 @@ export interface UpdatePrescription {
   prescriptionDate?: string; // ISO 8601 date string, optional because of default value in C#
   followUpDate: string;      // ISO 8601 date string
   medicationsIds: number[];
+}
+
+
+
+export interface PrescriptionMedicationsDto {
+  medicationName: string;
+  dosage?: string;
+  frequency?: string;
+  duration?: string;
+  notes?: string;
+}
+
+
+export interface PrescriptionResponse {
+  diagnosis: string;
+  prescriptionDate: string;
+  followUpDate: string;
+  notes: string;
+  patientName: string;
+  doctorName: string;
+  medications: string[];
 }

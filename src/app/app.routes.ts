@@ -23,6 +23,8 @@ import { InventoryItemsComponent } from './core/features/inventory/inventory-ite
 import { InventoryTransactionsComponent } from './core/features/inventory/inventory-transactions/inventory-transactions.component';
 import { AdminDataManagementComponent } from './core/features/Shared/admin-data-management/admin-data-management.component';
 import { OwnerLayoutComponent } from './core/layouts/owner-layout/owner-layout.component';
+import { PrescriptionService } from './core/services/patients/prescription.service';
+import { PatientPrescriptionComponent } from './core/features/patients/PatientPrescriptions/patient-prescription/patient-prescription.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -99,6 +101,7 @@ export const routes: Routes = [
   { path: 'doctorAppointments/:id', component: DoctorAppointmentsComponent },
   { path: 'MyAppointments', component: MyAppointmentsComponent },
   { path: 'doctorview', component: DoctorSidebarComponent },
+  { path: 'prescriptions', component: PatientPrescriptionComponent },
 
 
   { path: '**', component: NotFoundComponent },

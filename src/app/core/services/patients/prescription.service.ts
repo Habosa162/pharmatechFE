@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../enviroment';
 import { Observable } from 'rxjs';
-import { AllPrescriptions, CreatePrescription, PrescriptionDto, UpdatePrescription } from '../../Interfaces/patient/prescriptions/prescription';
+import { AllPrescriptions, CreatePrescription, PrescriptionDto, PrescriptionResponse, UpdatePrescription } from '../../Interfaces/patient/prescriptions/prescription';
 
 @Injectable({
   providedIn: 'root'
@@ -45,12 +45,12 @@ export class PrescriptionService {
       return this.http.get<AllPrescriptions[]>(`${this.PrescriptionEndPoint}/DateRange/${startDate}/${endDate}`);
     }
 
-  addPrescription(prescription: CreatePrescription): Observable<CreatePrescription> {
-    return this.http.post<CreatePrescription>(`${this.PrescriptionEndPoint}`, prescription);
+  addPrescription(prescription: CreatePrescription): Observable<PrescriptionResponse> {
+    return this.http.post<PrescriptionResponse>(`${this.PrescriptionEndPoint}`, prescription);
   }
 
-  updatePrescription(id: number, prescription: UpdatePrescription): Observable<UpdatePrescription> {
-    return this.http.put<UpdatePrescription>(`${this.PrescriptionEndPoint}/${id}`, prescription);
+  updatePrescription(id: number, prescription: UpdatePrescription): Observable<PrescriptionResponse> {
+    return this.http.put<PrescriptionResponse>(`${this.PrescriptionEndPoint}/${id}`, prescription);
   }
 
   deletePrescription(id: number): Observable<void> {
