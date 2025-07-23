@@ -40,11 +40,11 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component:AdminDashboardComponent
+        component:MasterDashboadrComponent
       },
       {
         path: 'admin-dashboard',
-        component:AdminDashboardComponent
+        component:MasterDashboadrComponent
       },
       { path: 'appointments', component: AppointmentListComponent },
       { path: 'doctors', component: DoctorListComponent },

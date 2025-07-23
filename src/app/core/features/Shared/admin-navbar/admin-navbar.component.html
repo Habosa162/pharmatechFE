@@ -1,13 +1,13 @@
 <div class="admin-layout mt-2">
 
 
-  <div class="profile-container mt-5">
+  <div class="profile-container">
 
 
     <!-- Add Tab Navigation -->
     <div class=" d-flex flex-row">
       <div class="profile-tabs">
-        <div class="container">
+        <div class="">
           <ul class="nav nav-tabs d-flex flex-column" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
           <li class="nav-item" >
             <a
