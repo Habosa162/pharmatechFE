@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 // import { Environment } from '../../../base/environment';
 import { Observable } from 'rxjs';
 import { environment } from '../enviroment';
-import { AppointmentDetails,UpdateAppointmentDTO,CreateAppointmentDTO } from '../../Interfaces/all';
+import { AppointmentDetails,UpdateAppointmentDTO,CreateAppointmentDTO, AppointmentStatus } from '../../Interfaces/all';
 // import { environment } from './enviroment';
 // import { AppointmentDetails, CreateAppointmentDTO, UpdateAppointmentDTO } from '../Interfaces/all';
 // import { CreateAppointmentDTO, UpdateAppointmentDTO, AppointmentDetails } from '../../Interfaces/Appointment';
@@ -44,6 +44,10 @@ export class AppointmentService {
   }
   myappointments(id:string): Observable<AppointmentDetails[]> {
     return this.http.get<AppointmentDetails[]>(`${this.apiUrl}/MyAppointments/${id}`);
+  }
+
+  editstatus(id: number, status: AppointmentStatus): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}`, status);
   }
 }
 

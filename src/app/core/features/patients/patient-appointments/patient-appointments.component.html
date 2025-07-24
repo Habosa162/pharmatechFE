@@ -36,7 +36,7 @@
                   <td>{{ appointment.departmentName }}</td>
                   <td>{{ appointment.doctorName }}</td>
                   <td>
-                    <span [class]="getStatusClass(appointment.status)">
+                    <span [class]="getStatusClass(appointment.status.toString())">
                       {{ appointment.status }}
                     </span>
                   </td>

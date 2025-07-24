@@ -18,6 +18,8 @@ export interface AllPrescriptions {
   patientName: string;
   doctorName: string;
   clinicName: string;
+  medications:PrescriptionMedicationsDto[];
+  
 }
 
 export interface PrescriptionMedication {
@@ -36,19 +38,22 @@ export interface CreatePrescription {
   prescriptionDate: string; // ISO 8601 format, e.g., "2025-07-03T14:00:00Z"
   followUpDate: string;     // Same format
   medicalRecordId: number;
-  medicationsIds: number[]; // IDs of selected medications
+  medications: PrescriptionMedicationsDto[]; // IDs of selected medications
 }
+
+
 
 export interface UpdatePrescription {
   diagnosis: string;
   prescriptionDate?: string; // ISO 8601 date string, optional because of default value in C#
   followUpDate: string;      // ISO 8601 date string
-  medicationsIds: number[];
+  medications: PrescriptionMedicationsDto[]; // Changed from medicationsIds to medications array
 }
 
 
 
 export interface PrescriptionMedicationsDto {
+  id:number;
   medicationName: string;
   dosage?: string;
   frequency?: string;

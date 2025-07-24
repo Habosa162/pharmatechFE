@@ -62,6 +62,7 @@
               <th>Patient Name</th>
               <th>Doctor Name</th>
               <th>Clinic Name</th>
+              <th>Medications</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -75,6 +76,9 @@
               <td>{{ p.doctorName }}</td>
               <td>{{ p.clinicName }}</td>
               <td>
+                <small class="text-muted">{{ formatMedicationsForDisplay(p.medications) }}</small>
+              </td>
+              <td>
                 <button class="btn btn-sm btn-outline-info me-1" (click)="editPrescription(p)">
                   <i class="fas fa-edit"></i>
                 </button>
@@ -84,7 +88,7 @@
               </td>
             </tr>
             <tr *ngIf="!prescriptions.length && !loading">
-              <td colspan="8" class="text-center text-muted">No prescriptions found.</td>
+              <td colspan="9" class="text-center text-muted">No prescriptions found.</td>
             </tr>
           </tbody>
         </table>

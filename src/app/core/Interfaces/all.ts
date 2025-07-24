@@ -39,7 +39,7 @@ export interface AppointmentDetails {
   doctorName: string;
   appointmentDate: string;
   notes: string;
-  status: string;
+  status: AppointmentStatus;
 }
 
 export enum AppointmentStatus {

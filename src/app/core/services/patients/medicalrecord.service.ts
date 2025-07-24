@@ -24,6 +24,10 @@ export class MedicalrecordService {
     return this.http.get<Allmedicalrecords[]>(`${this.MedicalrecordEndPoint}/patient/${patientId}`);
   }
 
+   getMedicalRecordsByAppointmenttId(appointmentid: number): Observable<MedicalrecordDto> {
+    return this.http.get<MedicalrecordDto>(`${this.MedicalrecordEndPoint}/ByAppointmentId/${appointmentid}`);
+  }
+
   getMedicalRecordsByClinicId(clinicId: number): Observable<Allmedicalrecords[]> {
     return this.http.get<Allmedicalrecords[]>(`${this.MedicalrecordEndPoint}/clinic/${clinicId}`);
   }

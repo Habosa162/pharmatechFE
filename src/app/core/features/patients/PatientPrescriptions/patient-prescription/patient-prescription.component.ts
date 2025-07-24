@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrescriptionService } from '../../../../services/patients/prescription.service';
-import { AllPrescriptions, CreatePrescription, UpdatePrescription } from '../../../../Interfaces/patient/prescriptions/prescription';
+import { AllPrescriptions, CreatePrescription, UpdatePrescription, PrescriptionMedicationsDto, PrescriptionDto } from '../../../../Interfaces/patient/prescriptions/prescription';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -51,12 +51,27 @@ export class PatientPrescriptionComponent implements OnInit {
   submitForm() {
     if (this.prescriptionForm.invalid) return;
     const formValue = this.prescriptionForm.value;
+    
+    // Convert comma-separated IDs to PrescriptionMedicationsDto array
+    const medications: PrescriptionMedicationsDto[] = formValue.medicationsIds
+      .split(',')
+      .map((id: string) => +id.trim())
+      .filter((id: number) => id > 0)
+      .map((id: number) => ({
+        id: id,
+        medicationName: `Medication ${id}`, // Placeholder name
+        dosage: '',
+        frequency: '',
+        duration: '',
+        notes: ''
+      }));
+
     const payload: CreatePrescription | UpdatePrescription = {
       diagnosis: formValue.diagnosis,
       prescriptionDate: formValue.prescriptionDate,
       followUpDate: formValue.followUpDate,
       medicalRecordId: +formValue.medicalRecordId,
-      medicationsIds: formValue.medicationsIds.split(',').map((id: string) => +id.trim()),
+      medications: medications,
     };
     if (this.editingId) {
       // Update
@@ -82,12 +97,39 @@ export class PatientPrescriptionComponent implements OnInit {
 
   editPrescription(p: AllPrescriptions) {
     this.editingId = p.id;
-    this.prescriptionForm.patchValue({
-      diagnosis: p.diagnosis,
-      prescriptionDate: p.prescriptionDate,
-      followUpDate: '', // Not available in AllPrescriptions, left blank
-      medicalRecordId: p.medicalRecordId,
-      medicationsIds: '', // Not available, left blank
+    
+    // Load full prescription details to get medications
+    this.prescriptionService.getPrescriptionById(p.id).subscribe({
+      next: (fullPrescription: PrescriptionDto) => {
+        console.log('Full prescription loaded for editing:', fullPrescription);
+        
+        // Format medications as comma-separated IDs for the simple input
+        const medicationIds = fullPrescription.medications
+          .map(med => med.id.toString())
+          .join(', ');
+        
+        this.prescriptionForm.patchValue({
+          diagnosis: fullPrescription.diagnosis,
+          prescriptionDate: fullPrescription.prescriptionDate,
+          followUpDate: fullPrescription.followUpDate,
+          medicalRecordId: p.medicalRecordId,
+          medicationsIds: medicationIds,
+        });
+        
+        console.log('Form populated with existing data:', this.prescriptionForm.value);
+      },
+      error: (err) => {
+        console.error('Failed to load full prescription details:', err);
+        
+        // Fallback: use basic data from AllPrescriptions
+        this.prescriptionForm.patchValue({
+          diagnosis: p.diagnosis,
+          prescriptionDate: p.prescriptionDate,
+          followUpDate: '', // Not available in AllPrescriptions, left blank
+          medicalRecordId: p.medicalRecordId,
+          medicationsIds: '', // Not available, left blank
+        });
+      }
     });
   }
 
@@ -102,5 +144,18 @@ export class PatientPrescriptionComponent implements OnInit {
   cancelEdit() {
     this.editingId = null;
     this.prescriptionForm.reset();
+  }
+
+  // Helper method to format medications for display
+  formatMedicationsForDisplay(medications: PrescriptionMedicationsDto[]): string {
+    if (!medications || medications.length === 0) {
+      return 'No medications';
+    }
+    
+    return medications.map(med => {
+      let display = med.medicationName;
+      if (med.dosage) display += ` (${med.dosage})`;
+      return display;
+    }).join(', ');
   }
 }

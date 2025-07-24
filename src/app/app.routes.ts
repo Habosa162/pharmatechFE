@@ -25,6 +25,7 @@ import { AdminDataManagementComponent } from './core/features/Shared/admin-data-
 import { OwnerLayoutComponent } from './core/layouts/owner-layout/owner-layout.component';
 import { PrescriptionService } from './core/services/patients/prescription.service';
 import { PatientPrescriptionComponent } from './core/features/patients/PatientPrescriptions/patient-prescription/patient-prescription.component';
+import { AppointmentDetailsComponent } from './core/features/appointments/appointment-details/appointment-details.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -102,6 +103,7 @@ export const routes: Routes = [
   { path: 'MyAppointments', component: MyAppointmentsComponent },
   { path: 'doctorview', component: DoctorSidebarComponent },
   { path: 'prescriptions', component: PatientPrescriptionComponent },
+  { path: 'appointment-details/:id', component: AppointmentDetailsComponent },
 
 
   { path: '**', component: NotFoundComponent },
