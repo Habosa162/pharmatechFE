@@ -1,0 +1,180 @@
+<div class="content">
+  <div class="container-fluid">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="page-title">
+          <i class="fas fa-procedures text-danger"></i>
+          Surgery History
+        </h2>
+        <p class="text-muted mb-0" *ngIf="patient">
+          Patient: <strong>{{ patient.name }}</strong> (ID: PT{{ patient.id.toString().padStart(4, '0') }})
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary me-2" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+        <button class="btn btn-secondary" (click)="goToPatientList()">
+          <i class="fas fa-list"></i> Patient List
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading surgery history...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+      <button class="btn btn-secondary ms-2" (click)="loadSurgeries()">
+        <i class="fas fa-redo"></i> Retry
+      </button>
+    </div>
+
+    <!-- Surgery Content -->
+    <div *ngIf="!loading && !error">
+      
+      <!-- No Surgeries State -->
+      <div *ngIf="surgeries.length === 0" class="card">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-procedures fa-4x text-muted mb-3"></i>
+          <h4 class="text-muted">No Surgery History Found</h4>
+          <p class="text-muted">This patient doesn't have any recorded surgeries.</p>
+          <button class="btn btn-primary" (click)="goBack()">
+            <i class="fas fa-arrow-left"></i> Back to Profile
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Card -->
+      <div *ngIf="surgeries.length > 0" class="card mb-4">
+        <div class="card-header">
+          <h6 class="card-title mb-0">
+            <i class="fas fa-chart-bar text-info"></i>
+            Surgery Summary
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <div class="summary-stat">
+                <h4 class="stat-number text-danger">{{ surgeries.length }}</h4>
+                <p class="stat-label">Total Surgeries</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-stat">
+                <h4 class="stat-number text-primary">{{ getYearsSorted().length }}</h4>
+                <p class="stat-label">Years Covered</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="summary-stat">
+                <h4 class="stat-number text-success">{{ getRecentSurgeries(1).length > 0 ? (getRecentSurgeries(1)[0].surgeryDate | date:'yyyy') : 'N/A' }}</h4>
+                <p class="stat-label">Most Recent</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Surgeries by Year -->
+      <div *ngIf="surgeries.length > 0">
+        <div *ngFor="let year of getYearsSorted()" class="year-section mb-4">
+          <h4 class="year-header">
+            <i class="fas fa-calendar-alt text-primary"></i>
+            {{ year }}
+            <span class="badge bg-primary ms-2">{{ getSurgeriesByYear()[year].length }} surgeries</span>
+          </h4>
+          
+          <div class="row">
+            <div *ngFor="let surgery of getSurgeriesByYear()[year]" class="col-md-6 col-lg-4 mb-3">
+              <div class="card surgery-card h-100">
+                <div class="card-header">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0">
+                      <i class="fas fa-scalpel text-danger"></i>
+                      {{ surgery.name }}
+                    </h6>
+                    <small class="text-muted">ID: {{ surgery.id }}</small>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="surgery-info">
+                    <div class="info-item mb-3">
+                      <label class="info-label">Surgery Date:</label>
+                      <span class="info-value">{{ surgery.surgeryDate | date:'fullDate' }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                      <label class="info-label">Time:</label>
+                      <span class="info-value">{{ surgery.surgeryDate | date:'shortTime' }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                      <label class="info-label">Surgeon:</label>
+                      <span class="info-value">Dr. {{ surgery.doctorName }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                      <label class="info-label">Patient:</label>
+                      <span class="info-value">{{ surgery.patientName }}</span>
+                    </div>
+                    
+                    <div *ngIf="surgery.description" class="info-item">
+                      <label class="info-label">Description:</label>
+                      <span class="info-value description-text">{{ surgery.description }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-danger">{{ surgery.surgeryDate | date:'MMM yyyy' }}</span>
+                    <small class="text-muted">Dr. {{ surgery.doctorName }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline View (Alternative Layout) -->
+      <div *ngIf="surgeries.length > 0" class="card mt-4">
+        <div class="card-header">
+          <h6 class="card-title mb-0">
+            <i class="fas fa-history text-info"></i>
+            Surgery Timeline
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div *ngFor="let surgery of getRecentSurgeries()" class="timeline-item">
+              <div class="timeline-marker">
+                <i class="fas fa-procedures"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <h6 class="timeline-title">{{ surgery.name }}</h6>
+                  <span class="timeline-date">{{ surgery.surgeryDate | date:'mediumDate' }}</span>
+                </div>
+                <div class="timeline-body">
+                  <p class="mb-1"><strong>Surgeon:</strong> Dr. {{ surgery.doctorName }}</p>
+                  <p class="mb-1" *ngIf="surgery.description"><strong>Description:</strong> {{ surgery.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div> 

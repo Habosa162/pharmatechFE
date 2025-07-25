@@ -1,305 +1,357 @@
 
 <div class="content">
-				<div class="container-fluid">
+  <div class="container-fluid">
+    
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading patient data...</p>
+    </div>
 
-					<div class="row">
-						<div class="col-md-5 col-lg-4 col-xl-3 ">
+    <!-- Error State -->
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+      <button class="btn btn-secondary ms-2" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Back to Patients
+      </button>
+    </div>
 
-							<!-- Profile Widget -->
-							<div class="card widget-profile pat-widget-profile mb-2">
-								<div class="card-body">
-									<div class="pro-widget-content">
-										<div class="profile-info-widget">
-											<a href="#" class="booking-doc-img">
-												<img src="assets/img/patients/patient.jpg" alt="User Image">
-											</a>
-											<div class="profile-det-info">
-												<p>Richard Wilson</p>
+    <!-- Patient Profile Content -->
+    <div *ngIf="!loading && !error && patient" class="row">
+      
+      <!-- Patient Info Sidebar -->
+      <div class="col-md-5 col-lg-4 col-xl-3">
+        
+        <!-- Profile Widget -->
+        <div class="card widget-profile pat-widget-profile mb-3">
+          <div class="card-body">
+            <div class="pro-widget-content">
+              <div class="profile-info-widget">
+                <div class="profile-pic">
+                  <img src="./images/images/logo1.png" alt="Patient Image" class="profile-image">
+                </div>
+                <div class="profile-det-info">
+                  <h3 class="patient-name">{{ patient.name }}</h3>
+                  <div class="patient-details">
+                    <p><b>Patient ID:</b> PT{{ patient.id.toString().padStart(4, '0') }}</p>
+                    <p class="mb-0"><i class="fas fa-phone"></i> {{ patient.phoneNumber }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="patient-info">
+              <ul>
+                <li>Phone <span>{{ patient.phoneNumber }}</span></li>
+                <li>Age <span>{{ calculateAge(patient.dateOfBirth) }} Years, {{ getGenderText(patient.gender) }}</span></li>
+                <li>Date of Birth <span>{{ patient.dateOfBirth | date:'mediumDate' }}</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- /Profile Widget -->
 
-												<div class="patient-details">
-													<p><b>Patient ID :</b> PT0016</p>
-													<p class="mb-0"><i class="fas fa-map-marker-alt"></i> Newyork, United States</p>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="patient-info">
-										<ul>
-											<li>Phone <span>+1 952 001 8563</span></li>
-											<li>Age <span>38 Years, Male</span></li>
-											<li>Blood Group <span>AB+</span></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-							<!-- /Profile Widget -->
+        <!-- Quick Stats -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <h6 class="card-title">Quick Stats</h6>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-6 mb-3">
+                <div class="stat-item">
+                  <h4 class="stat-number text-primary">{{ totalAppointments }}</h4>
+                  <p class="stat-label">Appointments</p>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <div class="stat-item">
+                  <h4 class="stat-number text-success">{{ totalMedicalRecords }}</h4>
+                  <p class="stat-label">Records</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item">
+                  <h4 class="stat-number text-info">{{ totalSurgeries }}</h4>
+                  <p class="stat-label">Surgeries</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item">
+                  <h4 class="stat-number text-warning">{{ totalLabTests }}</h4>
+                  <p class="stat-label">Lab Tests</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /Quick Stats -->
 
-							<!-- Last Booking -->
-							<div class="card">
-								<div class="card-header">
-									<h6 class="card-title">Last Booking</h6>
-								</div>
-								<ul class="list-group list-group-flush">
-									<li class="list-group-item">
-										<div class="media align-items-center">
-											<div class="mr-3">
-												<img alt="Image placeholder" src="assets/img/doctors/doctor-thumb-02.jpg" class="avatar  rounded-circle">
-											</div>
-											<div class="media-body">
-												<p class="d-block mb-0">Dr. Darren Elder </p>
-												<span class="d-block text-sm text-muted">Dentist</span>
-												<span class="d-block text-sm text-muted">14 Nov 2019 5.00 PM</span>
-											</div>
-										</div>
-									</li>
-									<li class="list-group-item">
-										<div class="media align-items-center">
-											<div class="mr-3">
-												<img alt="Image placeholder" src="assets/img/doctors/doctor-thumb-02.jpg" class="avatar  rounded-circle">
-											</div>
-											<div class="media-body">
-												<p class="d-block mb-0">Dr. Darren Elder </p>
-												<span class="d-block text-sm text-muted">Dentist</span>
-												<span class="d-block text-sm text-muted">12 Nov 2019 11.00 AM</span>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-							<!-- /Last Booking -->
+        <!-- Patient Actions -->
+        <div class="card">
+          <div class="card-header">
+            <h6 class="card-title">Actions</h6>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary btn-sm" (click)="editPatient()">
+                <i class="fas fa-edit"></i> Edit Patient
+              </button>
+              <button class="btn btn-success btn-sm" (click)="viewAppointments()">
+                <i class="fas fa-calendar-plus"></i> New Appointment
+              </button>
+              <button class="btn btn-secondary btn-sm" (click)="goBack()">
+                <i class="fas fa-arrow-left"></i> Back to List
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- /Patient Actions -->
 
-						</div>
+      </div>
 
-						<div class="col-md-7 col-lg-8 col-xl-9 dct-appoinment">
-							<div class="card">
-								<div class="card-body pt-0">
-									<div class="user-tabs">
-										<ul class="nav nav-tabs nav-tabs-bottom nav-justified flex-wrap">
-											<li class="nav-item">
-												<a class="nav-link active" href="#pat_appointments" data-toggle="tab">Appointments</a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" href="#pres" data-toggle="tab"><span>Prescription</span></a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" href="#medical" data-toggle="tab"><span class="med-records">Medical Records</span></a>
-											</li>
-											<li class="nav-item">
-												<a class="nav-link" href="#billing" data-toggle="tab"><span>Billing</span></a>
-											</li>
-										</ul>
-									</div>
+      <!-- Main Content Area -->
+      <div class="col-md-7 col-lg-8 col-xl-9">
+        
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="page-title">
+            <i class="fas fa-user text-primary"></i>
+            Patient Profile
+          </h2>
+          <div class="header-actions">
+            <button class="btn btn-outline-primary me-2" (click)="editPatient()">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-secondary" (click)="goBack()">
+              <i class="fas fa-arrow-left"></i> Back
+            </button>
+          </div>
+        </div>
 
-									<div class="tab-content">
+        <!-- Navigation Cards -->
+        <div class="row mb-4">
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card nav-card h-100" (click)="viewAppointments()">
+              <div class="card-body text-center">
+                <div class="nav-card-icon text-primary">
+                  <i class="fas fa-calendar-alt fa-3x"></i>
+                </div>
+                <h5 class="nav-card-title">Appointments</h5>
+                <p class="nav-card-text">View and manage patient appointments</p>
+                <span class="badge bg-primary">{{ totalAppointments }} Total</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card nav-card h-100" (click)="viewMedicalHistory()">
+              <div class="card-body text-center">
+                <div class="nav-card-icon text-info">
+                  <i class="fas fa-history fa-3x"></i>
+                </div>
+                <h5 class="nav-card-title">Medical History</h5>
+                <p class="nav-card-text">View patient medical history records</p>
+                <span class="badge bg-info">{{ totalMedicalHistories }} Records</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card nav-card h-100" (click)="viewMedicalRecords()">
+              <div class="card-body text-center">
+                <div class="nav-card-icon text-success">
+                  <i class="fas fa-file-medical fa-3x"></i>
+                </div>
+                <h5 class="nav-card-title">Medical Records</h5>
+                <p class="nav-card-text">View detailed medical records</p>
+                <span class="badge bg-success">{{ totalMedicalRecords }} Records</span>
+              </div>
+            </div>
+          </div>
 
-										<!-- Appointment Tab -->
-										<div id="pat_appointments" class=" ">
-											<div class="card card-table mb-0">
-												<div class="card-body">
-													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
-															<thead>
-																<tr>
-																	<th>Doctor</th>
-																	<th>Appt Date</th>
-																	<th>Booking Date</th>
-																	<th>Amount</th>
-																	<th>Follow Up</th>
-																	<th>Status</th>
-																	<th></th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td>
-																		<div class="table-avatar">
-																			<a href="doctor-profile.html" class="avatar avatar-sm mr-2">
-																				<img class="avatar-img rounded-circle" src="assets/img/doctors/doctor-thumb-02.jpg" alt="User Image">
-																			</a>
-                                      <br>
-																			<a href="doctor-profile.html">Dr. Darren Elder <span>Dental</span></a>
-																		</div>
-																	</td>
-																	<td>14 Nov 2019 <span class="d-block text-info">10.00 AM</span></td>
-																	<td>12 Nov 2019</td>
-																	<td>$160</td>
-																	<td>16 Nov 2019</td>
-																	<td><span class="badge badge-pill bg-success-light">Confirm</span></td>
-																	<td class="text-right">
-																		<div class="table-action">
-																			<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-																				<i class="far fa-edit"></i> Edit
-																			</a>
-																		</div>
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-										<!-- /Appointment Tab -->
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card nav-card h-100" (click)="viewLabTests()">
+              <div class="card-body text-center">
+                <div class="nav-card-icon text-warning">
+                  <i class="fas fa-flask fa-3x"></i>
+                </div>
+                <h5 class="nav-card-title">Lab Tests</h5>
+                <p class="nav-card-text">View and manage lab test results</p>
+                <span class="badge bg-warning">{{ totalLabTests }} Tests</span>
+              </div>
+            </div>
+          </div>
 
-										<!-- Prescription Tab -->
-										<div class="tab-pane fade" id="pres">
-											<div class="text-right">
-												<a href="add-prescription.html" class="add-new-btn">Add Prescription</a>
-											</div>
-											<div class="card card-table mb-0">
-												<div class="card-body">
-													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
-															<thead>
-																<tr>
-																	<th>Date </th>
-																	<th>Name</th>
-																	<th>Created by </th>
-																	<th></th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td>14 Nov 2019</td>
-																	<td>Prescription 1</td>
-																	<td>
-																		<h2 class="table-avatar">
-																			<a href="doctor-profile.html" class="avatar avatar-sm mr-2">
-																				<img class="avatar-img rounded-circle" src="assets/img/doctors/doctor-thumb-01.jpg" alt="User Image">
-																			</a>
-																			<a href="doctor-profile.html">Dr. Ruby Perrin <span>Dental</span></a>
-																		</h2>
-																	</td>
-																	<td class="text-right">
-																		<div class="table-action">
-																			<a href="javascript:void(0);" class="btn btn-sm bg-primary-light">
-																				<i class="fas fa-print"></i> Print
-																			</a>
-																			<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																				<i class="far fa-eye"></i> View
-																			</a>
-																		</div>
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-										<!-- /Prescription Tab -->
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card nav-card h-100" (click)="viewSurgeries()">
+              <div class="card-body text-center">
+                <div class="nav-card-icon text-danger">
+                  <i class="fas fa-procedures fa-3x"></i>
+                </div>
+                <h5 class="nav-card-title">Surgeries</h5>
+                <p class="nav-card-text">View patient surgery history</p>
+                <span class="badge bg-danger">{{ totalSurgeries }} Surgeries</span>
+              </div>
+            </div>
+          </div>
 
-										<!-- Medical Records Tab -->
-										<div class="tab-pane fade" id="medical">
-											<div class="text-right">
-												<a href="#" class="add-new-btn" data-toggle="modal" data-target="#add_medical_records">Add Medical Records</a>
-											</div>
-											<div class="card card-table mb-0">
-												<div class="card-body">
-													<div class="table-responsive">
-														<table class="table table-hover table-center mb-0">
-															<thead>
-																<tr>
-																	<th>ID</th>
-																	<th>Date </th>
-																	<th>Description</th>
-																	<th>Attachment</th>
-																	<th>Created</th>
-																	<th></th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><a href="javascript:void(0);">#MR-0010</a></td>
-																	<td>14 Nov 2019</td>
-																	<td>Dental Filling</td>
-																	<td><a href="#">dental-test.pdf</a></td>
-																	<td>
-																		<h2 class="table-avatar">
-																			<a href="doctor-profile.html" class="avatar avatar-sm mr-2">
-																				<img class="avatar-img rounded-circle" src="assets/img/doctors/doctor-thumb-01.jpg" alt="User Image">
-																			</a>
-																			<a href="doctor-profile.html">Dr. Ruby Perrin <span>Dental</span></a>
-																		</h2>
-																	</td>
-																	<td class="text-right">
-																		<div class="table-action">
-																			<a href="javascript:void(0);" class="btn btn-sm bg-primary-light">
-																				<i class="fas fa-print"></i> Print
-																			</a>
-																			<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																				<i class="far fa-eye"></i> View
-																			</a>
-																		</div>
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-										<!-- /Medical Records Tab -->
+          <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card nav-card h-100" (click)="viewPrescriptions()">
+              <div class="card-body text-center">
+                <div class="nav-card-icon text-purple">
+                  <i class="fas fa-prescription-bottle-alt fa-3x"></i>
+                </div>
+                <h5 class="nav-card-title">Prescriptions</h5>
+                <p class="nav-card-text">View patient prescriptions</p>
+                <span class="badge bg-purple">Prescriptions</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-										<!-- Billing Tab -->
-										<div class="tab-pane" id="billing">
-											<div class="text-right">
-												<a class="add-new-btn" href="add-billing.html">Add Billing</a>
-											</div>
-											<div class="card card-table mb-0">
-												<div class="card-body">
-													<div class="table-responsive">
+        <!-- Patient Details Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-info-circle text-primary"></i>
+              Patient Information
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <table class="table table-borderless">
+                  <tr>
+                    <td><strong>Full Name:</strong></td>
+                    <td>{{ patient.name }}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Patient ID:</strong></td>
+                    <td>PT{{ patient.id.toString().padStart(4, '0') }}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Phone Number:</strong></td>
+                    <td>{{ patient.phoneNumber }}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <table class="table table-borderless">
+                  <tr>
+                    <td><strong>Date of Birth:</strong></td>
+                    <td>{{ patient.dateOfBirth | date:'fullDate' }}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Age:</strong></td>
+                    <td>{{ calculateAge(patient.dateOfBirth) }} years old</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Gender:</strong></td>
+                    <td>{{ getGenderText(patient.gender) }}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
 
-														<table class="table table-hover table-center mb-0">
-															<thead>
-																<tr>
-																	<th>Invoice No</th>
-																	<th>Doctor</th>
-																	<th>Amount</th>
-																	<th>Paid On</th>
-																	<th></th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td>
-																		<a href="invoice-view.html">#INV-0010</a>
-																	</td>
-																	<td>
-																		<h2 class="table-avatar">
-																			<a href="doctor-profile.html" class="avatar avatar-sm mr-2">
-																				<img class="avatar-img rounded-circle" src="assets/img/doctors/doctor-thumb-01.jpg" alt="User Image">
-																			</a>
-																			<a href="doctor-profile.html">Ruby Perrin <span>Dental</span></a>
-																		</h2>
-																	</td>
-																	<td>$450</td>
-																	<td>14 Nov 2019</td>
-																	<td class="text-right">
-																		<div class="table-action">
-																			<a href="javascript:void(0);" class="btn btn-sm bg-primary-light">
-																				<i class="fas fa-print"></i> Print
-																			</a>
-																			<a href="javascript:void(0);" class="btn btn-sm bg-info-light">
-																				<i class="far fa-eye"></i> View
-																			</a>
-																		</div>
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-										<!-- Billing Tab -->
+        <!-- Recent Activity Section -->
+        <div class="row">
+          <!-- Recent Appointments -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                  <i class="fas fa-calendar text-primary"></i>
+                  Recent Appointments
+                </h6>
+                <button class="btn btn-sm btn-outline-primary" (click)="viewAppointments()">
+                  View All
+                </button>
+              </div>
+              <div class="card-body">
+                <div *ngIf="getRecentAppointments().length === 0" class="text-muted text-center py-3">
+                  No appointments found
+                </div>
+                <div *ngFor="let appointment of getRecentAppointments(); let last = last" class="appointment-item mb-2">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <strong>{{ appointment.departmentName }}</strong><br>
+                      <small class="text-muted">Dr. {{ appointment.doctorName }}</small>
+                    </div>
+                    <div class="text-end">
+                      <small>{{ appointment.appointmentDate | date:'short' }}</small><br>
+                      <span class="badge badge-sm" [ngClass]="getAppointmentStatusClass(appointment.status)">{{ getAppointmentStatusText(appointment.status) }}</span>
+                    </div>
+                  </div>
+                  <hr *ngIf="!last" class="my-2">
+                </div>
+              </div>
+            </div>
+          </div>
 
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+          <!-- Recent Medical Records -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                  <i class="fas fa-file-medical text-success"></i>
+                  Recent Medical Records
+                </h6>
+                <button class="btn btn-sm btn-outline-success" (click)="viewMedicalRecords()">
+                  View All
+                </button>
+              </div>
+              <div class="card-body">
+                <div *ngIf="getRecentMedicalRecords().length === 0" class="text-muted text-center py-3">
+                  No medical records found
+                </div>
+                <div *ngFor="let record of getRecentMedicalRecords(); let last = last" class="record-item mb-2">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <strong>Visit Record</strong><br>
+                      <small class="text-muted">Dr. {{ record.doctorName }}</small>
+                    </div>
+                    <div class="text-end">
+                      <small>{{ record.visitDate | date:'short' }}</small><br>
+                      <span class="badge badge-sm bg-success">{{ record.prescriptionsCount }} Prescriptions</span>
+                    </div>
+                  </div>
+                  <hr *ngIf="!last" class="my-2">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-				</div>
+        <!-- Surgery History (if any) -->
+        <div *ngIf="getRecentSurgeries().length > 0" class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-procedures text-danger"></i>
+              Recent Surgeries
+            </h6>
+            <button class="btn btn-sm btn-outline-danger" (click)="viewSurgeries()">
+              View All
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div *ngFor="let surgery of getRecentSurgeries()" class="col-md-4 mb-3">
+                <div class="surgery-card p-3 border rounded">
+                  <h6 class="mb-2">{{ surgery.name }}</h6>
+                  <p class="text-muted mb-1">Dr. {{ surgery.doctorName }}</p>
+                  <small class="text-muted">{{ surgery.surgeryDate | date:'mediumDate' }}</small>
+                  <p *ngIf="surgery.description" class="mt-2 small">{{ surgery.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-			</div>
+      </div>
+    </div>
+  </div>
+</div>

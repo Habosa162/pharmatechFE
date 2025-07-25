@@ -18,14 +18,30 @@ import { Gender } from '../../../Interfaces/all';
 export class PatientListComponent implements OnInit {
   patients: PatientDto[] = [];
   filteredPatients: PatientDto[] = [];
+  paginatedPatients: PatientDto[] = [];
   departments: DepartmentViewDTO[] = [];
+  
+  // Search and filter properties
   searchTerm: string = '';
-  selectedDepartment: number | null = null;
+  searchPhone: string = '';
+  selectedGender: string = 'all';
+  
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 0;
+  
+  // Loading and UI states
+  loading: boolean = false;
   showModal: boolean = false; 
    submitted: boolean = false;
  formErrors: { [key: string]: string } = {};
+  editMode: boolean = false;
+  editingPatientId: number | null = null;
 
 @ViewChild('patientForm') patientForm!: NgForm;
+  
   newPatient: CreatePatient = {
     name: '',
     phoneNumber: '',
@@ -45,13 +61,16 @@ export class PatientListComponent implements OnInit {
   }
 
   loadPatients(): void {
+    this.loading = true;
     this.patientService.getAllPatients().subscribe({
       next: (data) => {
         this.patients = data;
-        this.filteredPatients = data;
+        this.applyFilters();
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error fetching patients:', err);
+        this.loading = false;
       }
     });
   }
@@ -67,11 +86,174 @@ export class PatientListComponent implements OnInit {
     });
   }
 
-    search(): void {
-    this.filteredPatients = this.patients.filter(patient =>
-      patient.name.toLowerCase().includes(this.searchTerm.toLowerCase()) &&
-      patient.phoneNumber.includes(this.searchPhone)
-    );
+  // Enhanced search and filter functionality
+  applyFilters(): void {
+    let filtered = [...this.patients];
+
+    // Apply text search
+    if (this.searchTerm.trim()) {
+      filtered = filtered.filter(patient =>
+        patient.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply phone search
+    if (this.searchPhone.trim()) {
+      filtered = filtered.filter(patient =>
+        patient.phoneNumber.includes(this.searchPhone.trim())
+      );
+    }
+
+    // Apply gender filter
+    if (this.selectedGender !== 'all') {
+      const genderValue = this.selectedGender === 'male' ? Gender.male : Gender.female;
+      filtered = filtered.filter(patient => patient.gender === genderValue);
+    }
+
+    this.filteredPatients = filtered;
+    this.totalItems = filtered.length;
+    this.calculatePagination();
+    this.updatePaginatedPatients();
+  }
+
+  // Pagination methods
+  calculatePagination(): void {
+    // Ensure itemsPerPage is a number
+    const itemsPerPage = Number(this.itemsPerPage);
+    
+    if (isNaN(itemsPerPage) || itemsPerPage <= 0) {
+      console.error('Invalid itemsPerPage in calculatePagination:', this.itemsPerPage);
+      this.itemsPerPage = 10; // Default fallback
+      this.totalPages = Math.ceil(this.totalItems / 10);
+    } else {
+      this.totalPages = Math.ceil(this.totalItems / itemsPerPage);
+    }
+    
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = Math.max(1, this.totalPages);
+    }
+  }
+
+  updatePaginatedPatients(): void {
+    // Ensure itemsPerPage is a number
+    const itemsPerPage = Number(this.itemsPerPage);
+    const currentPage = Number(this.currentPage);
+    
+    if (isNaN(itemsPerPage) || itemsPerPage <= 0) {
+      console.error('Invalid itemsPerPage in updatePaginatedPatients:', this.itemsPerPage);
+      return;
+    }
+    
+    if (isNaN(currentPage) || currentPage <= 0) {
+      console.error('Invalid currentPage in updatePaginatedPatients:', this.currentPage);
+      return;
+    }
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    this.paginatedPatients = this.filteredPatients.slice(startIndex, endIndex);
+    
+    // Debug logging (can be removed in production)
+    console.log('Pagination Debug:', {
+      totalPatients: this.filteredPatients.length,
+      currentPage,
+      itemsPerPage,
+      startIndex,
+      endIndex,
+      resultCount: this.paginatedPatients.length
+    });
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedPatients();
+      this.scrollToTop();
+    }
+  }
+
+  onItemsPerPageChange(): void {
+    // Ensure itemsPerPage is a valid number
+    this.itemsPerPage = Number(this.itemsPerPage);
+    
+    if (isNaN(this.itemsPerPage) || this.itemsPerPage <= 0) {
+      console.error('Invalid items per page value:', this.itemsPerPage);
+      this.itemsPerPage = 10; // Default fallback
+    }
+    
+    this.currentPage = 1;
+    this.calculatePagination();
+    this.updatePaginatedPatients();
+  }
+
+  goToFirstPage(): void {
+    this.onPageChange(1);
+  }
+
+  goToLastPage(): void {
+    this.onPageChange(this.totalPages);
+  }
+
+  goToPreviousPage(): void {
+    this.onPageChange(this.currentPage - 1);
+  }
+
+  goToNextPage(): void {
+    this.onPageChange(this.currentPage + 1);
+  }
+
+  getPageNumbers(): number[] {
+    const pageNumbers: number[] = [];
+    const maxVisiblePages = 5;
+    
+    if (this.totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= this.totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      let startPage = Math.max(1, this.currentPage - 2);
+      let endPage = Math.min(this.totalPages, this.currentPage + 2);
+
+      if (this.currentPage <= 3) {
+        endPage = Math.min(maxVisiblePages, this.totalPages);
+      }
+      if (this.currentPage > this.totalPages - 3) {
+        startPage = Math.max(1, this.totalPages - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+      }
+    }
+    
+    return pageNumbers;
+  }
+
+  getStartIndex(): number {
+    return (this.currentPage - 1) * this.itemsPerPage + 1;
+  }
+
+  getEndIndex(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Search methods (updated to use applyFilters)
+  search(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.searchPhone = '';
+    this.selectedGender = 'all';
+    this.currentPage = 1;
+    this.applyFilters();
   }
 
   calculateAge(dateOfBirth: string): number {
@@ -87,6 +269,10 @@ export class PatientListComponent implements OnInit {
   }
 
   viewDetails(patientId: number): void {
+      this.router.navigate(['/patient-profile', patientId]);
+  }
+
+  viewAppointments(patientId: number): void {
       this.router.navigate(['/patientAppointments', patientId]);
   }
 
@@ -105,7 +291,6 @@ export class PatientListComponent implements OnInit {
     }
   }
 
-
 openModal(): void {
     this.showModal = true;
     this.submitted = false;
@@ -121,9 +306,6 @@ openModal(): void {
       this.patientForm.resetForm();
     }
   }
-
-
-  
   
   closeModal(): void {
     this.showModal = false;
@@ -175,13 +357,12 @@ openModal(): void {
     if (this.editMode && this.editingPatientId) {
       this.patientService.updatePatient(this.editingPatientId, this.newPatient).subscribe({
         next: (response) => {
-          console.log("Patient was eedited")
+          console.log("Patient was edited");
           this.loadPatients();
           this.closeModal();
         },
         error: (error) => {
-          console.log("Patient wasnt eedited")
-
+          console.log("Patient wasn't edited");
           console.error('Error updating patient:', error);
         }
       });
@@ -229,11 +410,9 @@ openModal(): void {
     return '';
   }
 
-
   getGenderName(gender: Gender): string {
     return Gender[gender].charAt(0).toUpperCase() + Gender[gender].slice(1);
   }
-
 
   validatePhoneNumber(phoneNumber: string): string {
     if (!phoneNumber) return '';
@@ -244,12 +423,4 @@ openModal(): void {
     );
     return duplicatePhone ? 'This phone number is already registered' : '';
   }
-
-  searchPhone: string = '';
-  editMode: boolean = false;
-  editingPatientId: number | null = null;
-
-
-
-
 }

@@ -6,6 +6,7 @@ import { AppointmentService } from '../../../services/appintments/appointment.se
 import { MedicalrecordService } from '../../../services/patients/medicalrecord.service';
 import { PrescriptionService } from '../../../services/patients/prescription.service';
 import { MedicationService } from '../../../services/clinics/medication.service';
+import { MedicalhistoryService } from '../../../services/patients/medicalhistory.service';
 import { Createmedicalrecord, MedicalrecordDto, Updatemedicalrecord } from '../../../Interfaces/patient/medicalrecords/medicalrecord';
 import { CreatePrescription, UpdatePrescription, AllPrescriptions, PrescriptionMedicationsDto } from '../../../Interfaces/patient/prescriptions/prescription';
 import { AppointmentDetails, AppointmentStatus } from '../../../Interfaces/all';
@@ -589,5 +590,25 @@ export class AppointmentDetailsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  viewPatientMedicalHistory() {
+    if (this.appointment && this.appointment.patientId) {
+      this.router.navigate(['/patient-medical-history', this.appointment.patientId], {
+        queryParams: { appointmentId: this.appointmentId }
+      });
+    } else {
+      this.error = 'Patient information not available';
+    }
+  }
+
+  viewPatientLabTests() {
+    if (this.appointment && this.appointment.patientId) {
+      this.router.navigate(['/patient-lab-tests', this.appointment.patientId], {
+        queryParams: { appointmentId: this.appointmentId }
+      });
+    } else {
+      this.error = 'Patient information not available';
+    }
   }
 } 

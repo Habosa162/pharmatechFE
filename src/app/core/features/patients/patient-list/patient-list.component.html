@@ -1,179 +1,389 @@
-<div class="container-fluid">
-  <!-- Page Header -->
+<div class="patients-container">
+  <!-- Header Section -->
   <div class="page-header">
-    <div class="row align-items-center">
-      <div class="col">
-        <h3 class="page-title">Patients</h3>
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-users text-primary"></i>
+          Patient Management
+        </h1>
+        <p class="page-subtitle">Manage and view all patient records</p>
       </div>
-      <div class="col-auto">
-        <a (click)="openModal()" class="btn btn-primary" >
-          <i class="fas fa-plus"></i> Add Patient
-        </a>
-      </div>
-    </div>
-  </div>
-  <!-- /Page Header -->
-
-  <!-- Search Filter -->
-  <div class="card filter-card">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-md-4">
-        <div class="form-group">
-          <input type="text" class="form-control" [(ngModel)]="searchTerm" 
-                 (input)="search()" placeholder="Search by patient name...">
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="form-group">
-          <input type="text" class="form-control" [(ngModel)]="searchPhone" 
-                 (input)="search()" placeholder="Search by phone number...">
-        </div>
+      <div class="header-actions">
+        <button class="btn btn-primary btn-add-patient" (click)="openModal()">
+          <i class="fas fa-plus"></i>
+          <span>Add New Patient</span>
+        </button>
       </div>
     </div>
   </div>
-</div>
-  <!-- /Search Filter -->
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover table-center mb-0">
-              <thead>
-                <tr>
-                  <th>Patient Name</th>
-                  <th>Age</th>
-                  <th>Gender</th>
-                  <th>Phone</th>
-                  <!-- <th>Surgeries</th>
-                  <th>Medical Records</th>
-                  <th>Appointments</th> -->
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let patient of filteredPatients">
-                  <td>
-                    <h2 class="table-avatar">
-                            <a (click)="viewDetails(patient.id)">{{ patient.name }}</a>
-                    </h2>
-                  </td>
-                  <td>{{ calculateAge(patient.dateOfBirth) }}</td>
-                  <td>{{ getGenderName(patient.gender) }}</td>
-                  <td>{{ patient.phoneNumber }}</td>
-                  <!-- <td>{{ patient.surgeryCount }}</td>
-                  <td>{{ patient.medicalRecordsCount }}</td>
-                  <td>{{ patient.appointmentsCount }}</td> -->
-                  <td>
-                    <div class="actions">
-                      <a (click)="viewDetails(patient.id)" class="btn btn-sm btn-info mr-2">
-                        <i class="fas fa-eye"></i>
-                      </a>
-                      <a (click)="editPatient(patient.id)" class="btn btn-sm btn-primary">
-                        <i class="fas fa-edit"></i>
-                      </a>
-                      <a (click)="viewDetails(patient.id)" class="btn btn-sm btn-primary">
-                        <i class="fas fa-calendar"></i>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+  <!-- Filters and Search Section -->
+  <div class="filters-section">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="fas fa-search"></i>
+          Search & Filter Patients
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Search by Name</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-user"></i>
+                </span>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  [(ngModel)]="searchTerm" 
+                  (input)="search()" 
+                  placeholder="Enter patient name...">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Search by Phone</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-phone"></i>
+                </span>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  [(ngModel)]="searchPhone" 
+                  (input)="search()" 
+                  placeholder="Enter phone number...">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="form-label">Filter by Gender</label>
+              <select class="form-select" [(ngModel)]="selectedGender" (change)="search()">
+                <option value="all">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <label class="form-label">&nbsp;</label>
+              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" title="Clear all filters">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Results Summary and Pagination Controls -->
+  <div class="results-section" *ngIf="!loading">
+    <div class="results-summary">
+      <div class="results-info">
+        <span class="results-text">
+          Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ totalItems }} patients
+        </span>
+      </div>
+      <div class="results-controls">
+        <label class="form-label me-2">Show:</label>
+        <select class="form-select form-select-sm" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+        <span class="ms-2">per page</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted">Loading patients...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patients Table -->
+  <div *ngIf="!loading" class="patients-table-section">
+    <div class="card">
+      <div class="card-body">
+        <!-- Empty State -->
+        <div *ngIf="paginatedPatients.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-user-friends"></i>
+          </div>
+          <h4 class="empty-title">No Patients Found</h4>
+          <p class="empty-description">
+            <span *ngIf="searchTerm || searchPhone || selectedGender !== 'all'">
+              No patients match your current search criteria. Try adjusting your filters.
+            </span>
+            <span *ngIf="!searchTerm && !searchPhone && selectedGender === 'all'">
+              No patients have been added yet. Click "Add New Patient" to get started.
+            </span>
+          </p>
+          <button *ngIf="searchTerm || searchPhone || selectedGender !== 'all'" 
+                  class="btn btn-primary" (click)="clearFilters()">
+            <i class="fas fa-times"></i> Clear Filters
+          </button>
+        </div>
+
+        <!-- Patients Table -->
+        <div *ngIf="paginatedPatients.length > 0" class="table-responsive">
+          <table class="table table-hover patients-table">
+            <thead>
+              <tr>
+                <th class="patient-col">
+                  <i class="fas fa-user me-2"></i>Patient
+                </th>
+                <th class="age-col">
+                  <i class="fas fa-birthday-cake me-2"></i>Age
+                </th>
+                <th class="gender-col">
+                  <i class="fas fa-venus-mars me-2"></i>Gender
+                </th>
+                <th class="phone-col">
+                  <i class="fas fa-phone me-2"></i>Phone
+                </th>
+                <th class="actions-col">
+                  <i class="fas fa-cogs me-2"></i>Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let patient of paginatedPatients; let i = index" class="patient-row">
+                <td class="patient-info">
+                  <div class="patient-avatar">
+                    <div class="avatar-circle">
+                      <i class="fas fa-user"></i>
+                    </div>
+                  </div>
+                  <div class="patient-details">
+                    <div class="patient-name">{{ patient.name }}</div>
+                    <div class="patient-id">ID: PT{{ patient.id.toString().padStart(4, '0') }}</div>
+                  </div>
+                </td>
+                <td class="age-info">
+                  <span class="age-badge">{{ calculateAge(patient.dateOfBirth) }}</span>
+                </td>
+                <td class="gender-info">
+                  <span class="gender-badge" [class]="'gender-' + getGenderName(patient.gender).toLowerCase()">
+                    <i class="fas" [class]="patient.gender === 0 ? 'fa-mars' : 'fa-venus'"></i>
+                    {{ getGenderName(patient.gender) }}
+                  </span>
+                </td>
+                <td class="phone-info">
+                  <span class="phone-number">{{ patient.phoneNumber }}</span>
+                </td>
+                <td class="actions-info">
+                  <div class="action-buttons">
+                    <button 
+                      class="btn btn-sm btn-outline-info" 
+                      (click)="viewDetails(patient.id)" 
+                      title="View Patient Profile">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-primary" 
+                      (click)="editPatient(patient.id)" 
+                      title="Edit Patient">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-success" 
+                      (click)="viewAppointments(patient.id)" 
+                      title="View Appointments">
+                      <i class="fas fa-calendar"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <nav *ngIf="!loading && totalPages > 1" class="pagination-nav" aria-label="Patients pagination">
+    <div class="pagination-container">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </div>
+      
+      <ul class="pagination">
+        <!-- First Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToFirstPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+        </li>
+        
+        <!-- Previous Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-angle-left"></i>
+          </button>
+        </li>
+        
+        <!-- Page Numbers -->
+        <li *ngFor="let pageNum of getPageNumbers()" 
+            class="page-item" 
+            [class.active]="pageNum === currentPage">
+          <button class="page-link" (click)="onPageChange(pageNum)">
+            {{ pageNum }}
+          </button>
+        </li>
+        
+        <!-- Next Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-right"></i>
+          </button>
+        </li>
+        
+        <!-- Last Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
 </div>
 
-
-<div class="modal" [class.show]="showModal" *ngIf="showModal">
-  <div class="modal-dialog">
+<!-- Modal (Enhanced) -->
+<div class="modal-overlay" [class.show]="showModal" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
-      <h5 class="modal-title">{{ editMode ? 'Edit Patient' : 'Add New Patient' }}</h5>
-      <button type="button" class="close" (click)="closeModal()">
-       <span>&times;</span>
-      </button>
-    </div>
-     
+        <h5 class="modal-title">
+          <i class="fas" [class]="editMode ? 'fa-edit' : 'fa-plus'"></i>
+          {{ editMode ? 'Edit Patient' : 'Add New Patient' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
 
       <div class="modal-body">
-  <form #patientForm="ngForm" (ngSubmit)="createPatient()">
-    <div class="form-group">
-      <label for="name">Name</label>
-      <input type="text" 
-             class="form-control" 
-             [class.is-invalid]="(submitted || nameInput.touched) && nameInput.invalid"
-             id="name"
-             [(ngModel)]="newPatient.name" 
-             name="name" 
-             #nameInput="ngModel"
-             pattern="^[A-Za-z\s]+$"
-             required>
-      <div class="invalid-feedback" *ngIf="(submitted || nameInput.touched) && nameInput.invalid">
-        {{ getErrorMessage('Name', nameInput) }}
+        <form #patientForm="ngForm" (ngSubmit)="createPatient()">
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="form-group">
+                <label for="name" class="form-label">
+                  <i class="fas fa-user me-2"></i>Full Name
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  [class.is-invalid]="(submitted || nameInput.touched) && nameInput.invalid"
+                  id="name"
+                  [(ngModel)]="newPatient.name" 
+                  name="name" 
+                  #nameInput="ngModel"
+                  pattern="^[A-Za-z\s]+$"
+                  placeholder="Enter patient's full name"
+                  required>
+                <div class="invalid-feedback" *ngIf="(submitted || nameInput.touched) && nameInput.invalid">
+                  {{ getErrorMessage('Name', nameInput) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="phoneNumber" class="form-label">
+                  <i class="fas fa-phone me-2"></i>Phone Number
+                </label>
+                <input 
+                  type="tel" 
+                  class="form-control" 
+                  [class.is-invalid]="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))"
+                  id="phoneNumber"
+                  [(ngModel)]="newPatient.phoneNumber" 
+                  name="phoneNumber" 
+                  #phoneInput="ngModel"
+                  pattern="^\d{10,12}$"
+                  placeholder="Enter phone number"
+                  required>
+                <div class="invalid-feedback" *ngIf="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))">
+                  {{ phoneInput.invalid ? getErrorMessage('Phone Number', phoneInput) : validatePhoneNumber(newPatient.phoneNumber) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="dateofBirth" class="form-label">
+                  <i class="fas fa-calendar me-2"></i>Date of Birth
+                </label>
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  [class.is-invalid]="(submitted || dobInput.touched) && dobInput.invalid"
+                  id="dateofBirth"
+                  [(ngModel)]="newPatient.dateofBirth" 
+                  name="dateofBirth" 
+                  #dobInput="ngModel"
+                  required>
+                <div class="invalid-feedback" *ngIf="(submitted || dobInput.touched) && dobInput.invalid">
+                  {{ getErrorMessage('Date of Birth', dobInput) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="form-group">
+                <label for="gender" class="form-label">
+                  <i class="fas fa-venus-mars me-2"></i>Gender
+                </label>
+                <select 
+                  class="form-select" 
+                  [class.is-invalid]="(submitted || genderInput.touched) && genderInput.invalid"
+                  id="gender"
+                  [(ngModel)]="newPatient.gender" 
+                  name="gender" 
+                  #genderInput="ngModel"
+                  required>
+                  <option [ngValue]="0">Male</option>
+                  <option [ngValue]="1">Female</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="(submitted || genderInput.touched) && genderInput.invalid">
+                  {{ getErrorMessage('Gender', genderInput) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">
+              <i class="fas fa-times me-2"></i>Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas" [class]="editMode ? 'fa-save' : 'fa-plus'" class="me-2"></i>
+              {{ editMode ? 'Update Patient' : 'Add Patient' }}
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
-
-    <div class="form-group">
-  <label for="phoneNumber">Phone Number</label>
-  <input type="tel" 
-         class="form-control" 
-         [class.is-invalid]="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))"
-         id="phoneNumber"
-         [(ngModel)]="newPatient.phoneNumber" 
-         name="phoneNumber" 
-         #phoneInput="ngModel"
-         pattern="^\d{10,12}$"
-         required>
-  <div class="invalid-feedback" *ngIf="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))">
-    {{ phoneInput.invalid ? getErrorMessage('Phone Number', phoneInput) : validatePhoneNumber(newPatient.phoneNumber) }}
-  </div>
-</div>
-
-    <div class="form-group">
-      <label for="dateofBirth">Date of Birth</label>
-      <input type="date" 
-             class="form-control" 
-             [class.is-invalid]="(submitted || dobInput.touched) && dobInput.invalid"
-             id="dateofBirth"
-             [(ngModel)]="newPatient.dateofBirth" 
-             name="dateofBirth" 
-             #dobInput="ngModel"
-             required>
-      <div class="invalid-feedback" *ngIf="(submitted || dobInput.touched) && dobInput.invalid">
-        {{ getErrorMessage('Date of Birth', dobInput) }}
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="gender">Gender</label>
-      <select class="form-control" 
-              [class.is-invalid]="(submitted || genderInput.touched) && genderInput.invalid"
-              id="gender"
-              [(ngModel)]="newPatient.gender" 
-              name="gender" 
-              #genderInput="ngModel"
-              required>
-        <option [ngValue]="0">Male</option>
-        <option [ngValue]="1">Female</option>
-      </select>
-      <div class="invalid-feedback" *ngIf="(submitted || genderInput.touched) && genderInput.invalid">
-        {{ getErrorMessage('Gender', genderInput) }}
-      </div>
-    </div>
-
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
-      <button type="submit" class="btn btn-primary">Save Patient</button>
-    </div>
-  </form>
-</div>
-     
     </div>
   </div>
 </div>

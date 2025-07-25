@@ -1,0 +1,742 @@
+/* Prescription Component Styles */
+.content {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0;
+}
+
+.header-actions .btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Filter Section Styles */
+.filter-group {
+  margin-bottom: 15px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.form-select {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  padding: 10px 15px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-select:focus {
+  border-color: #6f42c1;
+  box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+}
+
+.filter-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-stats .stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #6f42c1;
+}
+
+.filter-stats .stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.filter-stats .stat-value {
+  font-size: 0.9rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+}
+
+.filter-actions .btn {
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.filter-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filter-actions .btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+/* Badge Styles */
+.badge {
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.bg-purple {
+  background-color: #6f42c1 !important;
+}
+
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 15px 20px;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-radius: 0 0 12px 12px !important;
+  padding: 15px 20px;
+}
+
+/* Year Section */
+.year-section {
+  margin-bottom: 40px;
+}
+
+.year-header-container {
+  margin-bottom: 20px;
+}
+
+.year-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Year Pagination Controls */
+.year-pagination-controls {
+  margin-bottom: 15px;
+}
+
+.pagination-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.pagination-info .pagination-text {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.items-per-page-year {
+  display: flex;
+  align-items: center;
+}
+
+.items-per-page-year label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.items-per-page-year .form-select-sm {
+  min-width: 60px;
+  font-size: 0.9rem;
+}
+
+/* Year Pagination Navigation */
+.year-pagination-nav {
+  margin: 25px 0;
+  padding: 15px 0;
+  border-top: 1px solid #e9ecef;
+}
+
+.year-pagination-nav .pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.year-pagination-nav .pagination-info {
+  text-align: center;
+}
+
+.year-pagination-nav .pagination-text {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.year-pagination-nav .pagination {
+  margin-bottom: 0;
+  gap: 3px;
+}
+
+.year-pagination-nav .page-item {
+  margin: 0;
+}
+
+.year-pagination-nav .page-link {
+  border: 1px solid #e9ecef;
+  border-radius: 6px !important;
+  color: #495057;
+  font-weight: 500;
+  padding: 6px 10px;
+  margin: 0 1px;
+  transition: all 0.3s ease;
+  background-color: white;
+  font-size: 0.85rem;
+}
+
+.year-pagination-nav .page-link:hover {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.year-pagination-nav .page-link:focus {
+  box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+}
+
+.year-pagination-nav .page-item.active .page-link {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+  color: white;
+  font-weight: 600;
+}
+
+.year-pagination-nav .page-item.disabled .page-link {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.year-pagination-nav .page-item.disabled .page-link:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+  color: #adb5bd;
+  transform: none;
+}
+
+/* Year Pagination Icons */
+.year-pagination-nav .page-link i {
+  font-size: 0.8rem;
+}
+
+/* Prescription Card */
+.prescription-card {
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.prescription-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Prescription Info */
+.prescription-info {
+  font-size: 0.9rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #6c757d;
+  min-width: 80px;
+  margin-right: 10px;
+}
+
+.info-value {
+  color: #2c3e50;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+}
+
+.diagnosis-text {
+  font-style: italic;
+  color: #495057;
+}
+
+/* Medications Section */
+.medications-section {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #e9ecef;
+}
+
+.medications-label {
+  font-weight: 600;
+  color: #495057;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.medications-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.medication-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid #6f42c1;
+}
+
+.medication-item:last-child {
+  margin-bottom: 0;
+}
+
+.medication-name {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.medication-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 8px;
+}
+
+.detail-item {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.medication-notes {
+  font-size: 0.85rem;
+  color: #495057;
+  font-style: italic;
+  background: #e9ecef;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+/* Timeline Styles */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #6f42c1, #e9ecef);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  padding-left: 40px;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -27px;
+  top: 5px;
+  width: 30px;
+  height: 30px;
+  background: #6f42c1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 10px rgba(111, 66, 193, 0.3);
+}
+
+.timeline-content {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #6f42c1;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.timeline-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.timeline-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.timeline-body p {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.medication-names {
+  margin-top: 10px;
+}
+
+.medication-tag {
+  display: inline-block;
+  background: #e9ecef;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+/* Summary Stats */
+.summary-stat {
+  padding: 20px;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.summary-stat:hover {
+  transform: translateY(-2px);
+}
+
+.summary-stat .stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.summary-stat .stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #520dc2 100%);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #adb5bd 100%);
+  border: none;
+}
+
+.btn-outline-primary {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background: #007bff;
+  border-color: #007bff;
+  transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background: #6c757d;
+  border-color: #6c757d;
+}
+
+/* Loading and Error Styles */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+.alert {
+  border: none;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+/* Empty State */
+.fa-4x {
+  font-size: 4rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    margin-top: 10px;
+  }
+
+  .filter-stats {
+    margin-bottom: 15px;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+  }
+
+  /* Year pagination responsive */
+  .pagination-info-row {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .items-per-page-year {
+    justify-content: center;
+  }
+
+  .year-pagination-nav .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .year-pagination-nav .page-link {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    margin: 0 1px;
+  }
+  
+  .medication-details {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .summary-stat .stat-number {
+    font-size: 2rem;
+  }
+
+  .timeline-item {
+    padding-left: 30px;
+  }
+
+  .timeline-marker {
+    left: -22px;
+    width: 25px;
+    height: 25px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .content {
+    padding: 10px 0;
+  }
+  
+  .card-body {
+    padding: 15px;
+  }
+  
+  .card-header {
+    padding: 15px;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .info-value {
+    text-align: left;
+    margin-top: 5px;
+  }
+
+  .filter-stats .stat-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+  }
+
+  /* Year pagination mobile */
+  .pagination-info-row {
+    padding: 8px 10px;
+  }
+
+  .pagination-info .pagination-text {
+    font-size: 0.8rem;
+  }
+
+  .items-per-page-year label {
+    font-size: 0.8rem;
+  }
+
+  .items-per-page-year .form-select-sm {
+    font-size: 0.8rem;
+    min-width: 50px;
+  }
+
+  .year-pagination-nav .pagination-text {
+    font-size: 0.75rem;
+  }
+
+  .year-pagination-nav .page-link {
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .year-pagination-nav .page-link i {
+    font-size: 0.7rem;
+  }
+
+  .timeline {
+    padding-left: 20px;
+  }
+
+  .timeline-item {
+    padding-left: 25px;
+  }
+
+  .timeline-marker {
+    left: -17px;
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+  }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prescription-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.prescription-card:nth-child(1) { animation-delay: 0.1s; }
+.prescription-card:nth-child(2) { animation-delay: 0.2s; }
+.prescription-card:nth-child(3) { animation-delay: 0.3s; }
+
+.timeline-item {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.timeline-item:nth-child(1) { animation-delay: 0.1s; }
+.timeline-item:nth-child(2) { animation-delay: 0.2s; }
+.timeline-item:nth-child(3) { animation-delay: 0.3s; }
+.timeline-item:nth-child(4) { animation-delay: 0.4s; }
+.timeline-item:nth-child(5) { animation-delay: 0.5s; } 
+.timeline-item:nth-child(5) { animation-delay: 1s; } 

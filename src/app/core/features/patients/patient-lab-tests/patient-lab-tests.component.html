@@ -1,0 +1,234 @@
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>
+          <i class="fas fa-flask text-primary"></i>
+          Lab Tests - {{ patient?.name || 'Loading...' }}
+        </h2>
+        <button class="btn btn-secondary" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> 
+          {{ cameFromAppointment ? 'Back to Appointment' : 'Back to Patients' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status"></div>
+    <span class="ms-2">Loading...</span>
+  </div>
+
+  <!-- Patient Info Card -->
+  <div class="row mb-4" *ngIf="patient">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-user text-info"></i>
+            Patient Information
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <strong>Name:</strong> {{ patient.name }}
+            </div>
+            <div class="col-md-3">
+              <strong>Phone:</strong> {{ patient.phoneNumber }}
+            </div>
+            <div class="col-md-3">
+              <strong>Age:</strong> {{ calculateAge(patient.dateOfBirth) }} years old
+            </div>
+            <div class="col-md-3">
+              <strong>Gender:</strong> {{ patient.gender === 0 ? 'Male' : 'Female' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lab Test Form -->
+  <div class="row mb-4" *ngIf="showAddForm">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-plus-circle text-success"></i>
+            {{ editingLabTest ? 'Edit Lab Test' : 'Add New Lab Test' }}
+          </h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="labTestForm" (ngSubmit)="saveLabTest()">
+            <!-- Lab Test Selection -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="fas fa-flask text-primary"></i>
+                Lab Test *
+              </label>
+              
+              <!-- Show dropdown when creating -->
+              <select 
+                *ngIf="!editingLabTest"
+                class="form-control" 
+                formControlName="labTestId">
+                <option value="">-- Select Lab Test --</option>
+                <option 
+                  *ngFor="let labTest of availableLabTests" 
+                  [value]="labTest.id">
+                  {{ labTest.name }} 
+                </option>
+              </select>
+              
+              <!-- Show readonly field when editing -->
+              <div *ngIf="editingLabTest" class="form-control readonly-field">
+                <strong>{{ editingLabTest?.labTestName }}</strong>
+              </div>
+              
+              <small class="form-text text-muted" *ngIf="editingLabTest">
+                Lab test type cannot be changed when editing
+              </small>
+            </div>
+
+            <!-- Result -->
+            <div class="mb-3" *ngIf="editingLabTest">
+              <label class="form-label">
+                <i class="fas fa-clipboard-list text-success"></i>
+                Test Result *
+              </label>
+              <textarea 
+                class="form-control" 
+                rows="3" 
+                formControlName="result"
+                placeholder="Enter test result..."></textarea>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex gap-2">
+              <button 
+                type="submit" 
+                class="btn btn-success"
+                [disabled]="labTestForm.invalid || loading">
+                <i class="fas fa-save"></i> 
+                {{ editingLabTest ? 'Update' : 'Add' }} Lab Test
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                (click)="cancelForm()">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lab Tests List -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-list text-primary"></i>
+              Patient Lab Tests
+            </h5>
+            <button 
+              class="btn btn-primary" 
+              (click)="showAddLabTestForm()"
+              *ngIf="!showAddForm">
+              <i class="fas fa-plus"></i> Add New Lab Test
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Lab Tests Table -->
+          <div *ngIf="patientLabTests.length > 0" class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Patient</th>
+                  <th>Lab Test Name</th>
+                  <th>Test Date</th>
+                  <th>Result</th>
+                  <th>Status</th>
+                  <th>Reference</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let labTest of patientLabTests; let i = index">
+                  <td>{{ labTest.patientName }}</td>
+
+                  <td>
+                    <strong>{{ labTest.labTestName }}</strong>
+                  </td>
+                 
+                  <td>{{ labTest.testDate | date:'short' }}</td>
+                  <td>
+                    <span *ngIf="labTest.result && labTest.result.trim() !== ''" 
+                          class="text-success">
+                      {{ labTest.result | slice:0:50 }}{{ labTest.result.length > 50 ? '...' : '' }}
+                    </span>
+                    <span *ngIf="!labTest.result || labTest.result.trim() === ''" 
+                          class="text-muted">
+                      <i class="fas fa-clock"></i> Pending result
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class]="getStatusBadgeClass(labTest.status)">
+                      {{ getStatusText(labTest.status) }}
+                    </span>
+                  </td>
+                   <td>
+                    <span class="text-muted">{{ getLabTestReference(labTest.labTestName) }}</span>
+                  </td>
+                  <td>
+                    <button 
+                      class="btn btn-sm btn-outline-primary me-1" 
+                      (click)="editLabTest(labTest, i + 1)"
+                      title="Edit Result">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-danger" 
+                      (click)="deleteLabTest(i + 1)"
+                      title="Delete Lab Test">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No Lab Tests -->
+          <div *ngIf="patientLabTests.length === 0 && !loading" class="text-center text-muted py-4">
+            <i class="fas fa-flask fa-3x mb-3"></i>
+            <p>No lab tests found for this patient.</p>
+            <button 
+              class="btn btn-primary" 
+              (click)="showAddLabTestForm()">
+              <i class="fas fa-plus"></i> Add First Lab Test
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

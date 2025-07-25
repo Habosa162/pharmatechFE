@@ -26,6 +26,11 @@ import { OwnerLayoutComponent } from './core/layouts/owner-layout/owner-layout.c
 import { PrescriptionService } from './core/services/patients/prescription.service';
 import { PatientPrescriptionComponent } from './core/features/patients/PatientPrescriptions/patient-prescription/patient-prescription.component';
 import { AppointmentDetailsComponent } from './core/features/appointments/appointment-details/appointment-details.component';
+import { MedicalHistoryComponent } from './core/features/patients/medical-history/medical-history.component';
+import { PatientLabTestsComponent } from './core/features/patients/patient-lab-tests/patient-lab-tests.component';
+import { PatientMedicalRecordsComponent } from './core/features/patients/patient-medical-records/patient-medical-records.component';
+import { PatientSurgeriesComponent } from './core/features/patients/patient-surgeries/patient-surgeries.component';
+import { PatientPrescriptionsComponent } from './core/features/patients/patient-prescriptions/patient-prescriptions.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -57,7 +62,7 @@ export const routes: Routes = [
       { path: 'inventoryitmes', component: InventoryItemsComponent },
       { path: 'inventorytransactions', component: InventoryTransactionsComponent },
       { path: 'admin-data-management', component: AdminDataManagementComponent },
-      {path:'patient-profile/:id', component: PatientProfileComponent},
+      // {path:'patient-medical-history/:patientId', component: MedicalHistoryComponent},
     ]
   },
 
@@ -105,6 +110,12 @@ export const routes: Routes = [
   { path: 'prescriptions', component: PatientPrescriptionComponent },
   { path: 'appointment-details/:id', component: AppointmentDetailsComponent },
 
+  {path:'patient-medical-history/:id', component: MedicalHistoryComponent},
+  {path:'patient-lab-tests/:id', component: PatientLabTestsComponent},
+  {path:'patient-medical-records/:id', component: PatientMedicalRecordsComponent},
+  {path:'patient-surgeries/:id', component: PatientSurgeriesComponent},
+  {path:'patient-prescriptions/:id', component: PatientPrescriptionsComponent},
+   {path:'patient-profile/:id', component: PatientProfileComponent},
 
   { path: '**', component: NotFoundComponent },
 ];

@@ -1,0 +1,228 @@
+<div class="content">
+  <div class="container-fluid">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="page-title">
+          <i class="fas fa-file-medical text-success"></i>
+          Medical Records
+        </h2>
+        <p class="text-muted mb-0" *ngIf="patient">
+          Patient: <strong>{{ patient.name }}</strong> (ID: PT{{ patient.id.toString().padStart(4, '0') }})
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary me-2" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i> Back to Profile
+        </button>
+        <button class="btn btn-secondary" (click)="goToPatientList()">
+          <i class="fas fa-list"></i> Patient List
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading medical records...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-triangle"></i> {{ error }}
+      <button class="btn btn-secondary ms-2" (click)="loadMedicalRecords()">
+        <i class="fas fa-redo"></i> Retry
+      </button>
+    </div>
+
+    <!-- Medical Records Content -->
+    <div *ngIf="!loading && !error">
+      
+      <!-- No Records State -->
+      <div *ngIf="medicalRecords.length === 0" class="card">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-file-medical fa-4x text-muted mb-3"></i>
+          <h4 class="text-muted">No Medical Records Found</h4>
+          <p class="text-muted">This patient doesn't have any medical records yet.</p>
+          <button class="btn btn-primary" (click)="goBack()">
+            <i class="fas fa-arrow-left"></i> Back to Profile
+          </button>
+        </div>
+      </div>
+
+      <!-- Records Content (when records exist) -->
+      <div *ngIf="medicalRecords.length > 0">
+        
+        <!-- Records Info and Pagination Info -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="records-info">
+            <p class="mb-0 text-muted">
+              Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ totalItems }} records
+            </p>
+          </div>
+          <div class="items-per-page" *ngIf="totalItems > 6">
+            <label class="form-label mb-0 me-2">Records per page:</label>
+            <select class="form-select form-select-sm d-inline-block w-auto" 
+                    [(ngModel)]="itemsPerPage" 
+                    (change)="calculatePagination(); currentPage = 1; updatePaginatedRecords()">
+              <option value="6">6</option>
+              <option value="12">12</option>
+              <option value="18">18</option>
+              <option value="24">24</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Records List Section -->
+        <div class="records-section">
+          <div class="row">
+            <div *ngFor="let record of paginatedRecords" class="col-md-6 col-lg-4 mb-4">
+              <div class="card medical-record-card h-100">
+                <div class="card-header">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="card-title mb-0">
+                      <i class="fas fa-calendar-alt text-success"></i>
+                      Visit Record
+                    </h6>
+                    <small class="text-muted">ID: {{ record.id }}</small>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="record-info">
+                    <div class="info-item mb-3">
+                      <label class="info-label">Visit Date:</label>
+                      <span class="info-value">{{ record.visitDate | date:'fullDate' }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                      <label class="info-label">Time:</label>
+                      <span class="info-value">{{ record.visitDate | date:'shortTime' }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                      <label class="info-label">Doctor:</label>
+                      <span class="info-value">Dr. {{ record.doctorName }}</span>
+                    </div>
+                    
+                    <div class="info-item mb-3">
+                      <label class="info-label">Patient:</label>
+                      <span class="info-value">{{ record.patientName }}</span>
+                    </div>
+                    
+                    <div class="stats-row">
+                      <div class="stat-item">
+                        <span class="stat-number">{{ record.prescriptionsCount }}</span>
+                        <span class="stat-label">Prescriptions</span>
+                      </div>
+                      <div class="stat-item">
+                        <span class="stat-number">{{ record.labtestsCount }}</span>
+                        <span class="stat-label">Lab Tests</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <button class="btn btn-success btn-sm w-100" (click)="viewRecordDetails(record.id)">
+                    <i class="fas fa-eye"></i> View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <nav *ngIf="totalPages > 1" class="pagination-nav" aria-label="Medical Records Pagination">
+          <div class="pagination-container">
+            <div class="pagination-info">
+              <span class="pagination-text">
+                Page {{ currentPage }} of {{ totalPages }}
+              </span>
+            </div>
+            
+            <ul class="pagination justify-content-center">
+              <!-- First Page -->
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="goToFirstPage()" [disabled]="currentPage === 1">
+                  <i class="fas fa-angle-double-left"></i>
+                </button>
+              </li>
+              
+              <!-- Previous Page -->
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+                  <i class="fas fa-angle-left"></i>
+                </button>
+              </li>
+              
+              <!-- Page Numbers -->
+              <li *ngFor="let pageNum of getPageNumbers()" 
+                  class="page-item" 
+                  [class.active]="pageNum === currentPage">
+                <button class="page-link" (click)="onPageChange(pageNum)">
+                  {{ pageNum }}
+                </button>
+              </li>
+              
+              <!-- Next Page -->
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+                  <i class="fas fa-angle-right"></i>
+                </button>
+              </li>
+              
+              <!-- Last Page -->
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
+                  <i class="fas fa-angle-double-right"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Summary Card -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <h6 class="card-title mb-0">
+              <i class="fas fa-chart-bar text-info"></i>
+              Summary
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-md-3">
+                <div class="summary-stat">
+                  <h4 class="stat-number text-success">{{ medicalRecords.length }}</h4>
+                  <p class="stat-label">Total Records</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="summary-stat">
+                  <h4 class="stat-number text-primary">{{ getTotalPrescriptions() }}</h4>
+                  <p class="stat-label">Total Prescriptions</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="summary-stat">
+                  <h4 class="stat-number text-warning">{{ getTotalLabTests() }}</h4>
+                  <p class="stat-label">Total Lab Tests</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="summary-stat">
+                  <h4 class="stat-number text-info">{{ getDateRange() }}</h4>
+                  <p class="stat-label">Date Range</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div> 

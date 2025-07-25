@@ -1,0 +1,455 @@
+<div class="medical-history-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-history text-primary"></i>
+          Medical History
+        </h1>
+        <p class="page-subtitle" *ngIf="patient">
+          <strong>{{ patient.name }}</strong> (ID: PT{{ patient.id.toString().padStart(4, '0') }})
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-secondary me-2" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          <span>{{ cameFromAppointment ? 'Back to Appointment' : 'Back to Patients' }}</span>
+        </button>
+        <button class="btn btn-info me-2" (click)="goToPatientProfile()">
+          <i class="fas fa-user"></i>
+          <span>Patient Profile</span>
+        </button>
+        <button class="btn btn-primary" (click)="showAddMedicalHistoryForm()" *ngIf="!showAddForm">
+          <i class="fas fa-plus"></i>
+          <span>Add Medical History</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Patient Info Card -->
+  <div class="patient-info-section" *ngIf="patient">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="fas fa-user"></i>
+          Patient Information
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="patient-info-grid">
+          <div class="info-item">
+            <span class="info-label">Name:</span>
+            <span class="info-value">{{ patient.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ patient.phoneNumber }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Age:</span>
+            <span class="info-value">{{ calculateAge(patient.dateOfBirth) }} years old</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Gender:</span>
+            <span class="info-value">{{ patient.gender === 0 ? 'Male' : 'Female' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medical History Form -->
+  <div class="form-section" *ngIf="showAddForm">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="fas fa-plus-circle"></i>
+          {{ editingHistory ? 'Edit Medical History' : 'Add New Medical History' }}
+        </h6>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="medicalHistoryForm" (ngSubmit)="saveMedicalHistory()" class="medical-history-form">
+          
+          <!-- Allergies Section -->
+          <div class="form-section-group">
+            <div class="section-header">
+              <label class="form-label">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+                Allergies
+              </label>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addAllergy()">
+                <i class="fas fa-plus"></i> Add Allergy
+              </button>
+            </div>
+            <div formArrayName="allergies" class="form-array-container">
+              <div *ngFor="let allergy of allergiesFormArray.controls; let i = index" class="input-group mb-2">
+                <input class="form-control" [formControlName]="i" placeholder="Enter allergy">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger" 
+                  (click)="removeAllergy(i)"
+                  *ngIf="allergiesFormArray.length > 1">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chronic Diseases Section -->
+          <div class="form-section-group">
+            <div class="section-header">
+              <label class="form-label">
+                <i class="fas fa-heartbeat text-danger"></i>
+                Chronic Diseases
+              </label>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addChronicDisease()">
+                <i class="fas fa-plus"></i> Add Disease
+              </button>
+            </div>
+            <div formArrayName="chronicDiseases" class="form-array-container">
+              <div *ngFor="let disease of chronicDiseasesFormArray.controls; let i = index" class="input-group mb-2">
+                <input class="form-control" [formControlName]="i" placeholder="Enter chronic disease">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger" 
+                  (click)="removeChronicDisease(i)"
+                  *ngIf="chronicDiseasesFormArray.length > 1">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Surgeries Section -->
+          <div class="form-section-group">
+            <div class="section-header">
+              <label class="form-label">
+                <i class="fas fa-cut text-info"></i>
+                Previous Surgeries
+              </label>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addSurgery()">
+                <i class="fas fa-plus"></i> Add Surgery
+              </button>
+            </div>
+            <div formArrayName="surgeries" class="form-array-container">
+              <div *ngFor="let surgery of surgeriesFormArray.controls; let i = index" class="input-group mb-2">
+                <input class="form-control" [formControlName]="i" placeholder="Enter surgery details">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger" 
+                  (click)="removeSurgery(i)"
+                  *ngIf="surgeriesFormArray.length > 1">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medications Section -->
+          <div class="form-section-group">
+            <div class="section-header">
+              <label class="form-label">
+                <i class="fas fa-pills text-success"></i>
+                Current Medications
+              </label>
+              <button type="button" class="btn btn-sm btn-outline-primary" (click)="addMedication()">
+                <i class="fas fa-plus"></i> Add Medication
+              </button>
+            </div>
+            <div formArrayName="medications" class="form-array-container">
+              <div *ngFor="let medication of medicationsFormArray.controls; let i = index" class="input-group mb-2">
+                <input class="form-control" [formControlName]="i" placeholder="Enter medication">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger" 
+                  (click)="removeMedication(i)"
+                  *ngIf="medicationsFormArray.length > 1">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Family History -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-users text-primary"></i>
+              Family History *
+            </label>
+            <textarea 
+              class="form-control" 
+              rows="3" 
+              formControlName="familyHistory"
+              placeholder="Enter family medical history..."></textarea>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-sticky-note text-secondary"></i>
+              Notes *
+            </label>
+            <textarea 
+              class="form-control" 
+              rows="4" 
+              formControlName="notes"
+              placeholder="Enter additional notes..."></textarea>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="medicalHistoryForm.invalid || loading">
+              <i class="fas fa-save"></i> 
+              {{ editingHistory ? 'Update' : 'Save' }} Medical History
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              (click)="cancelForm()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search Section -->
+  <div class="filters-section" *ngIf="!showAddForm">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="fas fa-search"></i>
+          Search & Filter Medical History
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="form-label">Search</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-search"></i>
+                </span>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  [(ngModel)]="searchTerm" 
+                  (input)="search()" 
+                  placeholder="Search in history, notes, allergies, diseases...">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Filter by Date Range</label>
+              <select class="form-select" [(ngModel)]="selectedDateRange" (change)="search()">
+                <option value="all">All Time</option>
+                <option value="30days">Last 30 Days</option>
+                <option value="6months">Last 6 Months</option>
+                <option value="1year">Last Year</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label class="form-label">&nbsp;</label>
+              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" title="Clear all filters">
+                <i class="fas fa-times"></i>
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Summary and Pagination Controls -->
+  <div class="results-section" *ngIf="!loading && !showAddForm">
+    <div class="results-summary">
+      <div class="results-info">
+        <span class="results-text">
+          Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ totalItems }} medical history records
+        </span>
+      </div>
+      <div class="results-controls">
+        <label class="form-label me-2">Show:</label>
+        <select class="form-select form-select-sm" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option [value]="3">3</option>
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+        </select>
+        <span class="ms-2">per page</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted">Loading medical history...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medical Histories List -->
+  <div *ngIf="!loading && !showAddForm" class="histories-section">
+    <div class="card">
+      <div class="card-body">
+        <!-- Empty State -->
+        <div *ngIf="paginatedHistories.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-history"></i>
+          </div>
+          <h4 class="empty-title">No Medical History Found</h4>
+          <p class="empty-description">
+            <span *ngIf="searchTerm || selectedDateRange !== 'all'">
+              No medical history records match your current search criteria. Try adjusting your filters.
+            </span>
+            <span *ngIf="!searchTerm && selectedDateRange === 'all'">
+              This patient doesn't have any medical history records yet. Click "Add Medical History" to create the first record.
+            </span>
+          </p>
+          <button *ngIf="searchTerm || selectedDateRange !== 'all'" 
+                  class="btn btn-primary me-2" (click)="clearFilters()">
+            <i class="fas fa-times"></i> Clear Filters
+          </button>
+          <button class="btn btn-success" (click)="showAddMedicalHistoryForm()">
+            <i class="fas fa-plus"></i> Add Medical History
+          </button>
+        </div>
+
+        <!-- Medical History Cards -->
+        <div *ngIf="paginatedHistories.length > 0" class="history-cards">
+          <div *ngFor="let history of paginatedHistories; let i = index" class="history-card">
+            <div class="card-header">
+              <div class="history-date">
+                <i class="fas fa-calendar-alt"></i>
+                {{ history.recordDate | date:'MMM dd, yyyy' }}
+              </div>
+              <div class="history-actions">
+                <button 
+                  class="btn btn-sm btn-outline-primary" 
+                  (click)="editMedicalHistory(history)">
+                  <i class="fas fa-edit"></i>
+                  Edit
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="history-content">
+                <!-- Family History -->
+                <div class="content-section" *ngIf="history.familyHistory">
+                  <span class="section-label">Family History:</span>
+                  <span class="section-text">{{ history.familyHistory }}</span>
+                </div>
+
+                <!-- Allergies -->
+                <div class="content-section" *ngIf="history.allergies && history.allergies.length > 0">
+                  <span class="section-label">Allergies:</span>
+                  <span class="section-text">{{ history.allergies.join(', ') }}</span>
+                </div>
+
+                <!-- Chronic Diseases -->
+                <div class="content-section" *ngIf="history.chronicDiseases && history.chronicDiseases.length > 0">
+                  <span class="section-label">Chronic Diseases:</span>
+                  <span class="section-text">{{ history.chronicDiseases.join(', ') }}</span>
+                </div>
+
+                <!-- Surgeries -->
+                <div class="content-section" *ngIf="history.surgeries && history.surgeries.length > 0">
+                  <span class="section-label">Previous Surgeries:</span>
+                  <span class="section-text">{{ history.surgeries.join(', ') }}</span>
+                </div>
+
+                <!-- Medications -->
+                <div class="content-section" *ngIf="history.medications && history.medications.length > 0">
+                  <span class="section-label">Current Medications:</span>
+                  <span class="section-text">{{ history.medications.join(', ') }}</span>
+                </div>
+
+                <!-- Notes -->
+                <div class="content-section" *ngIf="history.notes">
+                  <span class="section-label">Notes:</span>
+                  <span class="section-text">{{ history.notes }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <nav *ngIf="!loading && totalPages > 1 && !showAddForm" class="pagination-nav" aria-label="Medical history pagination">
+    <div class="pagination-container">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </div>
+      
+      <ul class="pagination">
+        <!-- First Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToFirstPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+        </li>
+        
+        <!-- Previous Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-angle-left"></i>
+          </button>
+        </li>
+        
+        <!-- Page Numbers -->
+        <li *ngFor="let pageNum of getPageNumbers()" 
+            class="page-item" 
+            [class.active]="pageNum === currentPage">
+          <button class="page-link" (click)="onPageChange(pageNum)">
+            {{ pageNum }}
+          </button>
+        </li>
+        
+        <!-- Next Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-right"></i>
+          </button>
+        </li>
+        
+        <!-- Last Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div> 
