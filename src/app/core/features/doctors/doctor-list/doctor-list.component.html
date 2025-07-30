@@ -1,1 +1,387 @@
-<p>doctor-list works!</p>
+<div class="doctors-list-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-user-md"></i>
+          Doctors Directory
+        </h1>
+        <p class="page-subtitle">
+          Manage and view all doctors in the system
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-secondary me-2" (click)="loadDoctors()">
+          <i class="fas fa-sync-alt"></i>
+          <span>Refresh</span>
+        </button>
+        <button class="btn btn-primary" (click)="showAddDoctorForm()">
+          <i class="fas fa-plus"></i>
+          <span>Add Doctor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Filters and Search Section -->
+  <div class="filters-section">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title">
+          <i class="fas fa-filter"></i>
+          Search & Filter Doctors
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="form-label">Search</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-search"></i>
+                </span>
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  [(ngModel)]="searchTerm" 
+                  (input)="onSearch()" 
+                  placeholder="Search by name, specialization, phone, email...">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="form-label">Specialization</label>
+              <select class="form-select" [(ngModel)]="selectedSpecialization" (change)="onSpecializationChange()">
+                <option value="all">All Specializations</option>
+                <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label class="form-label">&nbsp;</label>
+              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" title="Clear all filters">
+                <i class="fas fa-times"></i>
+                <span>Clear</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Summary and Pagination Controls -->
+  <div class="results-section" *ngIf="!loading">
+    <div class="results-summary">
+      <div class="results-info">
+        <span class="results-text">
+          Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ totalItems }} doctors
+        </span>
+      </div>
+      <div class="results-controls">
+        <label class="form-label me-2">Show:</label>
+        <select class="form-select form-select-sm" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+          <option [value]="6">6</option>
+          <option [value]="12">12</option>
+          <option [value]="24">24</option>
+          <option [value]="48">48</option>
+        </select>
+        <span class="ms-2">per page</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted">Loading doctors...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctors List -->
+  <div *ngIf="!loading" class="doctors-section">
+    <div class="card">
+      <div class="card-body">
+        <!-- Empty State -->
+        <div *ngIf="paginatedDoctors.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-user-md"></i>
+          </div>
+          <h4 class="empty-title">No Doctors Found</h4>
+          <p class="empty-description">
+            <span *ngIf="searchTerm || selectedSpecialization !== 'all' || selectedStatus !== 'all'">
+              No doctors match your current search criteria. Try adjusting your filters.
+            </span>
+            <span *ngIf="!searchTerm && selectedSpecialization === 'all' && selectedStatus === 'all'">
+              No doctors have been added to the system yet.
+            </span>
+          </p>
+          <button *ngIf="searchTerm || selectedSpecialization !== 'all' || selectedStatus !== 'all'" 
+                  class="btn btn-primary me-2" (click)="clearFilters()">
+            <i class="fas fa-times"></i> Clear Filters
+          </button>
+          <button class="btn btn-success" (click)="showAddDoctorForm()">
+            <i class="fas fa-plus"></i> Add Doctor
+          </button>
+        </div>
+
+        <!-- Doctors Cards Grid -->
+        <div *ngIf="paginatedDoctors.length > 0" class="doctors-grid">
+          <div *ngFor="let doctor of paginatedDoctors" class="doctor-card" (click)="viewDoctorProfile(doctor.id)">
+            <div class="card-header">
+              <div class="doctor-avatar">
+                <img *ngIf="doctor.profilePicture" [src]="doctor.profilePicture" [alt]="doctor.name" class="avatar-img">
+                <div *ngIf="!doctor.profilePicture" class="avatar-placeholder">
+                  <i class="fas fa-user-md"></i>
+                </div>
+              </div>
+              <div class="doctor-status">
+                <span class="badge" [ngClass]="getStatusBadgeClass(doctor.isActive)">
+                  {{ getStatusText(doctor.isActive) }}
+                </span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="doctor-info">
+                <h5 class="doctor-name">{{ doctor.name }}</h5>
+                <p class="doctor-specialization">{{ doctor.specialization }}</p>
+                
+                <div class="doctor-details">
+                  <div class="detail-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ doctor.phoneNumber }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="doctor.email">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ doctor.email }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Started: {{ formatDate(doctor.startDate.toString()) }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="doctor.endDate">
+                    <i class="fas fa-calendar-times"></i>
+                    <span>Ended: {{ formatDate(doctor.endDate.toString()) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-outline-primary btn-sm" (click)="viewDoctorProfile(doctor.id); $event.stopPropagation()">
+                <i class="fas fa-eye"></i>
+                View Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <nav *ngIf="!loading && totalPages > 1" class="pagination-nav" aria-label="Doctors pagination">
+    <div class="pagination-container">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+      </div>
+      
+      <ul class="pagination">
+        <!-- First Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToFirstPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+        </li>
+        
+        <!-- Previous Page -->
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+            <i class="fas fa-angle-left"></i>
+          </button>
+        </li>
+        
+        <!-- Page Numbers -->
+        <li *ngFor="let pageNum of getPageNumbers()" 
+            class="page-item" 
+            [class.active]="pageNum === currentPage">
+          <button class="page-link" (click)="onPageChange(pageNum)">
+            {{ pageNum }}
+          </button>
+        </li>
+        
+        <!-- Next Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-right"></i>
+          </button>
+        </li>
+        
+        <!-- Last Page -->
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Add Doctor Modal -->
+  <div *ngIf="showAddDoctorModal" class="modal-overlay" (click)="closeAddDoctorModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-user-md"></i>
+          Add New Doctor
+        </h4>
+        <button type="button" class="btn-close" (click)="closeAddDoctorModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="addDoctorForm" (ngSubmit)="addDoctor()">
+        <div class="modal-body">
+          <!-- Name Field -->
+          <div class="form-group">
+            <label class="form-label" for="doctorName">
+              <i class="fas fa-user"></i>
+              Doctor Name *
+            </label>
+            <input
+              type="text"
+              id="doctorName"
+              class="form-control"
+              formControlName="name"
+              placeholder="Enter doctor's full name"
+              [class.is-invalid]="isFieldInvalid('name')"
+            />
+            <div *ngIf="isFieldInvalid('name')" class="invalid-feedback">
+              {{ getFieldError('name') }}
+            </div>
+          </div>
+
+          <!-- Specialization Field -->
+          <div class="form-group">
+            <label class="form-label" for="doctorSpecialization">
+              <i class="fas fa-stethoscope"></i>
+              Specialization *
+            </label>
+            <input
+              type="text"
+              id="doctorSpecialization"
+              class="form-control"
+              formControlName="specialization"
+              placeholder="Enter medical specialization"
+              [class.is-invalid]="isFieldInvalid('specialization')"
+            />
+            <div *ngIf="isFieldInvalid('specialization')" class="invalid-feedback">
+              {{ getFieldError('specialization') }}
+            </div>
+          </div>
+
+          <!-- Phone Number Field -->
+          <div class="form-group">
+            <label class="form-label" for="doctorPhone">
+              <i class="fas fa-phone"></i>
+              Phone Number *
+            </label>
+            <input
+              type="tel"
+              id="doctorPhone"
+              class="form-control"
+              formControlName="phoneNumber"
+              placeholder="Enter phone number"
+              [class.is-invalid]="isFieldInvalid('phoneNumber')"
+            />
+            <div *ngIf="isFieldInvalid('phoneNumber')" class="invalid-feedback">
+              {{ getFieldError('phoneNumber') }}
+            </div>
+          </div>
+
+          <!-- Start Date Field -->
+          <div class="form-group">
+            <label class="form-label" for="doctorStartDate">
+              <i class="fas fa-calendar-alt"></i>
+              Start Date *
+            </label>
+            <input
+              type="date"
+              id="doctorStartDate"
+              class="form-control"
+              formControlName="startDate"
+              [class.is-invalid]="isFieldInvalid('startDate')"
+            />
+            <div *ngIf="isFieldInvalid('startDate')" class="invalid-feedback">
+              {{ getFieldError('startDate') }}
+            </div>
+          </div>
+
+          <!-- App User ID Field -->
+          <!-- <div class="form-group">
+            <label class="form-label" for="doctorUserId">
+              <i class="fas fa-id-card"></i>
+              User ID *
+            </label>
+            <input
+              type="text"
+              id="doctorUserId"
+              class="form-control"
+              formControlName="appUserId"
+              placeholder="Enter associated user ID"
+              [class.is-invalid]="isFieldInvalid('appUserId')"
+            />
+            <div *ngIf="isFieldInvalid('appUserId')" class="invalid-feedback">
+              {{ getFieldError('appUserId') }}
+            </div>
+          </div> -->
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAddDoctorModal()">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="addDoctorForm.invalid || addingDoctor">
+            <i *ngIf="addingDoctor" class="fas fa-spinner fa-spin"></i>
+            <i *ngIf="!addingDoctor" class="fas fa-save"></i>
+            {{ addingDoctor ? 'Adding...' : 'Add Doctor' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

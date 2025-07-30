@@ -1,0 +1,417 @@
+<div class="transaction-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-money-bill-wave"></i>
+          Transaction Management
+        </h1>
+        <p class="page-subtitle">
+          Track income, expenses, and manage transaction categories
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div *ngIf="activeTab === 'transactions'" class="summary-cards">
+    <div class="summary-card income">
+      <div class="card-icon">
+        <i class="fas fa-arrow-up"></i>
+      </div>
+      <div class="card-content">
+        <h3>${{ getIncomeTotal().toFixed(2) }}</h3>
+        <p>Total Income</p>
+      </div>
+    </div>
+    
+    <div class="summary-card expense">
+      <div class="card-icon">
+        <i class="fas fa-arrow-down"></i>
+      </div>
+      <div class="card-content">
+        <h3>${{ getExpenseTotal().toFixed(2) }}</h3>
+        <p>Total Expenses</p>
+      </div>
+    </div>
+    
+    <div class="summary-card balance" [class.negative]="getTotalAmount() < 0">
+      <div class="card-icon">
+        <i class="fas fa-balance-scale"></i>
+      </div>
+      <div class="card-content">
+        <h3>${{ getTotalAmount().toFixed(2) }}</h3>
+        <p>Net Balance</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs-container">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'transactions'"
+          (click)="setActiveTab('transactions')">
+          <i class="fas fa-exchange-alt"></i> Transactions
+        </button>
+      </li>
+      <li class="nav-item">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'categories'"
+          (click)="setActiveTab('categories')">
+          <i class="fas fa-tags"></i> Categories
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Transactions Tab -->
+    <div *ngIf="activeTab === 'transactions'" class="tab-pane">
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="card-title">
+              <i class="fas fa-filter"></i>
+              Filter Transactions
+            </h6>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" [(ngModel)]="selectedCategory" (change)="onFilterChange()">
+                    <option value="all">All Categories</option>
+                    <option *ngFor="let category of categories" [value]="category.id">
+                      {{ category.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label class="form-label">Type</label>
+                  <select class="form-select" [(ngModel)]="selectedType" (change)="onFilterChange()">
+                    <option value="all">All Types</option>
+                    <option [value]="TransactionType.Income">Income</option>
+                    <option [value]="TransactionType.Expense">Expense</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label class="form-label">From Date</label>
+                  <input type="date" class="form-control" [(ngModel)]="dateFrom" (change)="onFilterChange()">
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label class="form-label">To Date</label>
+                  <input type="date" class="form-control" [(ngModel)]="dateTo" (change)="onFilterChange()">
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label class="form-label">&nbsp;</label>
+                  <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>
+          <i class="fas fa-exchange-alt"></i>
+          Transactions ({{ filteredTransactions.length }})
+        </h3>
+        <button class="btn btn-primary" (click)="showAddTransactionModal()">
+          <i class="fas fa-plus"></i>
+          Add Transaction
+        </button>
+      </div>
+
+      <div class="content-card">
+        <div *ngIf="loading" class="loading-section">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading transactions...</p>
+        </div>
+
+        <div *ngIf="!loading && filteredTransactions.length === 0" class="empty-state">
+          <i class="fas fa-exchange-alt"></i>
+          <h4>No Transactions Found</h4>
+          <p>Start by adding your first transaction.</p>
+          <button class="btn btn-primary" (click)="showAddTransactionModal()">
+            <i class="fas fa-plus"></i> Add Transaction
+          </button>
+        </div>
+
+        <div *ngIf="!loading && filteredTransactions.length > 0" class="transactions-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of filteredTransactions">
+                <td>{{ transaction.date | date:'short' }}</td>
+                <td>{{ transaction.description || 'No description' }}</td>
+                <td>{{ getCategoryName(transaction.categoryId) }}</td>
+                <td>
+                  <span class="badge" [ngClass]="getTransactionTypeClass(transaction.type)">
+                    <i [class]="getTransactionTypeIcon(transaction.type)"></i>
+                    {{ transaction.type }}
+                  </span>
+                </td>
+                <td class="amount" [class.income]="transaction.type === TransactionType.Income" [class.expense]="transaction.type === TransactionType.Expense">
+                  ${{ transaction.amount.toFixed(2) }}
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline-primary" (click)="showEditTransactionModal(transaction)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteTransaction(transaction.id!)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Tab -->
+    <div *ngIf="activeTab === 'categories'" class="tab-pane">
+      <div class="section-header">
+        <h3>
+          <i class="fas fa-tags"></i>
+          Categories
+        </h3>
+        <button class="btn btn-primary" (click)="showAddCategoryModal()">
+          <i class="fas fa-plus"></i>
+          Add Category
+        </button>
+      </div>
+
+      <div class="content-card">
+        <div *ngIf="loading" class="loading-section">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading categories...</p>
+        </div>
+
+        <div *ngIf="!loading && categories.length === 0" class="empty-state">
+          <i class="fas fa-tags"></i>
+          <h4>No Categories Found</h4>
+          <p>Start by creating your first transaction category.</p>
+          <button class="btn btn-primary" (click)="showAddCategoryModal()">
+            <i class="fas fa-plus"></i> Add Category
+          </button>
+        </div>
+
+        <div *ngIf="!loading && categories.length > 0" class="categories-grid">
+          <div *ngFor="let category of categories" class="category-card">
+            <div class="card-header">
+              <h5 class="category-name">{{ category.name }}</h5>
+              <div class="category-actions">
+                <button class="btn btn-sm btn-outline-primary" (click)="showEditCategoryModal(category)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(category.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div *ngIf="showTransactionModal" class="modal-overlay" (click)="closeTransactionModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-exchange-alt"></i>
+          {{ editingTransaction ? 'Edit Transaction' : 'Add Transaction' }}
+        </h4>
+        <button type="button" class="btn-close" (click)="closeTransactionModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="transactionForm" (ngSubmit)="saveTransaction()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Amount *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="amount"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'amount')"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00">
+                <div *ngIf="isFieldInvalid(transactionForm, 'amount')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'amount') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Date *</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  formControlName="date"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'date')">
+                <div *ngIf="isFieldInvalid(transactionForm, 'date')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'date') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Type *</label>
+                <select
+                  class="form-select"
+                  formControlName="type"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'type')">
+                  <option [value]="TransactionType.Income">Income</option>
+                  <option [value]="TransactionType.Expense">Expense</option>
+                </select>
+                <div *ngIf="isFieldInvalid(transactionForm, 'type')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'type') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select
+                  class="form-select"
+                  formControlName="categoryId"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'categoryId')">
+                  <option value="">Select category</option>
+                  <option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(transactionForm, 'categoryId')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'categoryId') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              formControlName="description"
+              rows="3"
+              placeholder="Enter transaction description (optional)"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="transactionForm.invalid">
+            <i class="fas fa-save"></i>
+            {{ editingTransaction ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div *ngIf="showCategoryModal" class="modal-overlay" (click)="closeCategoryModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-tags"></i>
+          {{ editingCategory ? 'Edit Category' : 'Add Category' }}
+        </h4>
+        <button type="button" class="btn-close" (click)="closeCategoryModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [class.is-invalid]="isFieldInvalid(categoryForm, 'name')"
+              placeholder="Enter category name">
+            <div *ngIf="isFieldInvalid(categoryForm, 'name')" class="invalid-feedback">
+              {{ getFieldError(categoryForm, 'name') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeCategoryModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="categoryForm.invalid">
+            <i class="fas fa-save"></i>
+            {{ editingCategory ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

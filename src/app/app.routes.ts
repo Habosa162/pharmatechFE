@@ -31,6 +31,9 @@ import { PatientLabTestsComponent } from './core/features/patients/patient-lab-t
 import { PatientMedicalRecordsComponent } from './core/features/patients/patient-medical-records/patient-medical-records.component';
 import { PatientSurgeriesComponent } from './core/features/patients/patient-surgeries/patient-surgeries.component';
 import { PatientPrescriptionsComponent } from './core/features/patients/patient-prescriptions/patient-prescriptions.component';
+import { DoctorProfileComponent } from './core/features/doctors/doctor-profile/doctor-profile.component';
+import { InventoryComponent } from './core/features/inventory/inventory.component';
+import { TransactionComponent } from './core/features/transactions/transaction.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -115,7 +118,13 @@ export const routes: Routes = [
   {path:'patient-medical-records/:id', component: PatientMedicalRecordsComponent},
   {path:'patient-surgeries/:id', component: PatientSurgeriesComponent},
   {path:'patient-prescriptions/:id', component: PatientPrescriptionsComponent},
-   {path:'patient-profile/:id', component: PatientProfileComponent},
-
+  {path:'patient-profile/:id', component: PatientProfileComponent},
+  {path:'DoctorsList', component: DoctorListComponent},
+  {path:'doctors/:id', component: DoctorProfileComponent},
+  
+  // New comprehensive inventory and transaction routes
+  {path:'inventory', component: InventoryComponent},
+  {path:'transactions', component: TransactionComponent},
+  
   { path: '**', component: NotFoundComponent },
 ];

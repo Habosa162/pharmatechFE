@@ -1,0 +1,531 @@
+<div class="inventory-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-boxes"></i>
+          Inventory Management
+        </h1>
+        <p class="page-subtitle">
+          Manage categories, items, and track inventory transactions
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs-container">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'categories'"
+          (click)="setActiveTab('categories')">
+          <i class="fas fa-tags"></i> Categories
+        </button>
+      </li>
+      <li class="nav-item">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'items'"
+          (click)="setActiveTab('items')">
+          <i class="fas fa-cube"></i> Items
+        </button>
+      </li>
+      <li class="nav-item">
+        <button 
+          class="nav-link" 
+          [class.active]="activeTab === 'transactions'"
+          (click)="setActiveTab('transactions')">
+          <i class="fas fa-exchange-alt"></i> Transactions
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+    <!-- Categories Tab -->
+    <div *ngIf="activeTab === 'categories'" class="tab-pane">
+      <div class="section-header">
+        <h3>
+          <i class="fas fa-tags"></i>
+          Categories
+        </h3>
+        <button class="btn btn-primary" (click)="showAddCategoryModal()">
+          <i class="fas fa-plus"></i>
+          Add Category
+        </button>
+      </div>
+
+      <div class="content-card">
+        <div *ngIf="loading" class="loading-section">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading categories...</p>
+        </div>
+
+        <div *ngIf="!loading && categories.length === 0" class="empty-state">
+          <i class="fas fa-tags"></i>
+          <h4>No Categories Found</h4>
+          <p>Start by creating your first inventory category.</p>
+          <button class="btn btn-primary" (click)="showAddCategoryModal()">
+            <i class="fas fa-plus"></i> Add Category
+          </button>
+        </div>
+
+        <div *ngIf="!loading && categories.length > 0" class="categories-grid">
+          <div *ngFor="let category of categories" class="category-card">
+            <div class="card-header">
+              <h5 class="category-name">{{ category.name }}</h5>
+              <div class="category-actions">
+                <button class="btn btn-sm btn-outline-primary" (click)="showEditCategoryModal(category)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(category.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="category-description">{{ category.description || 'No description' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Tab -->
+    <div *ngIf="activeTab === 'items'" class="tab-pane">
+      <div class="section-header">
+        <h3>
+          <i class="fas fa-cube"></i>
+          Items
+        </h3>
+        <button class="btn btn-primary" (click)="showAddItemModal()">
+          <i class="fas fa-plus"></i>
+          Add Item
+        </button>
+      </div>
+
+      <div class="content-card">
+        <div *ngIf="loading" class="loading-section">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading items...</p>
+        </div>
+
+        <div *ngIf="!loading && items.length === 0" class="empty-state">
+          <i class="fas fa-cube"></i>
+          <h4>No Items Found</h4>
+          <p>Start by adding your first inventory item.</p>
+          <button class="btn btn-primary" (click)="showAddItemModal()">
+            <i class="fas fa-plus"></i> Add Item
+          </button>
+        </div>
+
+        <div *ngIf="!loading && items.length > 0" class="items-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items">
+                <td>
+                  <div class="item-info">
+                    <strong>{{ item.name }}</strong>
+                    <small *ngIf="item.description">{{ item.description }}</small>
+                  </div>
+                </td>
+                <td>{{ getCategoryName(item.inventoryCategoryId) }}</td>
+                <td>
+                  <span class="quantity-badge">
+                    {{ item.stockQuantity }}
+                  </span>
+                </td>
+                <td>${{ item.purchasePrice.toFixed(2) }}</td>
+                <td>
+                  <span class="badge badge-success">
+                    Active
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline-primary" (click)="showEditItemModal(item)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteItem(item.id)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Tab -->
+    <div *ngIf="activeTab === 'transactions'" class="tab-pane">
+      <div class="section-header">
+        <h3>
+          <i class="fas fa-exchange-alt"></i>
+          Transactions
+        </h3>
+        <button class="btn btn-primary" (click)="showAddTransactionModal()">
+          <i class="fas fa-plus"></i>
+          Record Transaction
+        </button>
+      </div>
+
+      <div class="content-card">
+        <div *ngIf="loading" class="loading-section">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Loading transactions...</p>
+        </div>
+
+        <div *ngIf="!loading && transactions.length === 0" class="empty-state">
+          <i class="fas fa-exchange-alt"></i>
+          <h4>No Transactions Found</h4>
+          <p>Start by recording your first inventory transaction.</p>
+          <button class="btn btn-primary" (click)="showAddTransactionModal()">
+            <i class="fas fa-plus"></i> Record Transaction
+          </button>
+        </div>
+
+        <div *ngIf="!loading && transactions.length > 0" class="transactions-table">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Item</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let transaction of transactions">
+                <td>{{ transaction.date | date:'short' }}</td>
+                <td>{{ getItemName(transaction.inventoryItemId) }}</td>
+                <td>
+                  <span class="badge" [ngClass]="getTransactionTypeClass(transaction.transactionType)">
+                    {{ getTransactionTypeText(transaction.transactionType) }}
+                  </span>
+                </td>
+                <td>{{ transaction.quantity }}</td>
+                <td>{{ transaction.description || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div *ngIf="showCategoryModal" class="modal-overlay" (click)="closeCategoryModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-tags"></i>
+          {{ editingCategory ? 'Edit Category' : 'Add Category' }}
+        </h4>
+        <button type="button" class="btn-close" (click)="closeCategoryModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [class.is-invalid]="isFieldInvalid(categoryForm, 'name')"
+              placeholder="Enter category name">
+            <div *ngIf="isFieldInvalid(categoryForm, 'name')" class="invalid-feedback">
+              {{ getFieldError(categoryForm, 'name') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              formControlName="description"
+              rows="3"
+              placeholder="Enter category description (optional)"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeCategoryModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="categoryForm.invalid">
+            <i class="fas fa-save"></i>
+            {{ editingCategory ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Item Modal -->
+  <div *ngIf="showItemModal" class="modal-overlay" (click)="closeItemModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-cube"></i>
+          {{ editingItem ? 'Edit Item' : 'Add Item' }}
+        </h4>
+        <button type="button" class="btn-close" (click)="closeItemModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="itemForm" (ngSubmit)="saveItem()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="name"
+                  [class.is-invalid]="isFieldInvalid(itemForm, 'name')"
+                  placeholder="Enter item name">
+                <div *ngIf="isFieldInvalid(itemForm, 'name')" class="invalid-feedback">
+                  {{ getFieldError(itemForm, 'name') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select
+                  class="form-select"
+                  formControlName="inventoryCategoryId"
+                  [class.is-invalid]="isFieldInvalid(itemForm, 'inventoryCategoryId')">
+                  <option value="">Select category</option>
+                  <option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(itemForm, 'inventoryCategoryId')" class="invalid-feedback">
+                  {{ getFieldError(itemForm, 'inventoryCategoryId') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              formControlName="description"
+              rows="2"
+              placeholder="Enter item description (optional)"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Stock Quantity *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="stockQuantity"
+                  [class.is-invalid]="isFieldInvalid(itemForm, 'stockQuantity')"
+                  min="0">
+                <div *ngIf="isFieldInvalid(itemForm, 'stockQuantity')" class="invalid-feedback">
+                  {{ getFieldError(itemForm, 'stockQuantity') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Purchase Price *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="purchasePrice"
+                  [class.is-invalid]="isFieldInvalid(itemForm, 'purchasePrice')"
+                  min="0"
+                  step="0.01">
+                <div *ngIf="isFieldInvalid(itemForm, 'purchasePrice')" class="invalid-feedback">
+                  {{ getFieldError(itemForm, 'purchasePrice') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Expiration Date *</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  formControlName="expirationDate"
+                  [class.is-invalid]="isFieldInvalid(itemForm, 'expirationDate')">
+                <div *ngIf="isFieldInvalid(itemForm, 'expirationDate')" class="invalid-feedback">
+                  {{ getFieldError(itemForm, 'expirationDate') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                formControlName="isActive"
+                id="itemActive">
+              <label class="form-check-label" for="itemActive">
+                Active
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeItemModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="itemForm.invalid">
+            <i class="fas fa-save"></i>
+            {{ editingItem ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div *ngIf="showTransactionModal" class="modal-overlay" (click)="closeTransactionModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-exchange-alt"></i>
+          Record Transaction
+        </h4>
+        <button type="button" class="btn-close" (click)="closeTransactionModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="transactionForm" (ngSubmit)="saveTransaction()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Item *</label>
+                <select
+                  class="form-select"
+                  formControlName="inventoryItemId"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'inventoryItemId')">
+                  <option value="">Select item</option>
+                  <option *ngFor="let item of items" [value]="item.id">
+                    {{ item.name }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(transactionForm, 'inventoryItemId')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'inventoryItemId') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Transaction Type *</label>
+                <select
+                  class="form-select"
+                  formControlName="transactionType">
+                  <option [value]="InventoryTransactionType.Addition">Addition</option>
+                  <option [value]="InventoryTransactionType.Deduction">Deduction</option>
+                  <option [value]="InventoryTransactionType.Adjustment">Adjustment</option>
+                  <option [value]="InventoryTransactionType.Transfer">Transfer</option>
+                  <option [value]="InventoryTransactionType.Return">Return</option>
+                  <option [value]="InventoryTransactionType.Expiration">Expiration</option>
+                  <option [value]="InventoryTransactionType.Damage">Damage</option>
+                  <option [value]="InventoryTransactionType.Purchase">Purchase</option>
+                  <option [value]="InventoryTransactionType.Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quantity *</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="quantity"
+              [class.is-invalid]="isFieldInvalid(transactionForm, 'quantity')"
+              min="1">
+            <div *ngIf="isFieldInvalid(transactionForm, 'quantity')" class="invalid-feedback">
+              {{ getFieldError(transactionForm, 'quantity') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              formControlName="description"
+              rows="3"
+              placeholder="Enter transaction description (optional)"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="transactionForm.invalid">
+            <i class="fas fa-save"></i>
+            Record Transaction
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

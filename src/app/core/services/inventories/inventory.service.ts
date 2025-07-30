@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../enviroment';
 import { HttpClient } from '@angular/common/http';
+import { 
+  CreateInventoryCategoryDTO,
+  UpdateInventoryCategoryDTO,
+  CreateInventoryItemDTO,
+  UpdateInventoryItemDTO,
+  CreateInventoryTransactionDTO,
+  UpdateInventoryTransactionDTO,
+  InventoryCategory,
+  InventoryItem,
+  InventoryTransaction
+} from '../../Interfaces/all';
 
 @Injectable({
   providedIn: 'root'
@@ -10,60 +21,66 @@ export class InventoryService {
   private apiUrl = `${environment.apiUrl}/Inventory`;
   constructor(private http:HttpClient) {}
 
-
-  // getInventoryByCategory(categoryId: number) {
-  //   return this.http.get(`${this.apiUrl}/category/${categoryId}`);
-  // } ????
-
   //____________Inventory Category Service Methods____________
   getAllInventoryCategories() {
-    return this.http.get(`${this.apiUrl}/categories`);
+    return this.http.get<InventoryCategory[]>(`${this.apiUrl}/categories`);
   }
+  
   getInventoryCategoryById(categoryId: number) {
-    return this.http.get(`${this.apiUrl}/categories /${categoryId}`);
+    return this.http.get<InventoryCategory>(`${this.apiUrl}/categories/${categoryId}`);
   }
-  createInventoryCategory(categoryData: any) {
-    return this.http.post(`${this.apiUrl}/categories`, categoryData);
+  
+  createInventoryCategory(categoryData: CreateInventoryCategoryDTO) {
+    return this.http.post<InventoryCategory>(`${this.apiUrl}/categories`, categoryData);
   }
-  updateInventoryCategory(categoryId: number, categoryData: any) {
-    return this.http.put(`${this.apiUrl}/categories/${categoryId}`, categoryData);
+  
+  updateInventoryCategory(categoryId: number, categoryData: UpdateInventoryCategoryDTO) {
+    return this.http.put<InventoryCategory>(`${this.apiUrl}/categories/${categoryId}`, categoryData);
   }
+  
   deleteInventoryCategory(categoryId: number) {
-    return this.http.delete(`${this.apiUrl}/categories /${categoryId}`);
+    return this.http.delete(`${this.apiUrl}/categories/${categoryId}`);
   }
-//____________Inventory Items Service Methods____________
 
+  //____________Inventory Items Service Methods____________
   getAllInventoryItems() {
-    return this.http.get(`${this.apiUrl}/items`);
+    return this.http.get<InventoryItem[]>(`${this.apiUrl}/items`);
   }
+  
   getInventoryItemById(itemId: number) {
-    return this.http.get(`${this.apiUrl}/items/${itemId}`);
+    return this.http.get<InventoryItem>(`${this.apiUrl}/items/${itemId}`);
   }
-  createInventoryItem(itemData: any) {
-    return this.http.post(`${this.apiUrl}/items`, itemData);
+  
+  createInventoryItem(itemData: CreateInventoryItemDTO) {
+    return this.http.post<InventoryItem>(`${this.apiUrl}/items`, itemData);
   }
-  updateInventoryItem(itemId: number, itemData: any) {
-    return this.http.put(`${this.apiUrl}/items/${itemId}`, itemData);
+  
+  updateInventoryItem(itemId: number, itemData: UpdateInventoryItemDTO) {
+    return this.http.put<InventoryItem>(`${this.apiUrl}/items/${itemId}`, itemData);
   }
+  
   deleteInventoryItem(itemId: number) {
     return this.http.delete(`${this.apiUrl}/items/${itemId}`);
   }
-  //____________Inventory Transactions Service Methods____________
 
+  //____________Inventory Transactions Service Methods____________
   getAllInventoryTransactions() {
-    return this.http.get(`${this.apiUrl}/transactions`);
+    return this.http.get<InventoryTransaction[]>(`${this.apiUrl}/transactions`);
   }
+  
   getInventoryTransactionById(transactionId: number) {
-    return this.http.get(`${this.apiUrl}/transactions/${transactionId}`);
+    return this.http.get<InventoryTransaction>(`${this.apiUrl}/transactions/${transactionId}`);
   }
-  createInventoryTransaction(transactionData: any) {
-    return this.http.post(`${this.apiUrl}/transactions`, transactionData);
+  
+  createInventoryTransaction(transactionData: CreateInventoryTransactionDTO) {
+    return this.http.post<InventoryTransaction>(`${this.apiUrl}/transactions`, transactionData);
   }
-  updateInventoryTransaction(transactionId: number, transactionData: any) {
-    return this.http.put(`${this.apiUrl}/transactions/${transactionId}`, transactionData);
+  
+  updateInventoryTransaction(transactionId: number, transactionData: UpdateInventoryTransactionDTO) {
+    return this.http.put<InventoryTransaction>(`${this.apiUrl}/transactions/${transactionId}`, transactionData);
   }
+  
   deleteInventoryTransaction(transactionId: number) {
     return this.http.delete(`${this.apiUrl}/transactions/${transactionId}`);
   }
-
 }

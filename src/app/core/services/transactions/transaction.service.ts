@@ -2,14 +2,20 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../enviroment';
 import { Observable } from 'rxjs';
-import { Transaction,TransactionCategory} from '../../Models/transactions/transactions.model';
+import { 
+  CreateTransactionDTO, 
+  Transaction,
+  TransactionCategory,
+  CreateCategoryDTO,
+  UpdateCategoryDTO
+} from '../../Models/transactions/transactions.model';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = `${environment.apiUrl}/Transactions`;
+  private apiUrl = `${environment.apiUrl}/Transaction`;
 
   constructor(private http: HttpClient) {}
 
@@ -22,11 +28,11 @@ export class TransactionService {
     return this.http.get<TransactionCategory>(`${this.apiUrl}/categories/${categoryId}`);
   }
 
-  createTransactionCategory(categoryName: string): Observable<TransactionCategory> {
-    return this.http.post<TransactionCategory>(`${this.apiUrl}/categories`, categoryName);
+  createTransactionCategory(categoryData: CreateCategoryDTO): Observable<TransactionCategory> {
+    return this.http.post<TransactionCategory>(`${this.apiUrl}/categories`, categoryData);
   }
 
-  updateTransactionCategory(categoryId: number, categoryData: TransactionCategory): Observable<any> {
+  updateTransactionCategory(categoryId: number, categoryData: UpdateCategoryDTO): Observable<any> {
     return this.http.put(`${this.apiUrl}/categories/${categoryId}`, categoryData);
   }
 
@@ -51,11 +57,11 @@ export class TransactionService {
     return this.http.get<Transaction[]>(`${this.apiUrl}/date`, { params });
   }
 
-  createTransaction(transactionData: Transaction): Observable<Transaction> {
+  createTransaction(transactionData: CreateTransactionDTO): Observable<Transaction> {
     return this.http.post<Transaction>(`${this.apiUrl}`, transactionData);
   }
 
-  updateTransaction(transactionId: number, transactionData: Transaction): Observable<Transaction> {
+  updateTransaction(transactionId: number, transactionData: CreateTransactionDTO): Observable<Transaction> {
     return this.http.put<Transaction>(`${this.apiUrl}/${transactionId}`, transactionData);
   }
 

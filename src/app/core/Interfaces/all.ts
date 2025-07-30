@@ -185,7 +185,7 @@ export interface CreateDoctorDTO {
   specialization: string;
   phoneNumber: string;
   startDate: string; // ISO string (yyyy-mm-dd)
-  appUserId: string;
+  appUserId?: string;
 }
 
 export interface UpdateDoctorDTO {
@@ -292,6 +292,55 @@ export enum InventoryTransactionType {
     Damage = 7,
     Purchase = 8,
     Other = 9
+}
+
+// Inventory DTOs
+export interface CreateInventoryCategoryDTO {
+    name: string;
+    description?: string;
+}
+
+export interface UpdateInventoryCategoryDTO {
+    id: number;
+    name: string;
+    description?: string;
+}
+
+export interface CreateInventoryItemDTO {
+    name: string;
+    description?: string;
+    purchasePrice: number;
+    stockQuantity: number;
+    expirationDate: string;
+    inventoryCategoryId: number;
+}
+
+export interface UpdateInventoryItemDTO {
+    id: number;
+    name: string;
+    description?: string;
+    purchasePrice: number;
+    stockQuantity: number;
+    expirationDate: string;
+    inventoryCategoryId: number;
+}
+
+export interface CreateInventoryTransactionDTO {
+    quantity: number;
+    description?: string;
+    date: string;
+    transactionType: InventoryTransactionType;
+    inventoryItemId: number;
+    userId: string;
+}
+
+export interface UpdateInventoryTransactionDTO {
+    id: number;
+    quantity: number;
+    description?: string;
+    date: string;
+    transactionType: InventoryTransactionType;
+    inventoryItemId: number;
 }
 
 

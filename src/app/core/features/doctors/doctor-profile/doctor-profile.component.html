@@ -1,1 +1,348 @@
-<p>doctor-profile works!</p>
+<div class="doctor-profile-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-user-md"></i>
+          Doctor Profile
+        </h1>
+        <p class="page-subtitle" *ngIf="doctor">
+          <strong>{{ doctor.name }}</strong> - {{ doctor.specialization }}
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-secondary me-2" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          <span>Back</span>
+        </button>
+        <button class="btn btn-outline-primary me-2" (click)="goToDoctorsList()">
+          <i class="fas fa-list"></i>
+          <span>All Doctors</span>
+        </button>
+        <button class="btn btn-outline-secondary me-2" (click)="refreshProfile()">
+          <i class="fas fa-sync-alt"></i>
+          <span>Refresh</span>
+        </button>
+        <button class="btn btn-primary" (click)="toggleEditMode()" *ngIf="doctor">
+          <i *ngIf="!editMode" class="fas fa-edit"></i>
+          <i *ngIf="editMode" class="fas fa-times"></i>
+          <span>{{ editMode ? 'Cancel Edit' : 'Edit Profile' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted">Loading doctor profile...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctor Profile Content -->
+  <div *ngIf="!loading && doctor" class="profile-content">
+    <form [formGroup]="editForm">
+      <!-- Main Profile Card -->
+      <div class="profile-main-card">
+        <div class="card">
+          <div class="card-body">
+            <div class="profile-header">
+              <div class="profile-avatar">
+                <img *ngIf="doctor.profilePicture" [src]="doctor.profilePicture" [alt]="doctor.name" class="avatar-img">
+                <div *ngIf="!doctor.profilePicture" class="avatar-placeholder">
+                  <i class="fas fa-user-md"></i>
+                </div>
+              </div>
+              <div class="profile-info">
+                <!-- Name - Editable -->
+                <div *ngIf="!editMode">
+                  <h2 class="doctor-name">{{ doctor.name }}</h2>
+                </div>
+                <div *ngIf="editMode" class="edit-field">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-lg" 
+                    formControlName="name"
+                    [class.is-invalid]="isFieldInvalid('name')"
+                    placeholder="Doctor Name">
+                  <div *ngIf="isFieldInvalid('name')" class="invalid-feedback">
+                    {{ getFieldError('name') }}
+                  </div>
+                </div>
+
+                <!-- Specialization - Editable -->
+                <div >
+                  <p class="doctor-specialization">{{ doctor.specialization }}</p>
+                </div>
+                <!-- <div *ngIf="editMode" class="edit-field">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    formControlName="specialization"
+                    [class.is-invalid]="isFieldInvalid('specialization')"
+                    placeholder="Specialization">
+                  <div *ngIf="isFieldInvalid('specialization')" class="invalid-feedback">
+                    {{ getFieldError('specialization') }}
+                  </div>
+                </div> -->
+
+                <div class="doctor-status">
+                  <span class="badge" [ngClass]="getStatusBadgeClass(doctor.isActive)">
+                    {{ getStatusText(doctor.isActive) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Details Grid -->
+      <div class="profile-details-grid">
+        <!-- Contact Information -->
+        <div class="detail-card">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">
+                <i class="fas fa-address-book"></i>
+                Contact Information
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-phone"></i>
+                  Phone Number
+                </div>
+                <div class="detail-value" *ngIf="!editMode">{{ doctor.phoneNumber }}</div>
+                <div class="detail-value" *ngIf="editMode">
+                  <input 
+                    type="tel" 
+                    class="form-control form-control-sm" 
+                    formControlName="phoneNumber"
+                    [class.is-invalid]="isFieldInvalid('phoneNumber')">
+                  <div *ngIf="isFieldInvalid('phoneNumber')" class="invalid-feedback">
+                    {{ getFieldError('phoneNumber') }}
+                  </div>
+                </div>
+              </div>
+              <div class="detail-item" *ngIf="doctor.email">
+                <div class="detail-label">
+                  <i class="fas fa-envelope"></i>
+                  Email Address
+                </div>
+                <div class="detail-value">{{ doctor.email }}</div>
+              </div>
+              <div class="detail-item" *ngIf="doctor.firstName || doctor.lastName">
+                <div class="detail-label">
+                  <i class="fas fa-user"></i>
+                  Full Name
+                </div>
+                <div class="detail-value">{{ doctor.firstName }} {{ doctor.lastName }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="detail-card">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">
+                <i class="fas fa-stethoscope"></i>
+                Professional Details
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-stethoscope"></i>
+                  Specialization
+                </div>
+                <div class="detail-value" *ngIf="!editMode">{{ doctor.specialization }}</div>
+                <div class="detail-value" *ngIf="editMode">
+                  <input 
+                    type="text" 
+                    class="form-control form-control-sm" 
+                    formControlName="specialization"
+                    [class.is-invalid]="isFieldInvalid('specialization')">
+                  <div *ngIf="isFieldInvalid('specialization')" class="invalid-feedback">
+                    {{ getFieldError('specialization') }}
+                  </div>
+                </div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-calendar-alt"></i>
+                  Start Date
+                </div>
+                <div class="detail-value">{{ formatDate(doctor.startDate) }}</div>
+              </div>
+              <div class="detail-item" *ngIf="doctor.endDate">
+                <div class="detail-label">
+                  <i class="fas fa-calendar-times"></i>
+                  End Date
+                </div>
+                <div class="detail-value">{{ formatDate(doctor.endDate) }}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-clock"></i>
+                  Experience
+                </div>
+                <div class="detail-value">{{ calculateExperience() }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Information -->
+        <div class="detail-card">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">
+                <i class="fas fa-user-cog"></i>
+                Account Details
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-id-badge"></i>
+                  Doctor ID
+                </div>
+                <div class="detail-value">#{{ doctor.id.toString().padStart(4, '0') }}</div>
+              </div>
+              <div class="detail-item" *ngIf="doctor.appUserId">
+                <div class="detail-label">
+                  <i class="fas fa-key"></i>
+                  User ID
+                </div>
+                <div class="detail-value">{{ doctor.appUserId }}</div>
+              </div>
+              <div class="detail-item" *ngIf="doctor.accountCreatedAt">
+                <div class="detail-label">
+                  <i class="fas fa-user-plus"></i>
+                  Account Created
+                </div>
+                <div class="detail-value">{{ formatDate(doctor.accountCreatedAt) }}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-toggle-on"></i>
+                  Status
+                </div>
+                <div class="detail-value">
+                  <span class="badge" [ngClass]="getStatusBadgeClass(doctor.isActive)">
+                    {{ getStatusText(doctor.isActive) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="detail-card full-width" *ngIf="doctor.fullName || doctor.firstName || doctor.lastName">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">
+                <i class="fas fa-info-circle"></i>
+                Additional Information
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="detail-row">
+                <div class="detail-item" *ngIf="doctor.fullName">
+                  <div class="detail-label">
+                    <i class="fas fa-signature"></i>
+                    Display Name
+                  </div>
+                  <div class="detail-value">{{ doctor.fullName }}</div>
+                </div>
+                <div class="detail-item" *ngIf="doctor.firstName">
+                  <div class="detail-label">
+                    <i class="fas fa-user"></i>
+                    First Name
+                  </div>
+                  <div class="detail-value">{{ doctor.firstName }}</div>
+                </div>
+                <div class="detail-item" *ngIf="doctor.lastName">
+                  <div class="detail-label">
+                    <i class="fas fa-user"></i>
+                    Last Name
+                  </div>
+                  <div class="detail-value">{{ doctor.lastName }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save/Cancel Buttons for Edit Mode -->
+      <div *ngIf="editMode" class="edit-actions">
+        <div class="card">
+          <div class="card-body text-center">
+            <button 
+              type="button" 
+              class="btn btn-success me-3" 
+              (click)="saveChanges()"
+              [disabled]="editForm.invalid || saving">
+              <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+              <i *ngIf="!saving" class="fas fa-save"></i>
+              {{ saving ? 'Saving...' : 'Save Changes' }}
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary" 
+              (click)="cancelEdit()"
+              [disabled]="saving">
+              <i class="fas fa-times"></i>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && !doctor && error" class="error-state">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="error-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h4 class="error-title">Unable to Load Doctor Profile</h4>
+        <p class="error-description">{{ error }}</p>
+        <div class="error-actions">
+          <button class="btn btn-primary me-2" (click)="refreshProfile()">
+            <i class="fas fa-sync-alt"></i>
+            Try Again
+          </button>
+          <button class="btn btn-outline-secondary" (click)="goToDoctorsList()">
+            <i class="fas fa-list"></i>
+            Back to Doctors List
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
