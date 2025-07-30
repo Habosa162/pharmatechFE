@@ -18,7 +18,7 @@ import { InventoryCategoryComponent } from '../../inventory/inventory-category/i
 import { InventoryItemsComponent } from '../../inventory/inventory-items/inventory-items.component';
 import { InventoryTransactionsComponent } from '../../inventory/inventory-transactions/inventory-transactions.component';
 import { InvoiceListComponent } from '../../billing/invoice-list/invoice-list.component';
-import { MasterDashboadrComponent } from '../../Master/master-dashboadr/master-dashboadr.component';
+import { MasterDashboadrComponent } from '../../dashboard/master-dashboadr/master-dashboadr.component';
 import { AppointmentComponent } from '../../appointments/appointment/appointment.component';
 import { PatientAppointmentsComponent } from "../../patients/patient-appointments/patient-appointments.component";
 

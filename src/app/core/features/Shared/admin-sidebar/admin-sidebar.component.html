@@ -6,13 +6,13 @@
           <span>Main</span>
         </li>
         <li >
-          <a routerLink="master" routerLinkActive="active">
+          <a routerLink="master/masterdashboard" routerLinkActive="active">
             <i class="fe fe-home"></i>
             <span>Dashboard</span>
             </a>
         </li>
         <li>
-          <a routerLink="/appointments" routerLinkActive="active">
+          <a routerLink="admin/appointments" routerLinkActive="active">
             <i class="fe fe-layout"></i>
             <span>Appointments</span>
             </a>
@@ -31,7 +31,7 @@
             </a>
         </li>
         <li>
-          <a [routerLink]="['/patients']" routerLinkActive="active" >
+          <a [routerLink]="['admin/patients']" routerLinkActive="active" >
             <i class="fe fe-user"></i>
             <span>Patients</span>
             </a>
