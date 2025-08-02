@@ -297,9 +297,15 @@
 .employee-actions {
   display: flex;
   gap: 0.75rem;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   padding-top: 1rem;
   border-top: 1px solid #f1f5f9;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .employee-actions .btn {
