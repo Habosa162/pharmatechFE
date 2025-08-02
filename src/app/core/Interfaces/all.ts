@@ -198,9 +198,13 @@ export interface UpdateDoctorDTO {
 export interface CreateEmployeeDTO {
   name: string;
   phoneNumber: string;
+  startDate: string;            // ISO string (e.g., '2025-08-02')
+  endDate?: string | null;      // optional and nullable
+  isActive: boolean;
   salary: number;
-  appUserId?: string;
+  appUserId?: string | null;    // optional and nullable
   positionId: number;
+  departmentId: number;         // Department ID for the employee
 }
 
 export interface UpdateEmployeeDTO {
@@ -243,6 +247,21 @@ export interface Employee {
     position: PositionDto;
 }
 
+export interface EmployeeViewDto {
+  id: number;
+  name: string;
+  isDeleted: boolean;
+  appUserId: string;
+  appUserName: string;
+  endDate: string | null;
+  isActive: boolean;
+  positionId: number;
+  positionName: string;
+  departmentName: string;
+  phoneNumber: string;
+  salary: number;
+  startDate: string;
+}
 
 
 
@@ -254,6 +273,16 @@ export interface InventoryCategory {
     clinic: Clinic;
     inventoryItems: InventoryItem[] | null;
 }
+
+export interface InventoryCategoryViewDTO {
+  id: number;
+  name: string;
+  createdAt: string;
+  isDeleted: boolean;
+  clinicId: number;
+  inventoryItems: InventoryItem[] | null;
+}
+
 
 
 export interface InventoryItem {
@@ -267,6 +296,21 @@ export interface InventoryItem {
     updatedAt: string | null;
     inventoryCategoryId: number;
     inventoryCategory: InventoryCategory;
+}
+
+
+export interface InventoryItemViewDTO {
+  id?: number;
+  name: string;
+  description: string | null;
+  purchasePrice: number;
+  stockQuantity: number;
+  expirationDate: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  inventoryCategoryId: number;
+  clinicId: number;
+  isDeleted: boolean;
 }
 
 
@@ -297,13 +341,6 @@ export enum InventoryTransactionType {
 // Inventory DTOs
 export interface CreateInventoryCategoryDTO {
     name: string;
-    description?: string;
-}
-
-export interface UpdateInventoryCategoryDTO {
-    id: number;
-    name: string;
-    description?: string;
 }
 
 export interface CreateInventoryItemDTO {
@@ -325,13 +362,12 @@ export interface UpdateInventoryItemDTO {
     inventoryCategoryId: number;
 }
 
-export interface CreateInventoryTransactionDTO {
+export interface CreateInventoryTransactionDto {
     quantity: number;
     description?: string;
-    date: string;
     transactionType: InventoryTransactionType;
     inventoryItemId: number;
-    userId: string;
+    // userId: string;
 }
 
 export interface UpdateInventoryTransactionDTO {

@@ -25,7 +25,7 @@
   </div>
 
   <!-- Summary Cards -->
-  <div *ngIf="activeTab === 'transactions'" class="summary-cards">
+  <div class="summary-cards">
     <div class="summary-card income">
       <div class="card-icon">
         <i class="fas fa-arrow-up"></i>
@@ -62,18 +62,9 @@
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <button 
-          class="nav-link" 
-          [class.active]="activeTab === 'transactions'"
+          class="nav-link active" 
           (click)="setActiveTab('transactions')">
           <i class="fas fa-exchange-alt"></i> Transactions
-        </button>
-      </li>
-      <li class="nav-item">
-        <button 
-          class="nav-link" 
-          [class.active]="activeTab === 'categories'"
-          (click)="setActiveTab('categories')">
-          <i class="fas fa-tags"></i> Categories
         </button>
       </li>
     </ul>
@@ -82,7 +73,7 @@
   <!-- Tab Content -->
   <div class="tab-content">
     <!-- Transactions Tab -->
-    <div *ngIf="activeTab === 'transactions'" class="tab-pane">
+    <div class="tab-content-section">
       <!-- Filters Section -->
       <div class="filters-section">
         <div class="card">
@@ -94,34 +85,25 @@
           </div>
           <div class="card-body">
             <div class="row g-3">
-              <div class="col-md-3">
-                <div class="form-group">
-                  <label class="form-label">Category</label>
-                  <select class="form-select" [(ngModel)]="selectedCategory" (change)="onFilterChange()">
-                    <option value="all">All Categories</option>
-                    <option *ngFor="let category of categories" [value]="category.id">
-                      {{ category.name }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <div class="form-group">
                   <label class="form-label">Type</label>
                   <select class="form-select" [(ngModel)]="selectedType" (change)="onFilterChange()">
                     <option value="all">All Types</option>
                     <option [value]="TransactionType.Income">Income</option>
                     <option [value]="TransactionType.Expense">Expense</option>
+                    <option [value]="TransactionType.Refund">Refund</option>
+                    <option [value]="TransactionType.Other">Other</option>
                   </select>
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <div class="form-group">
                   <label class="form-label">From Date</label>
                   <input type="date" class="form-control" [(ngModel)]="dateFrom" (change)="onFilterChange()">
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-3">
                 <div class="form-group">
                   <label class="form-label">To Date</label>
                   <input type="date" class="form-control" [(ngModel)]="dateTo" (change)="onFilterChange()">
@@ -174,7 +156,6 @@
               <tr>
                 <th>Date</th>
                 <th>Description</th>
-                <th>Category</th>
                 <th>Type</th>
                 <th>Amount</th>
                 <th>Actions</th>
@@ -184,11 +165,10 @@
               <tr *ngFor="let transaction of filteredTransactions">
                 <td>{{ transaction.date | date:'short' }}</td>
                 <td>{{ transaction.description || 'No description' }}</td>
-                <td>{{ getCategoryName(transaction.categoryId) }}</td>
                 <td>
                   <span class="badge" [ngClass]="getTransactionTypeClass(transaction.type)">
                     <i [class]="getTransactionTypeIcon(transaction.type)"></i>
-                    {{ transaction.type }}
+                    {{ getTransactionTypeText(transaction.type) }}
                   </span>
                 </td>
                 <td class="amount" [class.income]="transaction.type === TransactionType.Income" [class.expense]="transaction.type === TransactionType.Expense">
@@ -207,54 +187,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Categories Tab -->
-    <div *ngIf="activeTab === 'categories'" class="tab-pane">
-      <div class="section-header">
-        <h3>
-          <i class="fas fa-tags"></i>
-          Categories
-        </h3>
-        <button class="btn btn-primary" (click)="showAddCategoryModal()">
-          <i class="fas fa-plus"></i>
-          Add Category
-        </button>
-      </div>
-
-      <div class="content-card">
-        <div *ngIf="loading" class="loading-section">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-          <p>Loading categories...</p>
-        </div>
-
-        <div *ngIf="!loading && categories.length === 0" class="empty-state">
-          <i class="fas fa-tags"></i>
-          <h4>No Categories Found</h4>
-          <p>Start by creating your first transaction category.</p>
-          <button class="btn btn-primary" (click)="showAddCategoryModal()">
-            <i class="fas fa-plus"></i> Add Category
-          </button>
-        </div>
-
-        <div *ngIf="!loading && categories.length > 0" class="categories-grid">
-          <div *ngFor="let category of categories" class="category-card">
-            <div class="card-header">
-              <h5 class="category-name">{{ category.name }}</h5>
-              <div class="category-actions">
-                <button class="btn btn-sm btn-outline-primary" (click)="showEditCategoryModal(category)">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteCategory(category.id)">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -295,14 +227,18 @@
 
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">Date *</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  formControlName="date"
-                  [class.is-invalid]="isFieldInvalid(transactionForm, 'date')">
-                <div *ngIf="isFieldInvalid(transactionForm, 'date')" class="invalid-feedback">
-                  {{ getFieldError(transactionForm, 'date') }}
+                <label class="form-label">Type *</label>
+                <select
+                  class="form-select"
+                  formControlName="type"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'type')">
+                  <option [value]="TransactionType.Income">Income</option>
+                  <option [value]="TransactionType.Expense">Expense</option>
+                  <option [value]="TransactionType.Refund">Refund</option>
+                  <option [value]="TransactionType.Other">Other</option>
+                </select>
+                <div *ngIf="isFieldInvalid(transactionForm, 'type')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'type') }}
                 </div>
               </div>
             </div>
@@ -311,34 +247,14 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">Type *</label>
-                <select
-                  class="form-select"
-                  formControlName="type"
-                  [class.is-invalid]="isFieldInvalid(transactionForm, 'type')">
-                  <option [value]="TransactionType.Income">Income</option>
-                  <option [value]="TransactionType.Expense">Expense</option>
-                </select>
-                <div *ngIf="isFieldInvalid(transactionForm, 'type')" class="invalid-feedback">
-                  {{ getFieldError(transactionForm, 'type') }}
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="form-label">Category *</label>
-                <select
-                  class="form-select"
-                  formControlName="categoryId"
-                  [class.is-invalid]="isFieldInvalid(transactionForm, 'categoryId')">
-                  <option value="">Select category</option>
-                  <option *ngFor="let category of categories" [value]="category.id">
-                    {{ category.name }}
-                  </option>
-                </select>
-                <div *ngIf="isFieldInvalid(transactionForm, 'categoryId')" class="invalid-feedback">
-                  {{ getFieldError(transactionForm, 'categoryId') }}
+                <label class="form-label">Date *</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  formControlName="date"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'date')">
+                <div *ngIf="isFieldInvalid(transactionForm, 'date')" class="invalid-feedback">
+                  {{ getFieldError(transactionForm, 'date') }}
                 </div>
               </div>
             </div>
@@ -364,51 +280,6 @@
             [disabled]="transactionForm.invalid">
             <i class="fas fa-save"></i>
             {{ editingTransaction ? 'Update' : 'Create' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Category Modal -->
-  <div *ngIf="showCategoryModal" class="modal-overlay" (click)="closeCategoryModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h4 class="modal-title">
-          <i class="fas fa-tags"></i>
-          {{ editingCategory ? 'Edit Category' : 'Add Category' }}
-        </h4>
-        <button type="button" class="btn-close" (click)="closeCategoryModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      
-      <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">Name *</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="name"
-              [class.is-invalid]="isFieldInvalid(categoryForm, 'name')"
-              placeholder="Enter category name">
-            <div *ngIf="isFieldInvalid(categoryForm, 'name')" class="invalid-feedback">
-              {{ getFieldError(categoryForm, 'name') }}
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeCategoryModal()">
-            <i class="fas fa-times"></i> Cancel
-          </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
-            [disabled]="categoryForm.invalid">
-            <i class="fas fa-save"></i>
-            {{ editingCategory ? 'Update' : 'Create' }}
           </button>
         </div>
       </form>

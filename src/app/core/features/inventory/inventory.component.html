@@ -1,7 +1,7 @@
 <div class="inventory-container">
   <!-- Header Section -->
-  <div class="page-header">
-    <div class="header-content">
+  <!-- <div class="page-header"> -->
+    <!-- <div class="header-content">
       <div class="header-title">
         <h1 class="page-title">
           <i class="fas fa-boxes"></i>
@@ -11,8 +11,35 @@
           Manage categories, items, and track inventory transactions
         </p>
       </div>
-    </div>
-  </div>
+      
+      
+      <div class="quick-actions">
+        <div class="row">
+          <div class="col-md-4">
+            <button class="btn btn-success btn-lg w-100" (click)="showAddCategoryModal()">
+              <i class="fas fa-tags"></i>
+              <span class="d-block">Add Category</span>
+              <small>Create new inventory category</small>
+            </button>
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-primary btn-lg w-100" (click)="showAddItemModal()">
+              <i class="fas fa-cube"></i>
+              <span class="d-block">Add Item</span>
+              <small>Add new inventory item</small>
+            </button>
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-info btn-lg w-100" (click)="showAddTransactionModal()">
+              <i class="fas fa-exchange-alt"></i>
+              <span class="d-block">Record Transaction</span>
+              <small>Log inventory movement</small>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  <!-- </div> -->
 
   <!-- Messages -->
   <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -23,6 +50,28 @@
     <i class="fas fa-exclamation-triangle"></i> {{ error }}
     <button type="button" class="btn-close" (click)="clearMessages()"></button>
   </div>
+
+  <!-- Clinic Filter -->
+  <!-- <div class="filter-section" *ngIf="clinics.length > 0">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-hospital"></i> Filter by Clinic
+          </label>
+          <select 
+            class="form-select" 
+            [(ngModel)]="selectedClinicId" 
+            (change)="onClinicChange()">
+            <option [value]="null">All Clinics</option>
+            <option *ngFor="let clinic of clinics" [value]="clinic.id">
+              {{ clinic.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div> -->
 
   <!-- Navigation Tabs -->
   <div class="nav-tabs-container">
@@ -54,10 +103,59 @@
     </ul>
   </div>
 
+  <!-- Quick Add Section (shown when no data) -->
+  <!-- <div class="quick-add-section" *ngIf="!loading && 
+    (activeTab === 'categories' && categories.length === 0) ||
+    (activeTab === 'items' && activeItems.length === 0) ||
+    (activeTab === 'transactions' && transactions.length === 0)">
+    <div class="content-card">
+      <div class="text-center">
+        <h4>Get Started with {{ getActiveTabTitle() }}</h4>
+        <p class="text-muted mb-4">Choose what you'd like to create first:</p>
+        <div class="row" *ngIf="activeTab === 'categories'">
+          <div class="col-md-12">
+            <div class="quick-add-card" (click)="showAddCategoryModal()">
+              <div class="quick-add-icon">
+                <i class="fas fa-tags"></i>
+              </div>
+              <h5>Create Category</h5>
+              <p>Organize your inventory with categories</p>
+              <button class="btn btn-outline-primary">Create Category</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="activeTab === 'items'">
+          <div class="col-md-12">
+            <div class="quick-add-card" (click)="showAddItemModal()">
+              <div class="quick-add-icon">
+                <i class="fas fa-cube"></i>
+              </div>
+              <h5>Add Item</h5>
+              <p>Add your first inventory item</p>
+              <button class="btn btn-outline-primary">Add Item</button>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="activeTab === 'transactions'">
+          <div class="col-md-12">
+            <div class="quick-add-card" (click)="showAddTransactionModal()">
+              <div class="quick-add-icon">
+                <i class="fas fa-exchange-alt"></i>
+              </div>
+              <h5>Record Transaction</h5>
+              <p>Log inventory movements</p>
+              <button class="btn btn-outline-primary">Record Transaction</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
   <!-- Tab Content -->
   <div class="tab-content">
     <!-- Categories Tab -->
-    <div *ngIf="activeTab === 'categories'" class="tab-pane">
+    <div *ngIf="activeTab === 'categories'" class="tab-content-section">
       <div class="section-header">
         <h3>
           <i class="fas fa-tags"></i>
@@ -81,12 +179,14 @@
           <i class="fas fa-tags"></i>
           <h4>No Categories Found</h4>
           <p>Start by creating your first inventory category.</p>
+          <p class="text-muted">Debug: Categories count: {{ categories.length }}</p>
           <button class="btn btn-primary" (click)="showAddCategoryModal()">
             <i class="fas fa-plus"></i> Add Category
           </button>
         </div>
 
         <div *ngIf="!loading && categories.length > 0" class="categories-grid">
+          
           <div *ngFor="let category of categories" class="category-card">
             <div class="card-header">
               <h5 class="category-name">{{ category.name }}</h5>
@@ -100,7 +200,14 @@
               </div>
             </div>
             <div class="card-body">
-              <p class="category-description">{{ category.description || 'No description' }}</p>
+              <div class="category-meta">
+                <span class="badge badge-info" *ngIf="clinics.length > 0">
+                  <i class="fas fa-hospital"></i> {{ getClinicName(category.clinicId || 0) }}
+                </span>
+                <small class="text-muted">
+                  <i class="fas fa-calendar"></i> {{ category.createdAt | date:'short' }}
+                </small>
+              </div>
             </div>
           </div>
         </div>
@@ -108,7 +215,7 @@
     </div>
 
     <!-- Items Tab -->
-    <div *ngIf="activeTab === 'items'" class="tab-pane">
+    <div *ngIf="activeTab === 'items'" class="tab-content-section">
       <div class="section-header">
         <h3>
           <i class="fas fa-cube"></i>
@@ -128,7 +235,7 @@
           <p>Loading items...</p>
         </div>
 
-        <div *ngIf="!loading && items.length === 0" class="empty-state">
+        <div *ngIf="!loading && activeItems.length === 0" class="empty-state">
           <i class="fas fa-cube"></i>
           <h4>No Items Found</h4>
           <p>Start by adding your first inventory item.</p>
@@ -137,12 +244,13 @@
           </button>
         </div>
 
-        <div *ngIf="!loading && items.length > 0" class="items-table">
+        <div *ngIf="!loading && activeItems.length > 0" class="items-table">
           <table class="table">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Category</th>
+                <th>Clinic</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Status</th>
@@ -150,7 +258,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of items">
+              <tr *ngFor="let item of activeItems">
                 <td>
                   <div class="item-info">
                     <strong>{{ item.name }}</strong>
@@ -158,6 +266,11 @@
                   </div>
                 </td>
                 <td>{{ getCategoryName(item.inventoryCategoryId) }}</td>
+                <td>
+                  <span class="badge badge-info" *ngIf="clinics.length > 0">
+                    <i class="fas fa-hospital"></i> {{ getClinicName(item.clinicId || 0) }}
+                  </span>
+                </td>
                 <td>
                   <span class="quantity-badge">
                     {{ item.stockQuantity }}
@@ -174,7 +287,7 @@
                     <button class="btn btn-sm btn-outline-primary" (click)="showEditItemModal(item)">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteItem(item.id)">
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteItem(item.id!)">
                       <i class="fas fa-trash"></i>
                     </button>
                   </div>
@@ -187,16 +300,22 @@
     </div>
 
     <!-- Transactions Tab -->
-    <div *ngIf="activeTab === 'transactions'" class="tab-pane">
+    <div *ngIf="activeTab === 'transactions'" class="tab-content-section">
       <div class="section-header">
         <h3>
           <i class="fas fa-exchange-alt"></i>
           Transactions
         </h3>
-        <button class="btn btn-primary" (click)="showAddTransactionModal()">
-          <i class="fas fa-plus"></i>
-          Record Transaction
-        </button>
+        <div>
+          <button class="btn btn-warning me-2" (click)="testTransactionCreation()">
+            <i class="fas fa-bug"></i>
+            Test Transaction
+          </button>
+          <button class="btn btn-primary" (click)="showAddTransactionModal()">
+            <i class="fas fa-plus"></i>
+            Record Transaction
+          </button>
+        </div>
       </div>
 
       <div class="content-card">
@@ -222,6 +341,7 @@
               <tr>
                 <th>Date</th>
                 <th>Item</th>
+                <th>Clinic</th>
                 <th>Type</th>
                 <th>Quantity</th>
                 <th>Notes</th>
@@ -231,6 +351,11 @@
               <tr *ngFor="let transaction of transactions">
                 <td>{{ transaction.date | date:'short' }}</td>
                 <td>{{ getItemName(transaction.inventoryItemId) }}</td>
+                <td>
+                  <span class="badge badge-info" *ngIf="clinics.length > 0">
+                    <i class="fas fa-hospital"></i> {{ getClinicName(transaction.inventoryItem?.inventoryCategory?.clinic?.id || 0) }}
+                  </span>
+                </td>
                 <td>
                   <span class="badge" [ngClass]="getTransactionTypeClass(transaction.transactionType)">
                     {{ getTransactionTypeText(transaction.transactionType) }}
@@ -272,15 +397,6 @@
             <div *ngIf="isFieldInvalid(categoryForm, 'name')" class="invalid-feedback">
               {{ getFieldError(categoryForm, 'name') }}
             </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea
-              class="form-control"
-              formControlName="description"
-              rows="3"
-              placeholder="Enter category description (optional)"></textarea>
           </div>
         </div>
 
@@ -526,6 +642,24 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="fab-container">
+    <button class="fab-button fab-main" (click)="toggleFabMenu()">
+      <i class="fas fa-plus"></i>
+    </button>
+    <div class="fab-menu" [class.active]="showFabMenu">
+      <button class="fab-button fab-item" (click)="showAddCategoryModal(); toggleFabMenu()" title="Add Category">
+        <i class="fas fa-tags"></i>
+      </button>
+      <button class="fab-button fab-item" (click)="showAddItemModal(); toggleFabMenu()" title="Add Item">
+        <i class="fas fa-cube"></i>
+      </button>
+      <button class="fab-button fab-item" (click)="showAddTransactionModal(); toggleFabMenu()" title="Record Transaction">
+        <i class="fas fa-exchange-alt"></i>
+      </button>
     </div>
   </div>
 </div> 

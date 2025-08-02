@@ -3,15 +3,17 @@ import { environment } from '../enviroment';
 import { HttpClient } from '@angular/common/http';
 import { 
   CreateInventoryCategoryDTO,
-  UpdateInventoryCategoryDTO,
   CreateInventoryItemDTO,
   UpdateInventoryItemDTO,
-  CreateInventoryTransactionDTO,
+  CreateInventoryTransactionDto,
   UpdateInventoryTransactionDTO,
   InventoryCategory,
   InventoryItem,
-  InventoryTransaction
+  InventoryTransaction,
+  InventoryCategoryViewDTO,
+  InventoryItemViewDTO
 } from '../../Interfaces/all';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -22,65 +24,84 @@ export class InventoryService {
   constructor(private http:HttpClient) {}
 
   //____________Inventory Category Service Methods____________
-  getAllInventoryCategories() {
-    return this.http.get<InventoryCategory[]>(`${this.apiUrl}/categories`);
+  getAllInventoryCategories():Observable<InventoryCategoryViewDTO[]> {
+    return this.http.get<InventoryCategoryViewDTO[]>(`${this.apiUrl}/categories`);
   }
   
-  getInventoryCategoryById(categoryId: number) {
-    return this.http.get<InventoryCategory>(`${this.apiUrl}/categories/${categoryId}`);
+  getInventoryCategoriesByClinic(clinicId: number): Observable<InventoryCategoryViewDTO[]> {
+    return this.http.get<InventoryCategoryViewDTO[]>(`${this.apiUrl}/categories/clinic/${clinicId}`);
   }
   
-  createInventoryCategory(categoryData: CreateInventoryCategoryDTO) {
-    return this.http.post<InventoryCategory>(`${this.apiUrl}/categories`, categoryData);
+  getInventoryCategoryById(categoryId: number): Observable<InventoryCategoryViewDTO> {
+    return this.http.get<InventoryCategoryViewDTO>(`${this.apiUrl}/categories/${categoryId}`);
   }
   
-  updateInventoryCategory(categoryId: number, categoryData: UpdateInventoryCategoryDTO) {
-    return this.http.put<InventoryCategory>(`${this.apiUrl}/categories/${categoryId}`, categoryData);
+  createInventoryCategory(categoryName: string): Observable<InventoryCategoryViewDTO> {
+    return this.http.post<InventoryCategoryViewDTO>(`${this.apiUrl}/categories`, `"${categoryName}"`, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
   
-  deleteInventoryCategory(categoryId: number) {
+  updateInventoryCategory(categoryId: number, categoryName: string): Observable<InventoryCategoryViewDTO> {
+    return this.http.put<InventoryCategoryViewDTO>(`${this.apiUrl}/categories/${categoryId}`, `"${categoryName}"`, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  
+  deleteInventoryCategory(categoryId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/categories/${categoryId}`);
   }
 
   //____________Inventory Items Service Methods____________
-  getAllInventoryItems() {
-    return this.http.get<InventoryItem[]>(`${this.apiUrl}/items`);
+  getAllInventoryItems(): Observable<InventoryItemViewDTO[]> {
+    return this.http.get<InventoryItemViewDTO[]>(`${this.apiUrl}/items`);
   }
   
-  getInventoryItemById(itemId: number) {
-    return this.http.get<InventoryItem>(`${this.apiUrl}/items/${itemId}`);
+  getInventoryItemsByClinic(clinicId: number): Observable<InventoryItemViewDTO[]> {
+    return this.http.get<InventoryItemViewDTO[]>(`${this.apiUrl}/items/clinic/${clinicId}`);
   }
   
-  createInventoryItem(itemData: CreateInventoryItemDTO) {
-    return this.http.post<InventoryItem>(`${this.apiUrl}/items`, itemData);
+  getInventoryItemById(itemId: number): Observable<InventoryItemViewDTO> {
+    return this.http.get<InventoryItemViewDTO>(`${this.apiUrl}/items/${itemId}`);
   }
   
-  updateInventoryItem(itemId: number, itemData: UpdateInventoryItemDTO) {
-    return this.http.put<InventoryItem>(`${this.apiUrl}/items/${itemId}`, itemData);
+  createInventoryItem(itemData: CreateInventoryItemDTO): Observable<InventoryItemViewDTO> {
+    return this.http.post<InventoryItemViewDTO>(`${this.apiUrl}/items`, itemData);
   }
   
-  deleteInventoryItem(itemId: number) {
+  updateInventoryItem(itemId: number, itemData: UpdateInventoryItemDTO): Observable<InventoryItemViewDTO> {
+    return this.http.put<InventoryItemViewDTO>(`${this.apiUrl}/items/${itemId}`, itemData);
+  }
+  
+  deleteInventoryItem(itemId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/items/${itemId}`);
   }
 
   //____________Inventory Transactions Service Methods____________
-  getAllInventoryTransactions() {
+  getAllInventoryTransactions(): Observable<InventoryTransaction[]> {
     return this.http.get<InventoryTransaction[]>(`${this.apiUrl}/transactions`);
   }
   
-  getInventoryTransactionById(transactionId: number) {
+  getInventoryTransactionsByClinic(clinicId: number): Observable<InventoryTransaction[]> {
+    return this.http.get<InventoryTransaction[]>(`${this.apiUrl}/transactions/clinic/${clinicId}`);
+  }
+  
+  getInventoryTransactionById(transactionId: number): Observable<InventoryTransaction> {
     return this.http.get<InventoryTransaction>(`${this.apiUrl}/transactions/${transactionId}`);
   }
   
-  createInventoryTransaction(transactionData: CreateInventoryTransactionDTO) {
-    return this.http.post<InventoryTransaction>(`${this.apiUrl}/transactions`, transactionData);
-  }
+    createInventoryTransaction(transactionData: CreateInventoryTransactionDto): Observable<InventoryTransaction> {
+      console.log('Service: Sending transaction data:', transactionData);
+      return this.http.post<InventoryTransaction>(`${this.apiUrl}/transactions`, transactionData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
   
-  updateInventoryTransaction(transactionId: number, transactionData: UpdateInventoryTransactionDTO) {
+  updateInventoryTransaction(transactionId: number, transactionData: UpdateInventoryTransactionDTO): Observable<InventoryTransaction> {
     return this.http.put<InventoryTransaction>(`${this.apiUrl}/transactions/${transactionId}`, transactionData);
   }
   
-  deleteInventoryTransaction(transactionId: number) {
+  deleteInventoryTransaction(transactionId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/transactions/${transactionId}`);
   }
 }

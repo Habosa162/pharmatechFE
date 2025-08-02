@@ -4,13 +4,11 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { TransactionService } from '../../services/transactions/transaction.service';
 import { 
   Transaction, 
-  TransactionCategory, 
   TransactionType,
   CreateTransactionDTO,
-  CreateCategoryDTO,
-  UpdateTransactionDTO,
-  UpdateCategoryDTO
+  UpdateTransactionDTO
 } from '../../Models/transactions/transactions.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-transaction',
@@ -21,60 +19,50 @@ import {
 export class TransactionComponent implements OnInit {
   // Data properties
   transactions: Transaction[] = [];
-  categories: TransactionCategory[] = [];
   filteredTransactions: Transaction[] = [];
   
   // UI state
-  activeTab: 'transactions' | 'categories' = 'transactions';
   loading = false;
   error: string | null = null;
   success: string | null = null;
 
   // Filter properties
-  selectedCategory = 'all';
   selectedType = 'all';
   dateFrom = '';
   dateTo = '';
 
   // Modal states
   showTransactionModal = false;
-  showCategoryModal = false;
 
   // Forms
   transactionForm: FormGroup;
-  categoryForm: FormGroup;
 
   // Edit states
   editingTransaction: Transaction | null = null;
-  editingCategory: TransactionCategory | null = null;
 
   // Enums for template
   TransactionType = TransactionType;
 
   constructor(
     private transactionService: TransactionService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private authservice:AuthService
   ) {
     this.transactionForm = this.formBuilder.group({
       amount: [0, [Validators.required, Validators.min(0.01)]],
       description: [''],
-      type: [TransactionType.Income, [Validators.required]],
-      categoryId: ['', [Validators.required]],
+      type: [TransactionType.Income, [Validators.required]], // This will now be numeric
       date: [new Date().toISOString().split('T')[0], [Validators.required]]
-    });
-
-    this.categoryForm = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(2)]]
     });
   }
 
   ngOnInit(): void {
     this.loadAllData();
   }
-
+userid:string|null=null;
   loadAllData(): void {
+    this.userid=this.authservice.getUserId();
     this.loadTransactions();
-    this.loadCategories();
   }
 
   loadTransactions(): void {
@@ -82,6 +70,7 @@ export class TransactionComponent implements OnInit {
     this.transactionService.getAllTransactions().subscribe({
       next: (transactions) => {
         this.transactions = transactions;
+        console.log(this.transactions,'all transac');
         this.applyFilters();
         this.loading = false;
       },
@@ -93,30 +82,13 @@ export class TransactionComponent implements OnInit {
     });
   }
 
-  loadCategories(): void {
-    this.transactionService.getAllTransactionCategories().subscribe({
-      next: (categories) => {
-        this.categories = categories;
-      },
-      error: (error) => {
-        console.error('Error loading categories:', error);
-        this.error = 'Failed to load categories';
-      }
-    });
-  }
-
   // Filter methods
   applyFilters(): void {
     let filtered = [...this.transactions];
 
-    // Filter by category
-    if (this.selectedCategory !== 'all') {
-      filtered = filtered.filter(t => t.categoryId === +this.selectedCategory);
-    }
-
     // Filter by type
     if (this.selectedType !== 'all') {
-      filtered = filtered.filter(t => t.type === this.selectedType);
+      filtered = filtered.filter(t => t.type === +this.selectedType);
     }
 
     // Filter by date range
@@ -137,7 +109,6 @@ export class TransactionComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.selectedCategory = 'all';
     this.selectedType = 'all';
     this.dateFrom = '';
     this.dateTo = '';
@@ -146,8 +117,7 @@ export class TransactionComponent implements OnInit {
 
   // Tab management
   setActiveTab(tab: 'transactions' | 'categories'): void {
-    this.activeTab = tab;
-    this.clearMessages();
+    // This method is no longer needed as categories are removed
   }
 
   // Transaction management
@@ -185,9 +155,8 @@ export class TransactionComponent implements OnInit {
           amount: this.transactionForm.value.amount,
           date: new Date(this.transactionForm.value.date),
           description: this.transactionForm.value.description,
-          type: this.transactionForm.value.type,
-          userId: 'current-user-id', // You might want to get this from auth service
-          categoryId: this.transactionForm.value.categoryId
+          type: Number(this.transactionForm.value.type), // Ensure it's numeric
+          userId: this.userid! // You might want to get this from auth service
         };
 
         this.transactionService.updateTransaction(this.editingTransaction.id!, updateData).subscribe({
@@ -207,9 +176,8 @@ export class TransactionComponent implements OnInit {
           amount: this.transactionForm.value.amount,
           date: new Date(this.transactionForm.value.date),
           description: this.transactionForm.value.description,
-          type: this.transactionForm.value.type,
-          userId: 'current-user-id', // You might want to get this from auth service
-          categoryId: this.transactionForm.value.categoryId
+          type: Number(this.transactionForm.value.type), // Ensure it's numeric
+          userId: this.userid! // You might want to get this from auth service
         };
 
         this.transactionService.createTransaction(createData).subscribe({
@@ -242,95 +210,50 @@ export class TransactionComponent implements OnInit {
     }
   }
 
-  // Category management
-  showAddCategoryModal(): void {
-    this.editingCategory = null;
-    this.categoryForm.reset();
-    this.showCategoryModal = true;
-  }
-
-  showEditCategoryModal(category: TransactionCategory): void {
-    this.editingCategory = category;
-    this.categoryForm.patchValue(category);
-    this.showCategoryModal = true;
-  }
-
-  closeCategoryModal(): void {
-    this.showCategoryModal = false;
-    this.editingCategory = null;
-    this.categoryForm.reset();
-  }
-
-  saveCategory(): void {
-    if (this.categoryForm.valid) {
-      const categoryName = this.categoryForm.value.name;
-
-      if (this.editingCategory) {
-        // Update existing category
-        const updateData: UpdateCategoryDTO = {
-          id: this.editingCategory.id,
-          name: categoryName
-        };
-        
-        this.transactionService.updateTransactionCategory(this.editingCategory.id, updateData).subscribe({
-          next: () => {
-            this.success = 'Category updated successfully!';
-            this.closeCategoryModal();
-            this.loadCategories();
-          },
-          error: (error) => {
-            console.error('Error updating category:', error);
-            this.error = 'Failed to update category';
-          }
-        });
-      } else {
-        // Create new category using DTO
-        const createData: CreateCategoryDTO = {
-          name: categoryName
-        };
-        
-        this.transactionService.createTransactionCategory(createData).subscribe({
-          next: () => {
-            this.success = 'Category created successfully!';
-            this.closeCategoryModal();
-            this.loadCategories();
-          },
-          error: (error) => {
-            console.error('Error creating category:', error);
-            this.error = 'Failed to create category';
-          }
-        });
-      }
-    }
-  }
-
-  deleteCategory(categoryId: number): void {
-    if (confirm('Are you sure you want to delete this category?')) {
-      this.transactionService.deleteTransactionCategory(categoryId).subscribe({
-        next: () => {
-          this.success = 'Category deleted successfully!';
-          this.loadCategories();
-        },
-        error: (error) => {
-          console.error('Error deleting category:', error);
-          this.error = 'Failed to delete category';
-        }
-      });
-    }
-  }
-
   // Utility methods
-  getCategoryName(categoryId: number): string {
-    const category = this.categories.find(c => c.id === categoryId);
-    return category ? category.name : 'Unknown Category';
-  }
-
   getTransactionTypeClass(type: TransactionType): string {
-    return type === TransactionType.Income ? 'badge-success' : 'badge-danger';
+    switch (type) {
+      case TransactionType.Income:
+        return 'badge-success';
+      case TransactionType.Expense:
+        return 'badge-danger';
+      case TransactionType.Refund:
+        return 'badge-warning';
+      case TransactionType.Other:
+        return 'badge-info';
+      default:
+        return 'badge-secondary';
+    }
   }
 
   getTransactionTypeIcon(type: TransactionType): string {
-    return type === TransactionType.Income ? 'fas fa-arrow-up' : 'fas fa-arrow-down';
+    switch (type) {
+      case TransactionType.Income:
+        return 'fas fa-arrow-up';
+      case TransactionType.Expense:
+        return 'fas fa-arrow-down';
+      case TransactionType.Refund:
+        return 'fas fa-undo';
+      case TransactionType.Other:
+        return 'fas fa-ellipsis-h';
+      default:
+        return 'fas fa-question';
+    }
+  }
+
+  getTransactionTypeText(type: TransactionType): string {
+    switch (type) {
+      case TransactionType.Income:
+        return 'Income';
+      case TransactionType.Expense:
+        return 'Expense';
+      case TransactionType.Refund:
+        return 'Refund';
+      case TransactionType.Other:
+        return 'Other';
+      default:
+        return 'Unknown';
+    }
   }
 
   getTotalAmount(): number {

@@ -1,6 +1,8 @@
 export enum TransactionType {
-  Income = 'Income',
-  Expense = 'Expense'
+  Income = 1,
+  Expense = 2,
+  Refund = 3,
+  Other = 4
 }
 
 export interface Transaction {
@@ -10,7 +12,7 @@ export interface Transaction {
   description?: string;
   type: TransactionType;
   userId?: string;
-  categoryId: number;
+  // categoryId: number;
 }
 
 export interface TransactionCategory {
@@ -25,7 +27,7 @@ export interface CreateTransactionDTO {
   description?: string;
   type?: TransactionType | null;
   userId: string;
-  categoryId: number;
+  categoryId?: number; // Made optional since we're removing category functionality
 }
 
 export interface CreateCategoryDTO {
