@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { NotFoundComponent } from './core/features/not-found/not-found.component';
 import { LoginComponent } from './core/features/auth/login/login.component';
-import { AppointmentComponent } from './core/features/appointments/appointment/appointment.component';
+
 import { PatientListComponent } from './core/features/patients/patient-list/patient-list.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AdminDashboardComponent } from './core/features/dashboard/admin-dashboard/admin-dashboard.component';
@@ -14,19 +14,14 @@ import { OwnerDashboardComponent } from './core/features/dashboard/owner-dashboa
 import { DoctorAppointmentsComponent } from './core/features/doctors/doctor-appointments/doctor-appointments.component';
 import { MyAppointmentsComponent } from './core/features/appointments/my-appointments/my-appointments.component';
 import { DoctorSidebarComponent } from './core/features/doctors/doctor-sidebar';
-import { AppointmentListComponent } from './core/features/appointments/appointment-list/appointment-list.component';
+
 import { DoctorListComponent } from './core/features/doctors/doctor-list/doctor-list.component';
 import { InvoiceListComponent } from './core/features/billing/invoice-list/invoice-list.component';
 import { InvoiceDetailsComponent } from './core/features/billing/invoice-details/invoice-details.component';
 import { InvoiceEditComponent } from './core/features/billing/invoice-edit/invoice-edit.component';
-import { TransactionsListComponent } from './core/features/transactions/transactions-list/transactions-list.component';
-import { InventoryCategoryComponent } from './core/features/inventory/inventory-category/inventory-category.component';
-import { InventoryItemsComponent } from './core/features/inventory/inventory-items/inventory-items.component';
-import { InventoryTransactionsComponent } from './core/features/inventory/inventory-transactions/inventory-transactions.component';
+
+
 import { AdminDataManagementComponent } from './core/features/Shared/admin-data-management/admin-data-management.component';
-import { OwnerLayoutComponent } from './core/layouts/owner-layout/owner-layout.component';
-import { PrescriptionService } from './core/services/patients/prescription.service';
-import { PatientPrescriptionComponent } from './core/features/patients/PatientPrescriptions/patient-prescription/patient-prescription.component';
 import { AppointmentDetailsComponent } from './core/features/appointments/appointment-details/appointment-details.component';
 import { MedicalHistoryComponent } from './core/features/patients/medical-history/medical-history.component';
 import { PatientLabTestsComponent } from './core/features/patients/patient-lab-tests/patient-lab-tests.component';
@@ -38,6 +33,7 @@ import { InventoryComponent } from './core/features/inventory/inventory.componen
 import { TransactionComponent } from './core/features/transactions/transaction.component';
 import { DepartmentManagementComponent } from './core/features/departments/department-management/department-management.component';
 import { PrescriptionDetailsComponent } from './core/features/patients/prescription-details/prescription-details.component';
+
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -59,19 +55,12 @@ export const routes: Routes = [
         path: 'admin-dashboard',
         component:MasterDashboadrComponent
       },
-      { path: 'appointments', component: AppointmentListComponent },
       { path: 'doctors', component: DoctorListComponent },
       { path: 'patients', component: PatientListComponent },
-      { path: 'appointments', component: AppointmentListComponent },
       { path: 'invoices', component: InvoiceListComponent },
       { path: 'invoices/:id', component: InvoiceDetailsComponent },
       { path: 'invoices/edit/:id', component: InvoiceEditComponent },
-      { path: 'transactions', component: TransactionsListComponent },
-      { path: 'inventorycategories', component: InventoryCategoryComponent },
-      { path: 'inventoryitmes', component: InventoryItemsComponent },
-      { path: 'inventorytransactions', component: InventoryTransactionsComponent },
       { path: 'admin-data-management', component: AdminDataManagementComponent },
-      { path: 'prescriptions', component: PatientPrescriptionComponent },
       { path: 'prescriptions/:id', component: PrescriptionDetailsComponent },
       // {path:'patient-medical-history/:patientId', component: MedicalHistoryComponent},
     ]
@@ -119,7 +108,6 @@ export const routes: Routes = [
   { path: 'doctorAppointments/:id', component: DoctorAppointmentsComponent },
   { path: 'MyAppointments', component: MyAppointmentsComponent },
   { path: 'doctorview', component: DoctorSidebarComponent },
-  { path: 'prescriptions', component: PatientPrescriptionComponent },
   { path: 'prescriptions/:id', component: PrescriptionDetailsComponent },
   { path: 'appointment-details/:id', component: AppointmentDetailsComponent },
   // { path: 'appointment', component: AppointmentComponent },
@@ -130,13 +118,13 @@ export const routes: Routes = [
   {path:'patient-surgeries/:id', component: PatientSurgeriesComponent},
   {path:'patient-prescriptions/:id', component: PatientPrescriptionsComponent},
   {path:'patient-profile/:id', component: PatientProfileComponent},
-  {path:'DoctorsList', component: DoctorListComponent},
+  // {path:'DoctorsList', component: DoctorListComponent},
   {path:'doctors/:id', component: DoctorProfileComponent},
-  
+
   // New comprehensive inventory and transaction routes
   {path:'inventory', component: InventoryComponent},
   {path:'transactions', component: TransactionComponent},
   {path:'departments', component: DepartmentManagementComponent},
-  
+  {path:'allemployees', component: EmployeeComponent},
   { path: '**', component: NotFoundComponent },
 ];

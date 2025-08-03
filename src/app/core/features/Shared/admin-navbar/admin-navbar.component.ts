@@ -9,24 +9,21 @@ import { AccountService } from '../../../services/account.service';
 import { AuthService } from '../../../services/auth.service';
 import { AdminDashboardComponent } from '../../dashboard/admin-dashboard/admin-dashboard.component';
 import { AdminDataManagementComponent } from '../admin-data-management/admin-data-management.component';
-import { AppointmentListComponent } from '../../appointments/appointment-list/appointment-list.component';
+
 import { DoctorListComponent } from '../../doctors/doctor-list/doctor-list.component';
 import { PatientListComponent } from '../../patients/patient-list/patient-list.component';
 import { TransactionsListComponent } from '../../transactions/transactions-list/transactions-list.component';
-import { TransactionsComponent } from '../../transactions/transactions/transactions.component';
-import { InventoryCategoryComponent } from '../../inventory/inventory-category/inventory-category.component';
-import { InventoryItemsComponent } from '../../inventory/inventory-items/inventory-items.component';
-import { InventoryTransactionsComponent } from '../../inventory/inventory-transactions/inventory-transactions.component';
+
+
 import { InvoiceListComponent } from '../../billing/invoice-list/invoice-list.component';
 import { MasterDashboadrComponent } from '../../dashboard/master-dashboadr/master-dashboadr.component';
-import { AppointmentComponent } from '../../appointments/appointment/appointment.component';
 import { PatientAppointmentsComponent } from "../../patients/patient-appointments/patient-appointments.component";
 
 
 @Component({
   selector: 'app-admin-navbar',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, AdminDashboardComponent, AdminDataManagementComponent, AppointmentListComponent, DoctorListComponent, PatientListComponent, TransactionsListComponent, InventoryCategoryComponent, InventoryItemsComponent, InventoryTransactionsComponent, InvoiceListComponent, MasterDashboadrComponent, AppointmentComponent, PatientAppointmentsComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.css'
 })

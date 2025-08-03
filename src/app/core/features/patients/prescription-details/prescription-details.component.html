@@ -2,13 +2,13 @@
   <!-- Header -->
   <div class="details-header">
     <div class="back-buttons">
-      <button class="btn btn-outline-primary me-2" (click)="backToPatientPrescriptions()" 
+      <button class="btn btn-outline-secondary" (click)="backToPatientPrescriptions()"
               *ngIf="route.snapshot.queryParamMap.get('patientId')">
         <i class="fas fa-arrow-left"></i> Back to Patient Prescriptions
       </button>
-      <button class="btn btn-outline-secondary" (click)="backToList()">
+      <!-- <button class="btn btn-outline-secondary" (click)="backToList()">
         <i class="fas fa-arrow-left"></i> Back to Prescriptions
-      </button>
+      </button> -->
     </div>
     <div class="header-actions">
       <button class="btn btn-outline-info" (click)="printPrescription()">
@@ -145,4 +145,4 @@
       </div>
     </div>
   </div>
-</div> 
+</div>

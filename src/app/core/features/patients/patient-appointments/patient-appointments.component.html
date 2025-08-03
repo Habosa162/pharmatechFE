@@ -29,7 +29,7 @@
   </div>
 
   <!-- Quick Actions Section -->
-  <div class="quick-actions-section">
+  <!-- <div class="quick-actions-section">
     <div class="card">
       <div class="card-header">
         <h6 class="card-title">
@@ -54,7 +54,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Filters and Search Section -->
   <div class="filters-section">
@@ -74,11 +74,11 @@
                 <span class="input-group-text">
                   <i class="fas fa-search"></i>
                 </span>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  [(ngModel)]="searchTerm" 
-                  (input)="search()" 
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="searchTerm"
+                  (input)="search()"
                   placeholder="Search by doctor, department, or notes...">
               </div>
             </div>
@@ -177,7 +177,7 @@
               This patient doesn't have any appointments yet. Click "New Appointment" to schedule one.
             </span>
           </p>
-          <button *ngIf="searchTerm || selectedStatus !== 'all' || selectedDepartment !== 'all'" 
+          <button *ngIf="searchTerm || selectedStatus !== 'all' || selectedDepartment !== 'all'"
                   class="btn btn-primary me-2" (click)="clearFilters()">
             <i class="fas fa-times"></i> Clear Filters
           </button>
@@ -249,14 +249,14 @@
                 </td>
                 <td class="actions-info">
                   <div class="action-buttons">
-                    <button 
-                      class="btn btn-sm btn-outline-primary" 
+                    <button
+                      class="btn btn-sm btn-outline-primary"
                       (click)="viewAppointmentDetails(appointment.id)"
                       title="View Appointment Details">
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button 
-                      class="btn btn-sm btn-outline-success" 
+                    <button
+                      class="btn btn-sm btn-outline-success"
                       (click)="viewPatientLabTests(patientId, appointment.id)"
                       title="View Lab Tests">
                       <i class="fas fa-flask"></i>
@@ -279,7 +279,7 @@
           Page {{ currentPage }} of {{ totalPages }}
         </span>
       </div>
-      
+
       <ul class="pagination">
         <!-- First Page -->
         <li class="page-item" [class.disabled]="currentPage === 1">
@@ -287,30 +287,30 @@
             <i class="fas fa-angle-double-left"></i>
           </button>
         </li>
-        
+
         <!-- Previous Page -->
         <li class="page-item" [class.disabled]="currentPage === 1">
           <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
             <i class="fas fa-angle-left"></i>
           </button>
         </li>
-        
+
         <!-- Page Numbers -->
-        <li *ngFor="let pageNum of getPageNumbers()" 
-            class="page-item" 
+        <li *ngFor="let pageNum of getPageNumbers()"
+            class="page-item"
             [class.active]="pageNum === currentPage">
           <button class="page-link" (click)="onPageChange(pageNum)">
             {{ pageNum }}
           </button>
         </li>
-        
+
         <!-- Next Page -->
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
             <i class="fas fa-angle-right"></i>
           </button>
         </li>
-        
+
         <!-- Last Page -->
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
@@ -343,9 +343,9 @@
                 <label class="form-label">
                   <i class="fas fa-calendar me-2"></i>Appointment Date & Time
                 </label>
-                <input 
-                  type="datetime-local" 
-                  class="form-control" 
+                <input
+                  type="datetime-local"
+                  class="form-control"
                   formControlName="appointmentDate"
                   [class.is-invalid]="appointmentForm.get('appointmentDate')?.invalid && appointmentForm.get('appointmentDate')?.touched">
                 <div class="invalid-feedback" *ngIf="appointmentForm.get('appointmentDate')?.invalid && appointmentForm.get('appointmentDate')?.touched">
@@ -353,14 +353,14 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label">
                   <i class="fas fa-building me-2"></i>Department
                 </label>
-                <select 
-                  class="form-select" 
+                <select
+                  class="form-select"
                   formControlName="departmentId"
                   [class.is-invalid]="appointmentForm.get('departmentId')?.invalid && appointmentForm.get('departmentId')?.touched">
                   <option value="">Select Department</option>
@@ -373,15 +373,15 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label">
                   <i class="fas fa-user-md me-2"></i>Doctor
                 </label>
-                <select 
-                  class="form-select" 
-                  formControlName="doctorId" 
+                <select
+                  class="form-select"
+                  formControlName="doctorId"
                   [disabled]="!selectedDepartmentId"
                   [class.is-invalid]="appointmentForm.get('doctorId')?.invalid && appointmentForm.get('doctorId')?.touched">
                   <option value="">Select Doctor</option>
@@ -394,15 +394,15 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="col-12">
               <div class="form-group">
                 <label class="form-label">
                   <i class="fas fa-sticky-note me-2"></i>Notes (Optional)
                 </label>
-                <textarea 
-                  class="form-control" 
-                  formControlName="notes" 
+                <textarea
+                  class="form-control"
+                  formControlName="notes"
                   rows="3"
                   placeholder="Enter any additional notes or special instructions..."></textarea>
               </div>
@@ -414,10 +414,10 @@
         <button type="button" class="btn btn-secondary" (click)="closeModal()">
           <i class="fas fa-times me-2"></i>Cancel
         </button>
-        <button 
-          type="button" 
-          class="btn btn-primary" 
-          (click)="createAppointment()" 
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="createAppointment()"
           [disabled]="!appointmentForm.valid">
           <i class="fas fa-calendar-plus me-2"></i>Create Appointment
         </button>

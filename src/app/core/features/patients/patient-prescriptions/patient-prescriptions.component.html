@@ -1,6 +1,6 @@
 <div class="content">
   <div class="container-fluid">
-    
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
@@ -40,7 +40,7 @@
 
     <!-- Prescription Content -->
     <div *ngIf="!loading && !error">
-      
+
       <!-- No Prescriptions State -->
       <div *ngIf="prescriptions.length === 0" class="card">
         <div class="card-body text-center py-5">
@@ -95,47 +95,10 @@
         </div>
       </div>
 
-      <!-- Summary Card -->
-      <div *ngIf="filteredPrescriptions.length > 0" class="card mb-4">
-        <div class="card-header">
-          <h6 class="card-title mb-0">
-            <i class="fas fa-chart-bar text-info"></i>
-            Prescription Summary
-            <span *ngIf="selectedYear !== 'all'" class="badge bg-primary ms-2">{{ selectedYear }}</span>
-          </h6>
-        </div>
-        <div class="card-body">
-          <div class="row text-center">
-            <div class="col-md-3">
-              <div class="summary-stat">
-                <h4 class="stat-number text-purple">{{ filteredPrescriptions.length }}</h4>
-                <p class="stat-label">Total Prescriptions</p>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="summary-stat">
-                <h4 class="stat-number text-primary">{{ getTotalMedications() }}</h4>
-                <p class="stat-label">Total Medications</p>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="summary-stat">
-                <h4 class="stat-number text-success">{{ getUniqueDoctors().length }}</h4>
-                <p class="stat-label">Doctors</p>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="summary-stat">
-                <h4 class="stat-number text-warning">{{ getFilteredYearsSorted().length }}</h4>
-                <p class="stat-label">Years Covered</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       <!-- Recent Prescriptions Timeline -->
-      <div *ngIf="filteredPrescriptions.length > 0" class="card mb-4">
+      <!-- <div *ngIf="filteredPrescriptions.length > 0" class="card mb-4">
         <div class="card-header">
           <h6 class="card-title mb-0">
             <i class="fas fa-history text-info"></i>
@@ -177,7 +140,7 @@
             No prescriptions found for the selected filter.
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Prescriptions by Year -->
       <div *ngIf="filteredPrescriptions.length > 0">
@@ -188,7 +151,7 @@
               {{ year }}
               <span class="badge bg-primary ms-2">{{ getFilteredPrescriptionsByYear()[year].length }} prescriptions</span>
             </h4>
-            
+
             <!-- Pagination Info and Controls for Year -->
             <div *ngIf="getFilteredPrescriptionsByYear()[year].length > defaultItemsPerPage" class="year-pagination-controls">
               <div class="pagination-info-row">
@@ -199,7 +162,7 @@
                 </div>
                 <div class="items-per-page-year">
                   <label class="form-label mb-0 me-2">Per page:</label>
-                  <select class="form-select form-select-sm d-inline-block w-auto" 
+                  <select class="form-select form-select-sm d-inline-block w-auto"
                           [ngModel]="yearPagination[year]?.itemsPerPage || defaultItemsPerPage"
                           (ngModelChange)="onItemsPerPageChangeForYear(year, $event)">
                     <option [value]="3">3</option>
@@ -211,7 +174,7 @@
               </div>
             </div>
           </div>
-          
+
           <div class="row">
             <div *ngFor="let prescription of getPaginatedPrescriptionsForYear(year)" class="col-md-6 col-lg-4 mb-3">
               <div class="card prescription-card h-100">
@@ -230,22 +193,22 @@
                       <label class="info-label">Date:</label>
                       <span class="info-value">{{ prescription.prescriptionDate | date:'mediumDate' }}</span>
                     </div>
-                    
+
                     <div class="info-item mb-3">
                       <label class="info-label">Doctor:</label>
                       <span class="info-value">Dr. {{ prescription.doctorName }}</span>
                     </div>
-                    
+
                     <div class="info-item mb-3">
                       <label class="info-label">Clinic:</label>
                       <span class="info-value">{{ prescription.clinicName }}</span>
                     </div>
-                    
+
                     <div class="info-item mb-3">
                       <label class="info-label">Diagnosis:</label>
                       <span class="info-value diagnosis-text">{{ prescription.diagnosis }}</span>
                     </div>
-                    
+
                     <div class="medications-section">
                       <label class="medications-label">
                         <i class="fas fa-pills text-primary"></i>
@@ -296,7 +259,7 @@
                   Page {{ getCurrentPageForYear(year) }} of {{ getTotalPagesForYear(year) }}
                 </span>
               </div>
-              
+
               <ul class="pagination justify-content-center">
                 <!-- First Page -->
                 <li class="page-item" [class.disabled]="getCurrentPageForYear(year) === 1">
@@ -304,30 +267,30 @@
                     <i class="fas fa-angle-double-left"></i>
                   </button>
                 </li>
-                
+
                 <!-- Previous Page -->
                 <li class="page-item" [class.disabled]="getCurrentPageForYear(year) === 1">
                   <button class="page-link" (click)="goToPreviousPageForYear(year)" [disabled]="getCurrentPageForYear(year) === 1">
                     <i class="fas fa-angle-left"></i>
                   </button>
                 </li>
-                
+
                 <!-- Page Numbers -->
-                <li *ngFor="let pageNum of getPageNumbersForYear(year)" 
-                    class="page-item" 
+                <li *ngFor="let pageNum of getPageNumbersForYear(year)"
+                    class="page-item"
                     [class.active]="pageNum === getCurrentPageForYear(year)">
                   <button class="page-link" (click)="onPageChangeForYear(year, pageNum)">
                     {{ pageNum }}
                   </button>
                 </li>
-                
+
                 <!-- Next Page -->
                 <li class="page-item" [class.disabled]="getCurrentPageForYear(year) === getTotalPagesForYear(year)">
                   <button class="page-link" (click)="goToNextPageForYear(year)" [disabled]="getCurrentPageForYear(year) === getTotalPagesForYear(year)">
                     <i class="fas fa-angle-right"></i>
                   </button>
                 </li>
-                
+
                 <!-- Last Page -->
                 <li class="page-item" [class.disabled]="getCurrentPageForYear(year) === getTotalPagesForYear(year)">
                   <button class="page-link" (click)="goToLastPageForYear(year)" [disabled]="getCurrentPageForYear(year) === getTotalPagesForYear(year)">
@@ -351,7 +314,44 @@
           </button>
         </div>
       </div>
-
+<!-- Summary Card -->
+      <div *ngIf="filteredPrescriptions.length > 0" class="card mb-4">
+        <div class="card-header">
+          <h6 class="card-title mb-0">
+            <i class="fas fa-chart-bar text-info"></i>
+            Prescription Summary
+            <span *ngIf="selectedYear !== 'all'" class="badge bg-primary ms-2">{{ selectedYear }}</span>
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-3">
+              <div class="summary-stat">
+                <h4 class="stat-number text-purple">{{ filteredPrescriptions.length }}</h4>
+                <p class="stat-label">Total Prescriptions</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="summary-stat">
+                <h4 class="stat-number text-primary">{{ getTotalMedications() }}</h4>
+                <p class="stat-label">Total Medications</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="summary-stat">
+                <h4 class="stat-number text-success">{{ getUniqueDoctors().length }}</h4>
+                <p class="stat-label">Doctors</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="summary-stat">
+                <h4 class="stat-number text-warning">{{ getFilteredYearsSorted().length }}</h4>
+                <p class="stat-label">Years Covered</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div> 
+</div>

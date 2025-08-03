@@ -1,186 +1,197 @@
 <div class="admin-layout mt-2">
-
-
   <div class="profile-container">
-
-
     <!-- Add Tab Navigation -->
-    <div class=" d-flex flex-row">
+    <div class="d-flex flex-row">
       <div class="profile-tabs">
         <div class="">
-          <ul class="nav nav-tabs d-flex flex-column" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
-          <li class="nav-item" >
-            <a
-              class="nav-link"
-              routerLink="/admin/admin-dashboard"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-folder"></i> Dashboard
-            </a>
-          </li>
-          <li class="nav-item" >
-            <a
-              class="nav-link"
-              routerLink="/admin/appointments"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-folder"></i> Appointments
-            </a>
-          </li>
-          <li class="nav-item submenu">
-          <a
-            class=" nav-link"
-            data-bs-toggle="collapse"
-            href="#Clinics"
-            role="button"
-            aria-expanded="false"
-            aria-controls="Clinics"
+          <ul
+            class="nav nav-tabs d-flex flex-column"
+            *ngIf="
+              authService.getUserRole() == 'Admin' ||
+              authService.getUserRole() == 'Master' ||
+              authService.getUserRole() == 'Owner'
+            "
           >
-            <!-- <i class="fa fa-certificate"></i> -->
-          <i class="fas fa-list"></i>
-             Clinic
-          </a>
-          <div class="collapse" id="Clinics">
-            <li>
+            <li class="nav-item">
               <a
-              [class.active]="activeTab === 'departments'"
-              (click)="setActiveTab('departments')"
-               class="ps-5 nav-link">
-            <i class="fa fa-certificate"></i>
-                Departments
+                class="nav-link"
+                routerLink="/admin/admin-dashboard"
+                routerLinkActive="active"
+              >
+                <i class="fa fa-folder"></i> Dashboard
               </a>
             </li>
             <li class="nav-item">
-            <a
-              class="ps-5 nav-link"
-              [class.active]="activeTab === 'employees'"
-              (click)="setActiveTab('employees')"
-            >
-              <i class="fa fa-certificate"></i>
-               Employees
-            </a>
-          </li>
-          </div>
-        </li>
-          <li class="nav-item" >
-            <a
-              class="nav-link"
-              routerLink="admin/doctors"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-briefcase"></i> Doctors
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              routerLink="/admin/patients"
-              routerLinkActive="active"
-            >
-              <!-- <i class="fa fa-graduation-cap"></i> -->
-              <i class="fa fa-user"></i>
-               Patients
-            </a>
-          </li>
-
-
-          <li class="nav-item submenu">
-          <a
-            class=" nav-link"
-            data-bs-toggle="collapse"
-            href="#Reports"
-            role="button"
-            aria-expanded="false"
-            aria-controls="Reports"
-          >
-            <!-- <i class="fa fa-certificate"></i> -->
-          <i class="fas fa-list"></i>
-
-             Reports
-          </a>
-          <div class="collapse" id="Reports">
-            <li>
               <a
-              routerLink="/admin/invoices"
-              routerLinkActive="active"
-               class="ps-5 nav-link">
-            <i class="fa fa-certificate"></i>
-                Invoice
+                class="nav-link"
+                routerLink="/MyAppointments"
+                routerLinkActive="active"
+              >
+                <i class="fa fa-folder"></i> Appointments
+              </a>
+            </li>
+            <li class="nav-item submenu">
+              <a
+                class="nav-link"
+                data-bs-toggle="collapse"
+                href="#Clinics"
+                role="button"
+                aria-expanded="false"
+                aria-controls="Clinics"
+              >
+                <i class="fas fa-list"></i>
+                Clinic
+              </a>
+              <div class="collapse" id="Clinics">
+                <li>
+                  <a
+                    routerLink="departments"
+                    routerLinkActive="active"
+                    class="ps-5 nav-link"
+                  >
+                    <i class="fa fa-certificate"></i>
+                    Departments
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="ps-5 nav-link"
+                    routerLink="allemployees"
+                    routerLinkActive="active"
+                  >
+                    <i class="fa fa-certificate"></i>
+                    Employees
+                  </a>
+                </li>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                routerLink="admin/doctors"
+                routerLinkActive="active"
+              >
+                <i class="fa fa-briefcase"></i> Doctors
               </a>
             </li>
             <li class="nav-item">
-            <a
-              class="ps-5 nav-link"
-              routerLink="/admin/transactions"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-certificate"></i>
-               Transactions
-            </a>
-          </li>
-          </div>
-        </li>
-          <li class="nav-item submenu">
-          <a
-            class=" nav-link"
-            data-bs-toggle="collapse"
-            role="button"
-            aria-expanded="false"
-            aria-controls="Inventory"
-            href="#Inventory"
-          >
-            <i class="fa fa-certificate"></i>
-             Inventory
-          </a>
-          <div class="collapse" id="Inventory">
+              <a
+                class="nav-link"
+                routerLink="/admin/patients"
+                routerLinkActive="active"
+              >
+                <i class="fa fa-user"></i>
+                Patients
+              </a>
+            </li>
+
+            <li class="nav-item submenu">
+              <a
+                class="nav-link"
+                data-bs-toggle="collapse"
+                href="#Reports"
+                role="button"
+                aria-expanded="false"
+                aria-controls="Reports"
+              >
+                <i class="fas fa-list"></i>
+                Reports
+              </a>
+              <div class="collapse" id="Reports">
+                <li>
+                  <a
+                    routerLink="/admin/invoices"
+                    routerLinkActive="active"
+                    class="ps-5 nav-link"
+                  >
+                    <i class="fa fa-certificate"></i>
+                    Invoice
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="ps-5 nav-link"
+                    routerLink="transactions"
+                    routerLinkActive="active"
+                  >
+                    <i class="fa fa-certificate"></i>
+                    Transactions
+                  </a>
+                </li>
+              </div>
+            </li>
+
+            <!-- <li class="nav-item submenu">
+              <a
+                class="nav-link"
+                data-bs-toggle="collapse"
+                role="button"
+                aria-expanded="false"
+                aria-controls="Inventory"
+                href="#Inventory"
+              >
+                <i class="fa fa-certificate"></i>
+                Inventory
+              </a>
+              <div class="collapse" id="Inventory">
+                <li class="nav-item">
+                  <a
+                    class="ps-5 nav-link"
+                    routerLink="/admin/inventorycategories"
+                    routerLinkActive="active"
+                  >
+                    <i class="fa fa-certificate"></i> Categories
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="ps-5 nav-link"
+                    routerLink="/admin/inventoryitmes"
+                    routerLinkActive="active"
+                  >
+                    <i class="fa fa-certificate"></i> Items
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="ps-5 nav-link"
+                    routerLink="/admin/inventorytransactions"
+                    routerLinkActive="active"
+                  >
+                    <i class="fa fa-certificate"></i> Inventory Transactions
+                  </a>
+                </li>
+              </div>
+            </li> -->
             <li class="nav-item">
-            <a
-              class=" ps-5 nav-link"
-              routerLink="/admin/inventorycategories"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-certificate"></i> Categories
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="ps-5 nav-link"
-              routerLink="/admin/inventoryitmes"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-certificate"></i> Items
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="ps-5 nav-link"
-              routerLink="/admin/inventorytransactions"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-certificate"></i> Inventory Transactions
-            </a>
-          </li>
-          </div>
-        </li>
-          <li class="nav-item" >
-            <a
-              class="nav-link"
-              [class.active]="activeTab === 'reviews'"
-              (click)="setActiveTab('reviews')"
-            >
-              <i class="fa fa-user"></i>
-               Reviews
-            </a>
-          </li>
-          <li class="nav-item" >
-            <a
-              class="nav-link"
-              routerLink="/admin/admin-data-management"
-              routerLinkActive="active"
-            >
-              <i class="fa fa-user"></i> Admin data management
-            </a>
-          </li>
+              <a
+                class="nav-link"
+                routerLink="inventory"
+                routerLinkActive="active"
+              >
+                <i class="fa fa-user"></i>
+                Inventory
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a
+                class="nav-link"
+                [class.active]="activeTab === 'reviews'"
+                (click)="setActiveTab('reviews')"
+              >
+                <i class="fa fa-user"></i>
+                Reviews
+              </a>
+            </li> -->
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                routerLink="/admin/admin-data-management"
+                routerLinkActive="active"
+              >
+                <i class="fa fa-user"></i> Admin data management
+              </a>
+            </li>
           </ul>
         </div>
       </div>
