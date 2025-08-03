@@ -368,4 +368,10 @@ export class PatientPrescriptionsComponent implements OnInit {
   goToPatientList(): void {
     this.router.navigate(['/admin/patients']);
   }
+
+  goToPrescriptionDetails(prescriptionId: number): void {
+    this.router.navigate(['/prescriptions', prescriptionId], {
+      queryParams: { patientId: this.patientId }
+    });
+  }
 } 

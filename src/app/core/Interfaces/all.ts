@@ -51,11 +51,11 @@ export enum AppointmentStatus {
 
 
 export enum PaymentMethod {
-    Cash = 0,
-    CreditCard = 1,
-    Wallet = 2,
-    Insurance = 3,
-    Other = 4
+  Cash = 0,
+  CreditCard = 1,
+  Wallet = 2,
+  Insurance = 3,
+  Other = 4
 }
 
 export interface Clinic {

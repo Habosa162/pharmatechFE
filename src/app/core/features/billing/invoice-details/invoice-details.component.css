@@ -1,0 +1,573 @@
+/* Print Styles */
+@media print {
+  /* Hide all navigation, sidebar, and UI elements */
+  .details-header,
+  .btn,
+  app-sidebar,
+  app-navbar,
+  app-footer,
+  app-admin-sidebar,
+  app-admin-navbar {
+    display: none !important;
+  }
+  
+  /* Reset page margins and background */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  
+  /* Invoice container styling for print */
+  .invoice-details-container {
+    padding: 0 !important;
+    background: white !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+  }
+  
+  /* Invoice content styling for print */
+  .invoice-content {
+    background: white !important;
+    border-radius: 0 !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  
+  /* Invoice header for print */
+  .invoice-header {
+    border-bottom: 2px solid #333 !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 15px !important;
+  }
+  
+  .invoice-title h1 {
+    font-size: 24px !important;
+    color: #333 !important;
+    margin-bottom: 5px !important;
+  }
+  
+  .clinic-name {
+    font-size: 14px !important;
+    color: #666 !important;
+    margin: 0 !important;
+  }
+  
+  /* Invoice sections for print */
+  .invoice-sections {
+    gap: 20px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .section {
+    background: #f9f9f9 !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  .section h3 {
+    font-size: 16px !important;
+    color: #333 !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #ddd !important;
+    padding-bottom: 5px !important;
+  }
+  
+  /* Info grid for print */
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+  
+  .info-item {
+    background: white !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+    border: 1px solid #eee !important;
+    box-shadow: none !important;
+  }
+  
+  .info-item label {
+    font-size: 11px !important;
+    color: #666 !important;
+    margin-bottom: 3px !important;
+  }
+  
+  .info-item span {
+    font-size: 13px !important;
+    color: #333 !important;
+  }
+  
+  .info-item .amount {
+    font-size: 14px !important;
+    font-weight: bold !important;
+  }
+  
+  /* Payment summary for print */
+  .payment-summary {
+    background: #f8f9fa !important;
+    color: #333 !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    border: 2px solid #333 !important;
+  }
+  
+  .payment-summary h3 {
+    color: #333 !important;
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #333 !important;
+    padding-bottom: 5px !important;
+  }
+  
+  .summary-grid {
+    gap: 10px !important;
+  }
+  
+  .summary-item {
+    background: white !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  .summary-item.total {
+    background: #e9ecef !important;
+    border: 2px solid #333 !important;
+    font-weight: bold !important;
+  }
+  
+  .summary-item .label {
+    color: #333 !important;
+    font-weight: 600 !important;
+  }
+  
+  .summary-item .value {
+    color: #333 !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Badges for print */
+  .badge {
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  .badge-success {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+  }
+  
+  .badge-danger {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+  }
+  
+  .badge-primary {
+    background-color: #cce7ff !important;
+    color: #004085 !important;
+  }
+  
+  .badge-info {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
+  }
+  
+  .badge-warning {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+  }
+  
+  .badge-secondary {
+    background-color: #e2e3e5 !important;
+    color: #383d41 !important;
+  }
+  
+  /* Page break settings */
+  .invoice-content {
+    page-break-inside: avoid !important;
+  }
+  
+  .section {
+    page-break-inside: avoid !important;
+  }
+  
+  .payment-summary {
+    page-break-inside: avoid !important;
+  }
+  
+  /* Force page orientation to portrait */
+  @page {
+    size: A4 portrait !important;
+    margin: 1cm !important;
+  }
+}
+
+/* Invoice Details Container */
+.invoice-details-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Header */
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+}
+
+/* Loading Section */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-section p {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: #6c757d;
+}
+
+/* Alert */
+.alert {
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Invoice Content */
+.invoice-content {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Invoice Header */
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.invoice-title h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.invoice-title h1 i {
+  color: #667eea;
+}
+
+.clinic-name {
+  margin: 10px 0 0 0;
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.invoice-status {
+  display: flex;
+  align-items: center;
+}
+
+/* Invoice Sections */
+.invoice-sections {
+  display: grid;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.section {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 25px;
+}
+
+.section h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section h3 i {
+  color: #667eea;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.info-item .amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.info-item .balance {
+  color: #dc3545;
+}
+
+/* Payment Summary */
+.payment-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 25px;
+}
+
+.payment-summary h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.summary-item.total {
+  background: rgba(255, 255, 255, 0.2);
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.summary-item .label {
+  font-weight: 600;
+}
+
+.summary-item .value {
+  font-weight: 700;
+}
+
+.summary-item .value.paid {
+  color: #90EE90;
+}
+
+.summary-item .value.unpaid {
+  color: #FFB6C1;
+}
+
+/* Badges */
+.badge {
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.badge-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.badge-primary {
+  background-color: #cce7ff;
+  color: #004085;
+}
+
+.badge-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.badge-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-secondary {
+  background-color: #e2e3e5;
+  color: #383d41;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-outline-primary {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.btn-outline-primary:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.btn-outline-info {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+
+.btn-outline-info:hover {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.btn-outline-success:hover {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .invoice-details-container {
+    padding: 15px;
+  }
+  
+  .details-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .invoice-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .invoice-title h1 {
+    font-size: 2rem;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .invoice-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: 20px;
+  }
+  
+  .payment-summary {
+    padding: 20px;
+  }
+  
+  .summary-item {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+} 

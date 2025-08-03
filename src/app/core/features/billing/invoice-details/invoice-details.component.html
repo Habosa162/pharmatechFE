@@ -1,0 +1,125 @@
+<div class="invoice-details-container">
+  <!-- Header -->
+  <div class="details-header">
+    <button class="btn btn-outline-secondary" (click)="backToList()">
+      <i class="fas fa-arrow-left"></i> Back to Invoices
+    </button>
+    <div class="header-actions">
+      <button class="btn btn-outline-primary" (click)="editInvoice()">
+        <i class="fas fa-edit"></i> Edit Invoice
+      </button>
+      <button class="btn btn-outline-info" (click)="printInvoice()">
+        <i class="fas fa-print"></i> Print
+      </button>
+      <button class="btn btn-outline-success" (click)="downloadInvoice()" [disabled]="downloading">
+        <i class="fas" [ngClass]="downloading ? 'fa-spinner fa-spin' : 'fa-download'"></i>
+        {{ downloading ? 'Generating PDF...' : 'Download' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading invoice details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <!-- Invoice Details -->
+  <div *ngIf="!loading && !error && invoice" class="invoice-content">
+    <!-- Invoice Header -->
+    <div class="invoice-header">
+      <div class="invoice-title">
+        <h1><i class="fas fa-file-invoice-dollar"></i> Invoice #{{ invoice.id }}</h1>
+        <p class="clinic-name">{{ invoice.clinicName }}</p>
+      </div>
+      <div class="invoice-status">
+        <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
+          {{ getPaymentStatusText(invoice.isPaid) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Invoice Information -->
+    <div class="invoice-sections">
+      <div class="section">
+        <h3><i class="fas fa-info-circle"></i> Invoice Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Invoice Date</label>
+            <span>{{ formatDate(invoice.createdAt) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Total Amount</label>
+            <span class="amount">{{ formatCurrency(invoice.totalAmount) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Paid Amount</label>
+            <span class="amount">{{ formatCurrency(invoice.paidAmount) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Balance</label>
+            <span class="amount balance">{{ formatCurrency(invoice.totalAmount - invoice.paidAmount) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Payment Method</label>
+            <span class="badge" [ngClass]="getPaymentMethodClass(invoice.paymentMethod)">
+              {{ getPaymentMethodText(invoice.paymentMethod) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Payment Status</label>
+            <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
+              {{ getPaymentStatusText(invoice.isPaid) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-user"></i> Patient Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Patient Name</label>
+            <span>{{ invoice.patientName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Clinic</label>
+            <span>{{ invoice.clinicName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Appointment ID</label>
+            <span>{{ invoice.appointmentId }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="payment-summary">
+      <h3><i class="fas fa-calculator"></i> Payment Summary</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="label">Subtotal</span>
+          <span class="value">{{ formatCurrency(invoice.totalAmount) }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Amount Paid</span>
+          <span class="value paid">{{ formatCurrency(invoice.paidAmount) }}</span>
+        </div>
+        <div class="summary-item total">
+          <span class="label">Balance Due</span>
+          <span class="value" [ngClass]="{'unpaid': !invoice.isPaid, 'paid': invoice.isPaid}">
+            {{ formatCurrency(invoice.totalAmount - invoice.paidAmount) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

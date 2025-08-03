@@ -1,0 +1,481 @@
+<div class="department-management-container">
+  <!-- Header -->
+  <div class="management-header">
+    <div class="header-content">
+      <h1><i class="fas fa-building"></i> Department Management</h1>
+      <p>Manage departments across all clinics</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="showCreateDepartmentModal()">
+        <i class="fas fa-plus"></i> Add Department
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-content">
+      <div class="search-filter">
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search departments..."
+            [(ngModel)]="searchTerm"
+            (input)="onFilterChange()">
+        </div>
+      </div>
+      
+      <div class="clinic-filter">
+        <select class="form-select" [(ngModel)]="selectedClinicId" (change)="onFilterChange()">
+          <option value="all">All Clinics</option>
+          <option *ngFor="let clinic of clinics" [value]="clinic.id">
+            {{ clinic.name }}
+          </option>
+        </select>
+      </div>
+      
+      <button class="btn btn-outline-secondary" (click)="clearFilters()">
+        <i class="fas fa-times"></i> Clear Filters
+      </button>
+      
+      <button class="btn btn-outline-info" (click)="debugClinicDepartmentMatching()">
+        <i class="fas fa-bug"></i> Debug Matching
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading departments...</p>
+  </div>
+
+  <!-- Departments List -->
+  <div *ngIf="!loading" class="departments-content">
+    <div class="departments-header">
+      <h3>Departments ({{ filteredDepartments.length }})</h3>
+    </div>
+
+    <div *ngIf="filteredDepartments.length === 0" class="no-data">
+      <i class="fas fa-building"></i>
+      <p>No departments found</p>
+      <button class="btn btn-primary" (click)="showCreateDepartmentModal()">
+        <i class="fas fa-plus"></i> Add First Department
+      </button>
+    </div>
+
+    <div *ngIf="filteredDepartments.length > 0" class="departments-grid">
+      <div *ngFor="let department of filteredDepartments" class="department-card">
+        <div class="card-header">
+          <h4>{{ department.name }}</h4>
+          <div class="card-actions">
+            <button class="btn btn-sm btn-outline-info" (click)="showDepartmentDetailsModal(department)">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-primary" (click)="showEditDepartmentModal(department)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-success" (click)="showAssignDoctorModal(department)">
+              <i class="fas fa-user-plus"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="showDeleteDepartmentModal(department)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <div class="department-info">
+            <div class="info-item">
+              <label>Clinic</label>
+              <span>{{ department.clinicName }}</span>
+            </div>
+            <div class="info-item">
+              <label>Doctors</label>
+              <span>{{ getDoctorCount(department.name) }} doctors</span>
+            </div>
+          </div>
+          
+          <div *ngIf="getDoctorCount(department.name) > 0" class="doctors-list">
+            <label>Assigned Doctors:</label>
+            <div class="doctors-tags">
+              <span *ngFor="let doctorName of getDoctorNames(department.name)" class="doctor-tag">
+                {{ doctorName }}
+                <button 
+                  class="btn-remove-doctor" 
+                  (click)="quickRemoveDoctor(doctorName, department)"
+                  title="Remove doctor from department">
+                  <i class="fas fa-times"></i>
+                </button>
+              </span>
+            </div>
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-info" (click)="showDepartmentDetailsModal(department)">
+                <i class="fas fa-users"></i> Manage Doctors
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Department Modal -->
+  <div *ngIf="showCreateModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-plus"></i> Create New Department</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form [formGroup]="departmentForm" (ngSubmit)="createDepartment()">
+          <div class="form-group">
+            <label class="form-label">Department Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [class.is-invalid]="isFieldInvalid(departmentForm, 'name')"
+              placeholder="Enter department name">
+            <div *ngIf="isFieldInvalid(departmentForm, 'name')" class="invalid-feedback">
+              {{ getFieldError(departmentForm, 'name') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Clinic *</label>
+            <select
+              class="form-select"
+              formControlName="clinicId"
+              [class.is-invalid]="isFieldInvalid(departmentForm, 'clinicId')">
+              <option value="">Select a clinic</option>
+              <option *ngFor="let clinic of clinics" [value]="clinic.id">
+                {{ clinic.name }}
+              </option>
+            </select>
+            <div *ngIf="isFieldInvalid(departmentForm, 'clinicId')" class="invalid-feedback">
+              {{ getFieldError(departmentForm, 'clinicId') }}
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="departmentForm.invalid || saving">
+              <i class="fas fa-save"></i>
+              {{ saving ? 'Creating...' : 'Create Department' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Department Modal -->
+  <div *ngIf="showEditModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-edit"></i> Edit Department</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form [formGroup]="departmentForm" (ngSubmit)="updateDepartment()">
+          <div class="form-group">
+            <label class="form-label">Department Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [class.is-invalid]="isFieldInvalid(departmentForm, 'name')"
+              placeholder="Enter department name">
+            <div *ngIf="isFieldInvalid(departmentForm, 'name')" class="invalid-feedback">
+              {{ getFieldError(departmentForm, 'name') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Clinic *</label>
+            <select
+              class="form-select"
+              formControlName="clinicId"
+              [class.is-invalid]="isFieldInvalid(departmentForm, 'clinicId')">
+              <option value="">Select a clinic</option>
+              <option *ngFor="let clinic of clinics" [value]="clinic.id">
+                {{ clinic.name }}
+              </option>
+            </select>
+            <div *ngIf="isFieldInvalid(departmentForm, 'clinicId')" class="invalid-feedback">
+              {{ getFieldError(departmentForm, 'clinicId') }}
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="departmentForm.invalid || saving">
+              <i class="fas fa-save"></i>
+              {{ saving ? 'Updating...' : 'Update Department' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Department Modal -->
+  <div *ngIf="showDeleteModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content delete-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-exclamation-triangle text-danger"></i> Delete Department</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="delete-warning">
+          <p>Are you sure you want to delete the department <strong>"{{ selectedDepartment?.name }}"</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+          
+          <div *ngIf="selectedDepartment && getDoctorCount(selectedDepartment.name) > 0" class="warning-info">
+            <i class="fas fa-info-circle"></i>
+            <span>This department has {{ getDoctorCount(selectedDepartment.name) }} assigned doctor(s).</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-danger" 
+            (click)="deleteDepartment()"
+            [disabled]="deleting">
+            <i class="fas fa-trash"></i>
+            {{ deleting ? 'Deleting...' : 'Delete Department' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Doctor Modal -->
+  <div *ngIf="showAssignDoctorModalState" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-plus"></i> Assign Doctor to Department</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="department-info-display">
+          <p><strong>Department:</strong> {{ selectedDepartment?.name }}</p>
+          <p><strong>Clinic:</strong> {{ selectedDepartment?.clinicName }}</p>
+        </div>
+
+        <form [formGroup]="assignDoctorForm" (ngSubmit)="assignDoctorToDepartment()">
+          <div class="form-group">
+            <label class="form-label">Select Doctor *</label>
+            <div class="d-flex gap-2 align-items-center">
+              <select
+                class="form-select"
+                formControlName="doctorId"
+                [class.is-invalid]="isFieldInvalid(assignDoctorForm, 'doctorId')">
+                <option value="">Select a doctor</option>
+                <option *ngFor="let doctor of availableDoctors" [value]="doctor.id">
+                  {{ doctor.name }} - {{ doctor.specialization }}
+                </option>
+              </select>
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary btn-sm" 
+                (click)="refreshAvailableDoctors()"
+                [disabled]="loadingDoctors">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+            <div *ngIf="isFieldInvalid(assignDoctorForm, 'doctorId')" class="invalid-feedback">
+              {{ getFieldError(assignDoctorForm, 'doctorId') }}
+            </div>
+            <div *ngIf="loadingDoctors" class="text-muted mt-2">
+              <i class="fas fa-spinner fa-spin"></i> Loading available doctors...
+            </div>
+            <!-- Debug information -->
+            <div *ngIf="!loadingDoctors && availableDoctors.length === 0" class="text-warning mt-2">
+              <i class="fas fa-exclamation-triangle"></i> No doctors available for assignment
+              <button 
+                type="button" 
+                class="btn btn-outline-warning btn-sm ms-2" 
+                (click)="testApiEndpoints()">
+                <i class="fas fa-bug"></i> Test API
+              </button>
+            </div>
+            <div *ngIf="!loadingDoctors && availableDoctors.length > 0" class="text-success mt-2">
+              <i class="fas fa-check-circle"></i> {{ availableDoctors.length }} doctor(s) available
+              <span *ngIf="usingFallbackDoctors" class="text-muted ms-2">
+                (using all doctors as fallback)
+              </span>
+              <span *ngIf="!usingFallbackDoctors" class="text-muted ms-2">
+                (filtered to exclude already assigned doctors)
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Assignment Percentage *</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="percentage"
+              [class.is-invalid]="isFieldInvalid(assignDoctorForm, 'percentage')"
+              min="1"
+              max="100"
+              placeholder="100">
+            <div *ngIf="isFieldInvalid(assignDoctorForm, 'percentage')" class="invalid-feedback">
+              {{ getFieldError(assignDoctorForm, 'percentage') }}
+            </div>
+            <small class="form-text text-muted">Percentage of time the doctor will work in this department (1-100)</small>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-success" 
+              [disabled]="assignDoctorForm.invalid || saving">
+              <i class="fas fa-user-plus"></i>
+              {{ saving ? 'Assigning...' : 'Assign Doctor' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remove Doctor Modal -->
+  <div *ngIf="showRemoveDoctorModalState" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content delete-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-user-minus text-danger"></i> Remove Doctor from Department</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="remove-warning">
+          <p>Are you sure you want to remove <strong>"{{ selectedDoctorDepartment?.doctorName }}"</strong> from the department <strong>"{{ selectedDoctorDepartment?.departmentName }}"</strong>?</p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-danger" 
+            (click)="removeDoctorFromDepartment()"
+            [disabled]="deleting">
+            <i class="fas fa-user-minus"></i>
+            {{ deleting ? 'Removing...' : 'Remove Doctor' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Department Details Modal -->
+  <div *ngIf="showDetailsModal" class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fas fa-building"></i> Department Details</h3>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedDepartment">
+        <div class="details-section">
+          <h4>Basic Information</h4>
+          <div class="details-grid">
+            <div class="detail-item">
+              <label>Department Name</label>
+              <span>{{ selectedDepartment.name }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Clinic</label>
+              <span>{{ selectedDepartment.clinicName }}</span>
+            </div>
+            <div class="detail-item">
+              <label>Total Doctors</label>
+              <span>{{ getDoctorCount(selectedDepartment.name) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-section" *ngIf="getDoctorCount(selectedDepartment.name) > 0">
+          <h4>Assigned Doctors</h4>
+          <div class="doctors-details">
+            <div *ngFor="let doctorDept of getDoctorsInDepartment(selectedDepartment.id)" class="doctor-item">
+              <div class="doctor-info">
+                <i class="fas fa-user-md"></i>
+                <span>{{ doctorDept.doctorName }}</span>
+              </div>
+              <button 
+                class="btn btn-sm btn-outline-danger" 
+                (click)="showRemoveDoctorModal(doctorDept)">
+                <i class="fas fa-user-minus"></i> Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">
+            <i class="fas fa-times"></i> Close
+          </button>
+          <button type="button" class="btn btn-primary" (click)="showEditDepartmentModal(selectedDepartment)">
+            <i class="fas fa-edit"></i> Edit Department
+          </button>
+          <button type="button" class="btn btn-success" (click)="showAssignDoctorModal(selectedDepartment)">
+            <i class="fas fa-user-plus"></i> Assign Doctor
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

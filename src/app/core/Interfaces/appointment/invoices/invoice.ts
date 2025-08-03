@@ -1,11 +1,12 @@
 import { PaymentMethod } from "../../all";
 
 export interface InvoiceDto {
+  id: number;
   createdAt: string;          // ISO 8601 date string, e.g., "2025-07-03T15:00:00Z"
   totalAmount: number;        // decimal → number
   paidAmount: number;         // decimal → number
   isPaid: boolean;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod | string; // Backend returns string, frontend displays
   appointmentId: number;
   clinicName: string;
   patientName: string;
@@ -16,19 +17,19 @@ export interface AllInvoices {
   totalAmount: number;   // decimal → number
   paidAmount: number;    // decimal → number
   isPaid: boolean;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod | string; // Backend returns string, frontend displays
 }
 
 export interface CreateInvoice {
   appointmentId: number;
   totalAmount: number;
   paidAmount: number;
-  isPaid: boolean;          // default false in C#, set when creating object in TS
-  paymentMethod: PaymentMethod; // default Cash in C#, set when creating object in TS
+  isPaid: boolean;          // Backend expects this field
+  paymentMethod: PaymentMethod; // Send enum value (number) to backend
 }
 
 export interface UpdateInvoice {
   totalAmount: number;
   paidAmount: number;
-  paymentMethod: PaymentMethod; // default is Cash in C#, set when creating object in TS
+  paymentMethod: PaymentMethod; // Send enum value to backend
 }

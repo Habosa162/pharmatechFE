@@ -1,0 +1,184 @@
+<div class="invoice-edit-container">
+  <!-- Header -->
+  <div class="edit-header">
+    <button class="btn btn-outline-secondary" (click)="cancel()">
+      <i class="fas fa-arrow-left"></i> Back to Invoices
+    </button>
+    <h1><i class="fas fa-edit"></i> Edit Invoice</h1>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading invoice...</p>
+  </div>
+
+  <!-- Edit Form -->
+  <div *ngIf="!loading && invoice" class="edit-content">
+    <!-- Invoice Info Card -->
+    <div class="invoice-info-card">
+      <div class="card-header">
+        <h3><i class="fas fa-file-invoice-dollar"></i> Invoice Information</h3>
+      </div>
+      <div class="card-body">
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Invoice ID</label>
+            <span>#{{ invoice.id }}</span>
+          </div>
+          <div class="info-item">
+            <label>Created Date</label>
+            <span>{{ formatDate(invoice.createdAt) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Payment Status</label>
+            <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
+              {{ getPaymentStatusText(invoice.isPaid) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Current Payment Method</label>
+            <span class="badge" [ngClass]="getPaymentMethodClass(invoice.paymentMethod)">
+              {{ getPaymentMethodText(invoice.paymentMethod) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Form Card -->
+    <div class="edit-form-card">
+      <div class="card-header">
+        <h3><i class="fas fa-edit"></i> Edit Invoice Details</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Total Amount *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="totalAmount"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'totalAmount')"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00">
+                <div *ngIf="isFieldInvalid(invoiceForm, 'totalAmount')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'totalAmount') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Paid Amount *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="paidAmount"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'paidAmount')"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00">
+                <div *ngIf="isFieldInvalid(invoiceForm, 'paidAmount')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'paidAmount') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Payment Method *</label>
+                <select
+                  class="form-select"
+                  formControlName="paymentMethod"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'paymentMethod')">
+                  <option value="">Select payment method</option>
+                  <option *ngFor="let method of paymentMethods" [value]="method">
+                    {{ getPaymentMethodText(method) }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(invoiceForm, 'paymentMethod')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'paymentMethod') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Balance</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [value]="formatCurrency((invoiceForm.get('totalAmount')?.value || 0) - (invoiceForm.get('paidAmount')?.value || 0))"
+                  readonly
+                  [class.balance-positive]="(invoiceForm.get('totalAmount')?.value || 0) - (invoiceForm.get('paidAmount')?.value || 0) > 0"
+                  [class.balance-zero]="(invoiceForm.get('totalAmount')?.value || 0) - (invoiceForm.get('paidAmount')?.value || 0) === 0">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="cancel()">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="invoiceForm.invalid || saving">
+              <i class="fas fa-save"></i>
+              {{ saving ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="summary-card">
+      <div class="card-header">
+        <h3><i class="fas fa-calculator"></i> Payment Summary</h3>
+      </div>
+      <div class="card-body">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="label">Original Total</span>
+            <span class="value">{{ formatCurrency(invoice.totalAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Original Paid</span>
+            <span class="value">{{ formatCurrency(invoice.paidAmount) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">New Total</span>
+            <span class="value">{{ formatCurrency(invoiceForm.get('totalAmount')?.value || 0) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">New Paid</span>
+            <span class="value">{{ formatCurrency(invoiceForm.get('paidAmount')?.value || 0) }}</span>
+          </div>
+          <div class="summary-item total">
+            <span class="label">New Balance</span>
+            <span class="value" [ngClass]="{'balance-positive': (invoiceForm.get('totalAmount')?.value || 0) - (invoiceForm.get('paidAmount')?.value || 0) > 0, 'balance-zero': (invoiceForm.get('totalAmount')?.value || 0) - (invoiceForm.get('paidAmount')?.value || 0) === 0}">
+              {{ formatCurrency((invoiceForm.get('totalAmount')?.value || 0) - (invoiceForm.get('paidAmount')?.value || 0)) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

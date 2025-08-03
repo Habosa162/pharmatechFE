@@ -1,0 +1,148 @@
+<div class="prescription-details-container">
+  <!-- Header -->
+  <div class="details-header">
+    <div class="back-buttons">
+      <button class="btn btn-outline-primary me-2" (click)="backToPatientPrescriptions()" 
+              *ngIf="route.snapshot.queryParamMap.get('patientId')">
+        <i class="fas fa-arrow-left"></i> Back to Patient Prescriptions
+      </button>
+      <button class="btn btn-outline-secondary" (click)="backToList()">
+        <i class="fas fa-arrow-left"></i> Back to Prescriptions
+      </button>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline-info" (click)="printPrescription()">
+        <i class="fas fa-print"></i> Print
+      </button>
+      <button class="btn btn-outline-success" (click)="downloadPrescription()" [disabled]="downloading">
+        <i class="fas" [ngClass]="downloading ? 'fa-spinner fa-spin' : 'fa-download'"></i>
+        {{ downloading ? 'Generating PDF...' : 'Download' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading prescription details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <!-- Prescription Details -->
+  <div *ngIf="!loading && !error && prescription" class="prescription-content">
+    <!-- Prescription Header -->
+    <div class="prescription-header">
+      <div class="prescription-title">
+        <h1><i class="fas fa-prescription-bottle-medical"></i> Medical Prescription</h1>
+        <p class="clinic-name">{{ prescription.clinicName }}</p>
+      </div>
+      <div class="prescription-date">
+        <span class="date-label">Prescription Date</span>
+        <span class="date-value">{{ formatDate(prescription.prescriptionDate) }}</span>
+      </div>
+    </div>
+
+    <!-- Prescription Information -->
+    <div class="prescription-sections">
+      <div class="section">
+        <h3><i class="fas fa-user"></i> Patient Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Patient Name</label>
+            <span>{{ prescription.patientName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Clinic</label>
+            <span>{{ prescription.clinicName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-user-md"></i> Doctor Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Prescribing Doctor</label>
+            <span>{{ prescription.doctorName }}</span>
+          </div>
+          <div class="info-item">
+            <label>Prescription Date</label>
+            <span>{{ formatDateTime(prescription.prescriptionDate) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-stethoscope"></i> Diagnosis</h3>
+        <div class="diagnosis-content">
+          <p>{{ prescription.diagnosis }}</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3><i class="fas fa-pills"></i> Medications</h3>
+        <div class="medications-list" *ngIf="prescription.medications && prescription.medications.length > 0; else noMedications">
+          <div *ngFor="let medication of prescription.medications; let i = index" class="medication-item">
+            <div class="medication-header">
+              <span class="medication-number">{{ i + 1 }}</span>
+              <h4>{{ medication.medicationName }}</h4>
+            </div>
+            <div class="medication-details">
+              <div class="detail-row" *ngIf="medication.dosage">
+                <label>Dosage:</label>
+                <span>{{ medication.dosage }}</span>
+              </div>
+              <div class="detail-row" *ngIf="medication.frequency">
+                <label>Frequency:</label>
+                <span>{{ medication.frequency }}</span>
+              </div>
+              <div class="detail-row" *ngIf="medication.duration">
+                <label>Duration:</label>
+                <span>{{ medication.duration }}</span>
+              </div>
+              <div class="detail-row" *ngIf="medication.notes">
+                <label>Notes:</label>
+                <span>{{ medication.notes }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noMedications>
+          <div class="no-medications">
+            <i class="fas fa-info-circle"></i>
+            <p>No medications prescribed</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="section" *ngIf="prescription.followUpDate">
+        <h3><i class="fas fa-calendar-check"></i> Follow-up Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Follow-up Date</label>
+            <span>{{ formatDate(prescription.followUpDate) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prescription Footer -->
+    <div class="prescription-footer">
+      <div class="footer-content">
+        <div class="signature-section">
+          <div class="signature-line"></div>
+          <p>Doctor's Signature</p>
+        </div>
+        <div class="prescription-validity">
+          <p><i class="fas fa-info-circle"></i> This prescription is valid only when signed by the prescribing physician</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

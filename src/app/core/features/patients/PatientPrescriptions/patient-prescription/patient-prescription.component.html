@@ -79,10 +79,13 @@
                 <small class="text-muted">{{ formatMedicationsForDisplay(p.medications) }}</small>
               </td>
               <td>
-                <button class="btn btn-sm btn-outline-info me-1" (click)="editPrescription(p)">
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="viewPrescriptionDetails(p.id)" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-info me-1" (click)="editPrescription(p)" title="Edit">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deletePrescription(p.id)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deletePrescription(p.id)" title="Delete">
                   <i class="fas fa-trash-alt"></i>
                 </button>
               </td>

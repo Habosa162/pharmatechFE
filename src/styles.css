@@ -1,0 +1,75 @@
+/* Global Print Styles */
+@media print {
+  /* Hide all navigation and UI elements globally */
+  nav,
+  .navbar,
+  .sidebar,
+  .header,
+  .footer,
+  .btn,
+  .button,
+  .actions,
+  .toolbar,
+  .menu,
+  .breadcrumb,
+  .pagination,
+  .modal,
+  .overlay,
+  .notification,
+  .alert,
+  .toast,
+  app-sidebar,
+  app-navbar,
+  app-footer,
+  app-admin-sidebar,
+  app-admin-navbar,
+  app-header,
+  app-navigation,
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Reset body for print */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Ensure content takes full width */
+  .container,
+  .container-fluid,
+  .row,
+  .col,
+  .col-md-*,
+  .col-lg-*,
+  .col-xl-* {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Page settings */
+  @page {
+    size: A4 portrait;
+    margin: 1cm;
+  }
+  
+  /* Prevent page breaks in important content */
+  .invoice-content,
+  .section,
+  .payment-summary,
+  .card,
+  .panel {
+    page-break-inside: avoid !important;
+  }
+  
+  /* Force color printing */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+}

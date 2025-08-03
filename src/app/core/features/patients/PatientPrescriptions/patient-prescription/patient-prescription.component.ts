@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { PrescriptionService } from '../../../../services/patients/prescription.service';
 import { AllPrescriptions, CreatePrescription, UpdatePrescription, PrescriptionMedicationsDto, PrescriptionDto } from '../../../../Interfaces/patient/prescriptions/prescription';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-patient-prescription',
@@ -19,7 +20,8 @@ export class PatientPrescriptionComponent implements OnInit {
 
   constructor(
     private prescriptionService: PrescriptionService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.prescriptionForm = this.fb.group({
       diagnosis: ['', Validators.required],
@@ -139,6 +141,10 @@ export class PatientPrescriptionComponent implements OnInit {
       next: () => this.loadPrescriptions(),
       error: () => { this.error = 'Failed to delete prescription'; }
     });
+  }
+
+  viewPrescriptionDetails(id: number) {
+    this.router.navigate(['/prescriptions', id]);
   }
 
   cancelEdit() {
