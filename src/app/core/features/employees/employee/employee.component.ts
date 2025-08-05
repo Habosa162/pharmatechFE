@@ -4,7 +4,8 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { EmployeeService } from '../../../services/employees/employee.service';
 import { PositionService } from '../../../services/employees/position.service';
 import { DepartmentService } from '../../../services/clinics/department.service';
-import { EmployeeViewDto, CreateEmployeeDTO, DepartmentViewDTO } from '../../../Interfaces/all';
+import { AccountService } from '../../../services/account.service';
+import { EmployeeViewDto, CreateEmployeeDTO, DepartmentViewDTO, UserViewDTO } from '../../../Interfaces/all';
 import { PositionDto } from '../../../Interfaces/employee/positions/position';
 
 @Component({
@@ -19,6 +20,8 @@ export class EmployeeComponent implements OnInit {
   positions: PositionDto[] = [];
   departments: DepartmentViewDTO[] = [];
   filteredEmployees: EmployeeViewDto[] = [];
+  allUsers: UserViewDTO[] = [];
+  availableUsers: UserViewDTO[] = [];
   
   // UI state
   activeView: 'list' | 'profile' = 'list';
@@ -45,6 +48,7 @@ export class EmployeeComponent implements OnInit {
     private employeeService: EmployeeService,
     private positionService: PositionService,
     private departmentService: DepartmentService,
+    private accountService: AccountService,
     private formBuilder: FormBuilder
   ) {
     this.employeeForm = this.formBuilder.group({
@@ -72,6 +76,40 @@ export class EmployeeComponent implements OnInit {
   loadAllData(): void {
     this.loadEmployees();
     this.loadDepartments();
+    this.loadAllUsers();
+  }
+
+  loadAllUsers(): void {
+    this.accountService.getAllUsers().subscribe({
+      next: (users) => {
+        this.allUsers = users;
+        this.filterAvailableUsers();
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.error = 'Failed to load users';
+      }
+    });
+  }
+
+  filterAvailableUsers(currentEmployeeId?: number): void {
+    // Get user IDs that are already employees or doctors
+    const employeeUserIds = this.employees
+      .filter(emp => emp.id !== currentEmployeeId) // Exclude current employee when editing
+      .map(emp => emp.appUserId)
+      .filter(id => id);
+    
+    const doctorUserIds = this.allUsers.filter(user => 
+      user.roles.some(role => role.toLowerCase() === 'doctor')
+    ).map(user => user.id);
+    
+    // Combine all used user IDs
+    const usedUserIds = [...employeeUserIds, ...doctorUserIds];
+    
+    // Filter out users who are already employees or doctors
+    this.availableUsers = this.allUsers.filter(user => 
+      !usedUserIds.includes(user.id) && user.isActive
+    );
   }
 
   loadEmployees(): void {
@@ -80,6 +118,7 @@ export class EmployeeComponent implements OnInit {
       next: (employees) => {
         this.employees = employees;
         this.applyFilters();
+        this.filterAvailableUsers(); // Re-filter available users after loading employees
         this.loading = false;
       },
       error: (error) => {
@@ -197,6 +236,8 @@ export class EmployeeComponent implements OnInit {
     });
     // Load all positions initially
     this.loadPositions();
+    // Refresh available users
+    this.filterAvailableUsers();
     this.showEmployeeModal = true;
   }
 
@@ -205,6 +246,9 @@ export class EmployeeComponent implements OnInit {
     
     // Load all positions initially for editing
     this.loadPositions();
+    
+    // Refresh available users and include the current employee's user if they have one
+    this.filterAvailableUsers(employee.id);
     
     this.employeeForm.patchValue({
       name: employee.name,

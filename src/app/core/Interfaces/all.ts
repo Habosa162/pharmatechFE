@@ -435,3 +435,75 @@ export interface AppUser extends IdentityUser {
 export interface IdentityUser {
 
 }
+
+// User Management Interfaces
+export interface UserViewDTO {
+  id: string;
+  userName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  isActive: boolean;
+  createdAt: string;
+  profilePicture: string | null;
+  phoneNumber: string | null;
+  dateOfBirth: string | null;
+  roles: string[];
+  lastLoginDate: string | null;
+}
+
+export interface CreateAccountDTO {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  dateOfBirth: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword?: string;
+  profilePicture?: File;
+  roles: string[];
+}
+
+export interface EditAccountDTO {
+  firstName: string;
+  lastName: string;
+  userName: string;
+  dateOfBirth: string;
+  email: string;
+  phoneNumber: string;
+  profilePicture?: File;
+  roles: string[];
+}
+
+export interface CreateUserDTO {
+  userName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber?: string;
+  profilePicture?: File;
+  roles: string[];
+}
+
+export interface UpdateUserDTO {
+  id: string;
+  userName: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  profilePicture?: File;
+  isActive: boolean;
+  roles: string[];
+}
+
+export interface ChangePasswordDTO {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}

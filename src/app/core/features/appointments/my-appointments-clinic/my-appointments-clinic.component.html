@@ -1,0 +1,151 @@
+<div class="appointments-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-calendar-check"></i>
+        My Appointments - Clinic {{ clinicId }}
+      </h1>
+      <p class="page-subtitle">View and manage appointments for this clinic</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline-primary" (click)="loadAppointments()">
+        <i class="fas fa-sync-alt"></i>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages Section -->
+  <div class="messages-section" *ngIf="success || error">
+    <div class="alert alert-success" *ngIf="success">
+      <i class="fas fa-check-circle"></i>
+      {{ success }}
+    </div>
+    <div class="alert alert-danger" *ngIf="error">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ error }}
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-content">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          placeholder="Search appointments..." 
+          [(ngModel)]="searchTerm"
+          (input)="onFilterChange()"
+          class="form-control"
+        >
+      </div>
+      
+      <div class="filter-controls">
+        <select 
+          [(ngModel)]="selectedStatus" 
+          (change)="onFilterChange()"
+          class="form-select"
+        >
+          <option value="all">All Status</option>
+          <option value="0">Scheduled</option>
+          <option value="1">Completed</option>
+          <option value="2">Cancelled</option>
+          <option value="3">No Show</option>
+        </select>
+        
+        <input 
+          type="date" 
+          [(ngModel)]="selectedDate"
+          (change)="onFilterChange()"
+          class="form-control"
+        >
+        
+        <button class="btn btn-outline-secondary" (click)="clearFilters()">
+          <i class="fas fa-times"></i>
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointments List Section -->
+  <div class="appointments-section">
+    <div class="section-header">
+      <h3>Appointments ({{ filteredAppointments.length }})</h3>
+      <div class="loading-spinner" *ngIf="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        Loading appointments...
+      </div>
+    </div>
+
+    <div class="appointments-grid" *ngIf="!loading">
+      <div class="appointment-card" *ngFor="let appointment of filteredAppointments">
+        <div class="appointment-card-header">
+          <div class="appointment-info">
+            <h4 class="patient-name">{{ appointment.name }}</h4>
+            <p class="appointment-id">ID: {{ appointment.id }}</p>
+          </div>
+          <div class="appointment-status">
+            <span 
+              class="badge"
+              [class]="getStatusBadgeClass(appointment.status)"
+            >
+              {{ getStatusText(appointment.status) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="appointment-card-body">
+          <div class="appointment-details">
+            <div class="detail-item">
+              <span class="detail-label">Doctor:</span>
+              <span class="detail-value">{{ appointment.doctorName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Department:</span>
+              <span class="detail-value">{{ appointment.departmentName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date & Time:</span>
+              <span class="detail-value">{{ formatDateTime(appointment.appointmentDate) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Notes:</span>
+              <span class="detail-value">{{ appointment.notes || 'No notes' }}</span>
+            </div>
+          </div>
+          
+          <div class="appointment-actions">
+            <div class="status-update">
+              <label for="status-{{ appointment.id }}">Update Status:</label>
+              <select 
+                [id]="'status-' + appointment.id"
+                class="form-select"
+                (change)="onStatusChange(appointment, $event)"
+                [disabled]="updatingStatus"
+              >
+                <option *ngFor="let option of getStatusOptions()" 
+                        [value]="option.value"
+                        [selected]="option.value === appointment.status">
+                  {{ option.text }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && filteredAppointments.length === 0">
+      <i class="fas fa-calendar-times"></i>
+      <h3>No appointments found</h3>
+      <p>No appointments match your current filters for clinic {{ clinicId }}.</p>
+      <button class="btn btn-primary" (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+</div> 

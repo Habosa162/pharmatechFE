@@ -380,12 +380,18 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">User ID (Optional)</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="appUserId"
-              placeholder="Enter user ID if employee has an account">
+            <label class="form-label">User Account (Optional)</label>
+            <select
+              class="form-select"
+              formControlName="appUserId">
+              <option value="">Select a user account (optional)</option>
+              <option *ngFor="let user of availableUsers" [value]="user.id">
+                {{ user.fullName }} ({{ user.userName }}) - {{ user.email }}
+              </option>
+            </select>
+            <div class="form-text">
+              Only users who are not already employees or doctors are shown
+            </div>
           </div>
         </div>
 

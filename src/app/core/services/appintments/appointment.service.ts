@@ -49,5 +49,9 @@ export class AppointmentService {
   editstatus(id: number, status: AppointmentStatus): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}`, status);
   }
+
+  getAppointmentsByClinicId(clinicId: number): Observable<AppointmentDetails[]> {
+    return this.http.get<AppointmentDetails[]>(`${this.apiUrl}/ClinicAppointments/${clinicId}`);
+  }
 }
 

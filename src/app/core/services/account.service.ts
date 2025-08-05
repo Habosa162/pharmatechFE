@@ -4,7 +4,19 @@ import { Observable } from 'rxjs';
 // import { Environment } from '../../../base/environment';
 // import { CreateAccountDTO, LoginDTO, RefreshTokenDTO, CreateDoctorDTO, UpdateDoctorDTO, CreateEmployeeDTO, UpdateEmployeeDTO } from '../../Interfaces/AccountModels';
 import { environment } from './enviroment';
-import { LoginDTO, RefreshTokenDTO, CreateDoctorDTO, UpdateDoctorDTO, CreateEmployeeDTO, UpdateEmployeeDTO, DoctorViewDTO } from '../Interfaces/all';
+import { 
+  LoginDTO, 
+  RefreshTokenDTO, 
+  CreateDoctorDTO, 
+  UpdateDoctorDTO, 
+  CreateEmployeeDTO, 
+  UpdateEmployeeDTO, 
+  DoctorViewDTO,
+  UserViewDTO,
+  CreateUserDTO,
+  UpdateUserDTO,
+  ChangePasswordDTO
+} from '../Interfaces/all';
 
 @Injectable({
   providedIn: 'root'
@@ -89,4 +101,58 @@ export class AccountService {
   {
         return this.http.get<any>(`${this.apiUrl}doctorId/${userid}`)
   }
+
+  // User Management Methods
+  getAllUsers(): Observable<UserViewDTO[]> {
+    return this.http.get<UserViewDTO[]>(`${this.apiUrl}AllUsers`);
+  }
+
+  getUserById(id: string): Observable<UserViewDTO> {
+    return this.http.get<UserViewDTO>(`${this.apiUrl}User/${id}`);
+  }
+
+  createUser(userData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}CreateUser`, userData);
+  }
+
+  updateUser(username: string, userData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}UpdateUser/${username}`, userData);
+  }
+
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}DeleteUser/${id}`);
+  }
+
+  changePassword(passwordData: ChangePasswordDTO): Observable<any> {
+    return this.http.post(`${this.apiUrl}ChangePassword`, passwordData);
+  }
+
+  activateUser(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}ActivateUser/${id}`, {});
+  }
+
+  deactivateUser(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}DeactivateUser/${id}`, {});
+  }
+
+  assignRole(userId: string, role: string): Observable<any> {
+    const data: changingroleDTO = {
+      userId: userId,
+      role: role
+    };
+    return this.http.patch(`${this.apiUrl}AssignRole`, data);
+  }
+
+  removeRole(userId: string, role: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}RemoveRole`, { userId :userId,role: role });
+  }
+
+  editAccount(username: string, accountData: FormData): Observable<any> {
+    return this.http.put(`${this.apiUrl}EditAccount/${username}`, accountData);
+  }
+}
+export interface  changingroleDTO
+{
+	 userId:string;
+	 role:string;
 }

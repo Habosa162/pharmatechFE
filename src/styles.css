@@ -1,3 +1,6 @@
+/* Import ngx-toastr styles */
+@import 'ngx-toastr/toastr';
+
 /* Global Print Styles */
 @media print {
   /* Hide all navigation and UI elements globally */

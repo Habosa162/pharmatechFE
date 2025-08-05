@@ -33,6 +33,9 @@ import { InventoryComponent } from './core/features/inventory/inventory.componen
 import { TransactionComponent } from './core/features/transactions/transaction.component';
 import { DepartmentManagementComponent } from './core/features/departments/department-management/department-management.component';
 import { PrescriptionDetailsComponent } from './core/features/patients/prescription-details/prescription-details.component';
+import { UserManagementComponent } from './core/features/users/user-management/user-management.component';
+import { MyAppointmentsClinicComponent } from './core/features/appointments/my-appointments-clinic/my-appointments-clinic.component';
+import { AdminLayoutComponent } from './core/layouts/admin-layout/admin-layout.component';
 
 
 export const routes: Routes = [
@@ -44,6 +47,7 @@ export const routes: Routes = [
 
   {
     path: 'admin',
+    component: AdminLayoutComponent,
     canActivate: [AuthGuard],
     data: { role: 'Admin' },
     children: [
@@ -58,6 +62,7 @@ export const routes: Routes = [
       { path: 'doctors', component: DoctorListComponent },
       { path: 'patients', component: PatientListComponent },
       { path: 'invoices', component: InvoiceListComponent },
+      { path: 'users', component: UserManagementComponent },
       { path: 'invoices/:id', component: InvoiceDetailsComponent },
       { path: 'invoices/edit/:id', component: InvoiceEditComponent },
       { path: 'admin-data-management', component: AdminDataManagementComponent },
@@ -126,5 +131,8 @@ export const routes: Routes = [
   {path:'transactions', component: TransactionComponent},
   {path:'departments', component: DepartmentManagementComponent},
   {path:'allemployees', component: EmployeeComponent},
+  {path:'my-appointments-clinic', component: MyAppointmentsClinicComponent},
+  { path: 'users', component: UserManagementComponent },
   { path: '**', component: NotFoundComponent },
+
 ];
