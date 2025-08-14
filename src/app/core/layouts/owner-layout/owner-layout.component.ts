@@ -8,6 +8,7 @@ import { AdminNavbarComponent } from "../../features/Shared/admin-navbar/admin-n
 
 @Component({
   selector: 'app-owner-layout',
+  standalone: true,
   imports: [SidebarComponent, FooterComponent, RouterModule, NavBarComponent, AdminNavbarComponent],
   templateUrl: './owner-layout.component.html',
   styleUrl: './owner-layout.component.css'

@@ -1,0 +1,320 @@
+<div class="medical-record-details-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <button class="btn btn-outline-secondary me-3" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Back
+        </button>
+        <h1 class="page-title">
+          <i class="fas fa-file-medical"></i>
+          Medical Record Details
+        </h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline-secondary me-2" (click)="loadMedicalRecordDetails()">
+          <i class="fas fa-sync-alt"></i>
+          Refresh
+        </button>
+        <button class="btn btn-primary me-2" (click)="showEditMedicalRecordForm()">
+          <i class="fas fa-edit"></i>
+          Edit Record
+        </button>
+        <button class="btn btn-success" (click)="showAddPrescriptionForm = true">
+          <i class="fas fa-plus"></i>
+          Add Prescription
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()"></button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-muted">Loading medical record details...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medical Record Details -->
+  <div *ngIf="!loading && medicalRecord" class="medical-record-section">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-file-medical"></i>
+          Medical Record Information
+        </h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info-group">
+              <label class="info-label">Patient Name</label>
+              <span class="info-value">{{ medicalRecord.patientName }}</span>
+            </div>
+            <div class="info-group">
+              <label class="info-label">Doctor Name</label>
+              <span class="info-value">{{ medicalRecord.doctorName }}</span>
+            </div>
+            <div class="info-group">
+              <label class="info-label">Visit Date</label>
+              <span class="info-value">{{ formatDate(medicalRecord.visitDate) }}</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-group">
+              <label class="info-label">Prescriptions Count</label>
+              <span class="info-value badge bg-primary">{{ medicalRecord.prescriptions?.length || 0 }}</span>
+            </div>
+            <div class="info-group">
+              <label class="info-label">Lab Tests Count</label>
+              <span class="info-value badge bg-info">{{ medicalRecord.labtestsCount || 0 }}</span>
+            </div>
+            <div class="info-group" *ngIf="medicalRecord.notes">
+              <label class="info-label">Notes</label>
+              <span class="info-value">{{ medicalRecord.notes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prescriptions Section -->
+  <div *ngIf="!loading && medicalRecord" class="prescriptions-section">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-prescription"></i>
+          Prescriptions ({{ prescriptions.length }})
+        </h3>
+      </div>
+      <div class="card-body">
+        <!-- Empty State -->
+        <div *ngIf="prescriptions.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-prescription"></i>
+          </div>
+          <h4 class="empty-title">No Prescriptions Found</h4>
+          <p class="empty-description">
+            This medical record doesn't have any prescriptions yet.
+          </p>
+          <button class="btn btn-success" (click)="showAddPrescriptionForm = true">
+            <i class="fas fa-plus"></i> Add First Prescription
+          </button>
+        </div>
+
+        <!-- Prescriptions List -->
+        <div *ngIf="prescriptions.length > 0" class="prescriptions-list">
+          <div *ngFor="let prescription of prescriptions" class="prescription-card">
+            <div class="prescription-header">
+              <div class="prescription-info">
+                <h5 class="prescription-diagnosis">{{ prescription.diagnosis }}</h5>
+                <div class="prescription-meta">
+                  <span class="meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ formatDate(prescription.prescriptionDate) }}
+                  </span>
+                  <span class="meta-item">
+                    <i class="fas fa-user-md"></i>
+                    {{ prescription.doctorName }}
+                  </span>
+                  <span class="meta-item">
+                    <i class="fas fa-building"></i>
+                    {{ prescription.clinicName }}
+                  </span>
+                </div>
+              </div>
+              <div class="prescription-actions">
+                <button class="btn btn-outline-primary btn-sm" (click)="viewPrescriptionDetails(prescription.id)">
+                  <i class="fas fa-eye"></i>
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Medical Record Modal -->
+  <div *ngIf="showEditForm" class="modal-overlay" (click)="closeEditForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-edit"></i>
+          Edit Medical Record
+        </h4>
+        <button type="button" class="btn-close" (click)="closeEditForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="medicalRecordForm" (ngSubmit)="updateMedicalRecord()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="visitDate">
+              <i class="fas fa-calendar-alt"></i>
+              Visit Date *
+            </label>
+            <input
+              type="datetime-local"
+              id="visitDate"
+              class="form-control"
+              formControlName="visitDate"
+              [class.is-invalid]="isFieldInvalid(medicalRecordForm, 'visitDate')"
+            />
+            <div *ngIf="isFieldInvalid(medicalRecordForm, 'visitDate')" class="invalid-feedback">
+              {{ getFieldError(medicalRecordForm, 'visitDate') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="notes">
+              <i class="fas fa-sticky-note"></i>
+              Notes
+            </label>
+            <textarea
+              id="notes"
+              class="form-control"
+              formControlName="notes"
+              rows="4"
+              placeholder="Enter medical record notes..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditForm()">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="medicalRecordForm.invalid || editingRecord">
+            <i *ngIf="editingRecord" class="fas fa-spinner fa-spin"></i>
+            <i *ngIf="!editingRecord" class="fas fa-save"></i>
+            {{ editingRecord ? 'Updating...' : 'Update Record' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Prescription Modal -->
+  <div *ngIf="showAddPrescriptionForm" class="modal-overlay" (click)="closeAddPrescriptionForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-plus"></i>
+          Add New Prescription
+        </h4>
+        <button type="button" class="btn-close" (click)="closeAddPrescriptionForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="prescriptionForm" (ngSubmit)="addPrescription()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="diagnosis">
+              <i class="fas fa-stethoscope"></i>
+              Diagnosis *
+            </label>
+            <input
+              type="text"
+              id="diagnosis"
+              class="form-control"
+              formControlName="diagnosis"
+              placeholder="Enter diagnosis..."
+              [class.is-invalid]="isFieldInvalid(prescriptionForm, 'diagnosis')"
+            />
+            <div *ngIf="isFieldInvalid(prescriptionForm, 'diagnosis')" class="invalid-feedback">
+              {{ getFieldError(prescriptionForm, 'diagnosis') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="prescriptionDate">
+              <i class="fas fa-calendar-alt"></i>
+              Prescription Date *
+            </label>
+            <input
+              type="datetime-local"
+              id="prescriptionDate"
+              class="form-control"
+              formControlName="prescriptionDate"
+              [class.is-invalid]="isFieldInvalid(prescriptionForm, 'prescriptionDate')"
+            />
+            <div *ngIf="isFieldInvalid(prescriptionForm, 'prescriptionDate')" class="invalid-feedback">
+              {{ getFieldError(prescriptionForm, 'prescriptionDate') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="followUpDate">
+              <i class="fas fa-calendar-check"></i>
+              Follow-up Date *
+            </label>
+            <input
+              type="datetime-local"
+              id="followUpDate"
+              class="form-control"
+              formControlName="followUpDate"
+              [class.is-invalid]="isFieldInvalid(prescriptionForm, 'followUpDate')"
+            />
+            <div *ngIf="isFieldInvalid(prescriptionForm, 'followUpDate')" class="invalid-feedback">
+              {{ getFieldError(prescriptionForm, 'followUpDate') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="prescriptionNotes">
+              <i class="fas fa-sticky-note"></i>
+              Notes
+            </label>
+            <textarea
+              id="prescriptionNotes"
+              class="form-control"
+              formControlName="notes"
+              rows="3"
+              placeholder="Enter prescription notes..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAddPrescriptionForm()">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-success" 
+            [disabled]="prescriptionForm.invalid || addingPrescription">
+            <i *ngIf="addingPrescription" class="fas fa-spinner fa-spin"></i>
+            <i *ngIf="!addingPrescription" class="fas fa-plus"></i>
+            {{ addingPrescription ? 'Adding...' : 'Add Prescription' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

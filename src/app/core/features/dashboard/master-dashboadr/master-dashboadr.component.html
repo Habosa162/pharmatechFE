@@ -1,173 +1,269 @@
 <div class="dashboard-container">
-  <h1 class="dashboard-title">Clinic Master Dashboard</h1>
-
-  <!-- Statistics Cards -->
-  <div class="statistics-grid">
-    <div class="stat-card">
-      <div class="stat-icon">👥</div>
-      <div class="stat-content">
-        <h3>Total Patients</h3>
-        <p class="stat-number">{{totalPatients}}</p>
-      </div>
+  <!-- Loading and Error States -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">💰</div>
-      <div class="stat-content">
-        <h3>Total Revenue</h3>
-        <p class="stat-number">${{totalRevenue | number:'1.2-2'}}</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">📄</div>
-      <div class="stat-content">
-        <h3>Total Invoices</h3>
-        <p class="stat-number">{{totalInvoices}}</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">💊</div>
-      <div class="stat-content">
-        <h3>Medications</h3>
-        <p class="stat-number">{{totalMedications}}</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">🏥</div>
-      <div class="stat-content">
-        <h3>Surgeries</h3>
-        <p class="stat-number">{{totalSurgeries}}</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">🔬</div>
-      <div class="stat-content">
-        <h3>Lab Tests</h3>
-        <p class="stat-number">{{totalLabTests}}</p>
-      </div>
-    </div>
-
-    <div class="stat-card">
-      <div class="stat-icon">👨‍⚕️</div>
-      <div class="stat-content">
-        <h3>Staff Positions</h3>
-        <p class="stat-number">{{totalPositions}}</p>
-      </div>
-    </div>
+    <p class="mt-2">Loading dashboard data...</p>
   </div>
 
-  <!-- Detailed Lists -->
-  <div class="dashboard-sections">
-    <!-- Recent Transactions Section -->
-    <section class="dashboard-section">
-      <h2>Recent Transactions</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let transaction of recentTransactions.slice(0, 5)">
-              <td>{{transaction.date | date:'short'}}</td>
-              <td>{{transaction.description}}</td>
-              <td>${{transaction.amount | number:'1.2-2'}}</td>
-              <td>
-                <span [class]="'status-badge ' + transaction.status.toLowerCase()">
-                  {{transaction.status}}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="refreshDashboard()">Retry</button>
+  </div>
 
-    <!-- Recent Invoices Section -->
-    <section class="dashboard-section">
-      <h2>Recent Invoices</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Invoice #</th>
-              <th>Patient</th>
-              <th>Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let invoice of recentInvoices.slice(0, 5)">
-              <td>{{invoice.invoiceNumber}}</td>
-              <td>{{invoice.patientName}}</td>
-              <td>${{invoice.amount | number:'1.2-2'}}</td>
-              <td>
-                <span [class]="'status-badge ' + invoice.status.toLowerCase()">
-                  {{invoice.status}}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="dashboard-title">{{ getDashboardTitle() }}</h1>
+      <button class="btn btn-outline-primary" (click)="refreshDashboard()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
 
-    <!-- Medications Section -->
-    <section class="dashboard-section">
-      <h2>Recent Medications</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <!-- <th>Dosage</th>
-              <th>Duration</th> -->
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let med of medications.slice(0, 5)">
-              <td>{{med.name}}</td>
-              <!-- <td>{{med.dosage}}</td> -->
-              <!-- <td>{{med.duration}}</td> -->
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <!-- Role-based Welcome Message -->
+    <div class="alert alert-info" role="alert" *ngIf="userRole">
+      <strong>Welcome!</strong> You are logged in as: <span class="badge bg-primary">{{ userRole }}</span>
+      <span *ngIf="isDoctor" class="badge bg-success ms-2">Doctor</span>
+      <span *ngIf="isEmployee" class="badge bg-info ms-2">Employee</span>
+    </div>
 
-    <!-- Surgeries Section -->
-    <section class="dashboard-section">
-      <h2>Upcoming Surgeries</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let surgery of surgeries.slice(0, 5)">
-              <td>{{surgery.name}}</td>
-              <td>{{surgery.surgeryDate| date:'short'}}</td>
-              <td>
-                <span [class]="'status-badge ' + surgery.doctorName.toLowerCase()">
-                  {{surgery.doctorName}}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <!-- Statistics Cards -->
+    <div class="statistics-grid">
+      <!-- Core Statistics -->
+      <div class="stat-card" (click)="navigateToPatients()" style="cursor: pointer;">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <h3>Total Patients</h3>
+          <p class="stat-number">{{ getTotalPatients() }}</p>
+        </div>
       </div>
-    </section>
+
+      <div class="stat-card" (click)="navigateToAppointments()" style="cursor: pointer;">
+        <div class="stat-icon">📅</div>
+        <div class="stat-content">
+          <h3>Total Appointments</h3>
+          <p class="stat-number">{{ getTotalAppointments() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👨‍⚕️</div>
+        <div class="stat-content">
+          <h3>Total Doctors</h3>
+          <p class="stat-number">{{ getTotalDoctors() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👷</div>
+        <div class="stat-content">
+          <h3>Total Employees</h3>
+          <p class="stat-number">{{ getTotalEmployees() }}</p>
+        </div>
+      </div>
+
+      <!-- Financial Statistics -->
+      <div class="stat-card" (click)="navigateToTransactions()" style="cursor: pointer;">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <h3>Total Revenue</h3>
+          <p class="stat-number">${{ getTotalRevenue() | number:'1.2-2' }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card" (click)="navigateToInvoices()" style="cursor: pointer;">
+        <div class="stat-icon">📄</div>
+        <div class="stat-content">
+          <h3>Total Invoices</h3>
+          <p class="stat-number">{{ getTotalInvoices() }}</p>
+        </div>
+      </div>
+
+      <!-- Medical Statistics -->
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-content">
+          <h3>Medical Records</h3>
+          <p class="stat-number">{{ getTotalMedicalRecords() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🏥</div>
+        <div class="stat-content">
+          <h3>Surgeries</h3>
+          <p class="stat-number">{{ getTotalSurgeries() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🔬</div>
+        <div class="stat-content">
+          <h3>Lab Tests</h3>
+          <p class="stat-number">{{ getTotalLabTests() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">💊</div>
+        <div class="stat-content">
+          <h3>Medications</h3>
+          <p class="stat-number">{{ getTotalMedications() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👔</div>
+        <div class="stat-content">
+          <h3>Staff Positions</h3>
+          <p class="stat-number">{{ getTotalPositions() }}</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🏢</div>
+        <div class="stat-content">
+          <h3>Departments</h3>
+          <p class="stat-number">{{ getTotalDepartments() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role-Specific Statistics -->
+    <div class="dashboard-sections">
+      <!-- Doctor-Specific Section -->
+      <div *ngIf="isDoctor" class="section-card">
+        <h3><i class="fas fa-stethoscope text-primary"></i> My Practice Overview</h3>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="mini-stat">
+              <h4>{{ getMyPatients() }}</h4>
+              <p>My Patients</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="mini-stat">
+              <h4>{{ getMyAppointments() }}</h4>
+              <p>My Appointments</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="mini-stat">
+              <h4>{{ getMySurgeries() }}</h4>
+              <p>My Surgeries</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="mini-stat">
+              <h4>{{ getMyMedicalRecords() }}</h4>
+              <p>Medical Records</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee-Specific Section -->
+      <div *ngIf="isEmployee" class="section-card">
+        <h3><i class="fas fa-briefcase text-info"></i> My Work Overview</h3>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mini-stat">
+              <h4>{{ getProcessedPayments() }}</h4>
+              <p>Processed Payments</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mini-stat">
+              <h4>{{ getProcessedInvoices() }}</h4>
+              <p>Processed Invoices</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mini-stat">
+              <h4>{{ getCustomerInteractions() }}</h4>
+              <p>Customer Interactions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointment Status Section -->
+      <div class="section-card">
+        <h3><i class="fas fa-calendar-check text-success"></i> Appointment Status</h3>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="status-stat pending">
+              <h4>{{ getPendingAppointments() }}</h4>
+              <p>Pending</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="status-stat completed">
+              <h4>{{ getCompletedAppointments() }}</h4>
+              <p>Completed</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="status-stat cancelled">
+              <h4>{{ getCancelledAppointments() }}</h4>
+              <p>Cancelled</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="status-stat total">
+              <h4>{{ getTotalAppointments() }}</h4>
+              <p>Total</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invoice Status Section -->
+      <div class="section-card">
+        <h3><i class="fas fa-file-invoice-dollar text-warning"></i> Invoice Status</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="status-stat paid">
+              <h4>{{ getPaidInvoices() }}</h4>
+              <p>Paid Invoices</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="status-stat unpaid">
+              <h4>{{ getUnpaidInvoices() }}</h4>
+              <p>Unpaid Invoices</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Section -->
+      <div class="section-card">
+        <h3><i class="fas fa-bolt text-primary"></i> Quick Actions</h3>
+        <div class="row">
+          <div class="col-md-3" *ngIf="canAccessAdminFeatures()">
+            <button class="btn btn-outline-primary w-100" routerLink="/admin/doctors">
+              <i class="fas fa-user-md"></i> Manage Doctors
+            </button>
+          </div>
+          <div class="col-md-3" *ngIf="canAccessAdminFeatures()">
+            <button class="btn btn-outline-primary w-100" routerLink="/admin/patients">
+              <i class="fas fa-users"></i> Manage Patients
+            </button>
+          </div>
+          <div class="col-md-3" *ngIf="canAccessDoctorFeatures()">
+            <button class="btn btn-outline-success w-100" routerLink="/doctor/appointments">
+              <i class="fas fa-calendar"></i> My Appointments
+            </button>
+          </div>
+          <div class="col-md-3" *ngIf="canAccessEmployeeFeatures()">
+            <button class="btn btn-outline-info w-100" routerLink="/employee/payments">
+              <i class="fas fa-credit-card"></i> Process Payments
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

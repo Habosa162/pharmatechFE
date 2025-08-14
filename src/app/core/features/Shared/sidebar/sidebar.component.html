@@ -1,14 +1,38 @@
 <!-- sidebar.component.html -->
 <div class="sidebar d-flex flex-column flex-shrink-0" id="sidebar">
-  <!-- Sidebar Header (Optional) -->
-  <div class="sidebar-header p-3 text-white border-bottom border-white border-opacity-10">
-    <h5 class="mb-0">Admin Panel</h5>
+  <!-- Debug Buttons -->
+  <div class="debug-section p-2 border-bottom">
+    <button class="btn btn-sm btn-outline-info me-2" (click)="debugUserData()">
+      <i class="fas fa-bug"></i> Debug User Data
+    </button>
+    <button class="btn btn-sm btn-outline-warning" (click)="reloadUserData()">
+      <i class="fas fa-sync-alt"></i> Reload User Data
+    </button>
+  </div>
+
+  <!-- Sidebar Header -->
+  <div class="sidebar-header p-3 border-bottom">
+    <h5 class="sidebar-title mb-0">
+      <span *ngIf="canAccessMaster()">Master Panel</span>
+      <span *ngIf="canAccessOwner() && canAccessMaster()"> + </span>
+      <span *ngIf="canAccessOwner()">Owner Panel</span>
+      <span *ngIf="canAccessAdmin() && (canAccessMaster() || canAccessOwner())"> + </span>
+      <span *ngIf="canAccessAdmin()">Admin Panel</span>
+      <span *ngIf="canAccessDoctor() && (canAccessMaster() || canAccessOwner() || canAccessAdmin())"> + </span>
+      <span *ngIf="canAccessDoctor()">Doctor Panel</span>
+      <span *ngIf="canAccessEmployee() && (canAccessMaster() || canAccessOwner() || canAccessAdmin() || canAccessDoctor())"> + </span>
+      <span *ngIf="canAccessEmployee()">Employee Panel</span>
+      <span *ngIf="canAccessAccountant() && (canAccessMaster() || canAccessOwner() || canAccessAdmin() || canAccessDoctor() || canAccessEmployee())"> + </span>
+      <span *ngIf="canAccessAccountant()">Financial Panel</span>
+      <span *ngIf="!canAccessAdmin() && !canAccessDoctor() && !canAccessEmployee() && !canAccessAccountant() && !canAccessMaster() && !canAccessOwner()">User Panel</span>
+    </h5>
   </div>
 
   <!-- Scrollable Menu Content -->
   <div class="sidebar-menu flex-grow-1 overflow-auto">
     <ul class="nav flex-column">
-      <!-- Main Section -->
+      
+      <!-- Main Section - Available to all authenticated users -->
       <li class="nav-item menu-section">
         <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
            data-bs-toggle="collapse" href="#mainMenu">
@@ -17,7 +41,7 @@
         </a>
         <div class="collapse show" id="mainMenu">
           <ul class="nav flex-column submenu">
-            <li class="nav-item" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
+            <li class="nav-item" *ngIf="canAccessAdmin()">
               <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
                 <i class="fe fe-home me-2"></i> Dashboard
               </a>
@@ -27,68 +51,327 @@
                 <i class="fe fe-calendar me-2"></i> Appointments
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" *ngIf="canAccessAdmin()">
               <a routerLink="/doctor-list" routerLinkActive="active" class="nav-link">
                 <i class="fe fe-user-plus me-2"></i> Doctors
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" *ngIf="canAccessAdmin()">
               <a routerLink="/patient-list" routerLinkActive="active" class="nav-link">
                 <i class="fe fe-users me-2"></i> Patients
               </a>
             </li>
+            <li class="nav-item" *ngIf="canAccessAdmin()">
+              <a routerLink="/allemployees" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-briefcase me-2"></i> Employees
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessAdmin()">
+              <a routerLink="/departments" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-layers me-2"></i> Departments
+              </a>
+            </li>
           </ul>
         </div>
       </li>
 
-      <!-- Management Section -->
-      <li class="nav-item menu-section">
+      <!-- Master Section - Only for Master users -->
+      <li *ngIf="canAccessMaster()" class="nav-item menu-section">
         <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
-           data-bs-toggle="collapse" href="#managementMenu">
-          <span><i class="fe fe-settings me-2"></i> Management</span>
+           data-bs-toggle="collapse" href="#masterMenu">
+          <span><i class="fe fe-crown me-2"></i> Master Control</span>
           <i class="fe fe-chevron-down toggle-icon"></i>
         </a>
-        <div class="collapse show" id="managementMenu">
+        <div class="collapse" id="masterMenu">
           <ul class="nav flex-column submenu">
             <li class="nav-item">
-              <a routerLink="/specialities" routerLinkActive="active" class="nav-link">
-                <i class="fe fe-layers me-2"></i> Specialities
+              <a routerLink="/master/system-settings" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-settings me-2"></i> System Settings
               </a>
             </li>
             <li class="nav-item">
-              <a routerLink="/reviews" routerLinkActive="active" class="nav-link">
-                <i class="fe fe-star me-2"></i> Reviews
+              <a routerLink="/master/audit-logs" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-list me-2"></i> Audit Logs
               </a>
             </li>
             <li class="nav-item">
-              <a routerLink="/transactions-list" routerLinkActive="active" class="nav-link">
-                <i class="fe fe-credit-card me-2"></i> Transactions
+              <a routerLink="/master/global-config" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-sliders me-2"></i> Global Configuration
               </a>
             </li>
           </ul>
         </div>
       </li>
 
-      <!-- Reports Section -->
+      <!-- Owner Section - Only for Owner users -->
+      <li *ngIf="canAccessOwner()" class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse" href="#ownerMenu">
+          <span><i class="fe fe-briefcase me-2"></i> Business Control</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="ownerMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/owner/business-analytics" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-bar-chart me-2"></i> Business Analytics
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/owner/strategic-reports" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file-text me-2"></i> Strategic Reports
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Management Section - For admins and above -->
+      <li *ngIf="canAccessAdmin()" class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse" href="#managementMenu">
+          <span><i class="fe fe-users me-2"></i> Management</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="managementMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item" *ngIf="canManageUsers()">
+              <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-user-check me-2"></i> User Management
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/admin/doctors" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-user-plus me-2"></i> Doctor Management
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/admin/patients" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-users me-2"></i> Patient Management
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/admin/appointments" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-calendar me-2"></i> Appointment Management
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canManageInventory()">
+              <a routerLink="/admin/inventory" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-package me-2"></i> Inventory Management
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/admin/admin-data-management" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-database me-2"></i> Data Management
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Doctor Section - Only for doctors -->
+      <li *ngIf="canAccessDoctor()" class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse" href="#doctorMenu">
+          <span><i class="fe fe-stethoscope me-2"></i> Doctor Tools</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="doctorMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/doctor/dashboard" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-home me-2"></i> Doctor Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/doctor/my-appointments" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-calendar me-2"></i> My Appointments
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/doctor/my-patients" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-users me-2"></i> My Patients
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/doctor/schedule" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-clock me-2"></i> Schedule
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a routerLink="/doctorview" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-eye me-2"></i> Doctor View
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Employee Section - Only for employees -->
+      <li *ngIf="canAccessEmployee()" class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse" href="#employeeMenu">
+          <span><i class="fe fe-briefcase me-2"></i> Employee Tools</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="employeeMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/employee/dashboard" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-home me-2"></i> Employee Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/employee/payments" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-credit-card me-2"></i> Payments
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/employee/transactions" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-activity me-2"></i> Transactions
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/employee/invoices" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file me-2"></i> Invoices
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/employee/customer-service" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-headphones me-2"></i> Customer Service
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/transactions" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-activity me-2"></i> All Transactions
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Financial Section - For accountants and admins -->
+      <li *ngIf="canAccessFinancial()" class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse" href="#financialMenu">
+          <span><i class="fe fe-dollar-sign me-2"></i> Financial</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="financialMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/admin/invoices" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file me-2"></i> Invoice Management
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/transactions" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-activity me-2"></i> Transactions
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessAccountant()">
+              <a routerLink="/accountant/reports" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-bar-chart me-2"></i> Financial Reports
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessAccountant()">
+              <a routerLink="/accountant/tax-reports" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file-text me-2"></i> Tax Reports
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessAccountant()">
+              <a routerLink="/accountant/budget-planning" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-pie-chart me-2"></i> Budget Planning
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Patient Section - For all users (including doctors and employees) -->
       <li class="nav-item menu-section">
         <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
+           data-bs-toggle="collapse" href="#patientMenu">
+          <span><i class="fe fe-user me-2"></i> Patient Management</span>
+          <i class="fe fe-chevron-down toggle-icon"></i>
+        </a>
+        <div class="collapse" id="patientMenu">
+          <ul class="nav flex-column submenu">
+            <li class="nav-item">
+              <a routerLink="/patient-list" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-users me-2"></i> All Patients
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessDoctor()">
+              <a routerLink="/doctor/my-patients" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-user-check me-2"></i> My Patients
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-profile" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-user me-2"></i> Patient Profile
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-appointments" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-calendar me-2"></i> Patient Appointments
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-medical-records" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file-text me-2"></i> Medical Records
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-prescriptions" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-paper me-2"></i> Prescriptions
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-surgeries" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-scissors me-2"></i> Surgeries
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/patient-lab-tests" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-droplet me-2"></i> Lab Tests
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Reports Section - For admins and accountants -->
+      <li *ngIf="canAccessFinancial()" class="nav-item menu-section">
+        <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
            data-bs-toggle="collapse" href="#reportsMenu">
-          <span><i class="fe fe-file-text me-2"></i> Reports</span>
+          <span><i class="fe fe-bar-chart me-2"></i> Reports</span>
           <i class="fe fe-chevron-down toggle-icon"></i>
         </a>
         <div class="collapse" id="reportsMenu">
           <ul class="nav flex-column submenu">
             <li class="nav-item">
-              <a routerLink="/invoice-report" routerLinkActive="active" class="nav-link">
-                <i class="fe fe-file me-2"></i> Invoice Reports
+              <a routerLink="/admin/reports" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-file-text me-2"></i> General Reports
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessAccountant()">
+              <a routerLink="/accountant/financial-reports" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-dollar-sign me-2"></i> Financial Reports
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="canAccessBusinessAnalytics()">
+              <a routerLink="/owner/business-analytics" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-trending-up me-2"></i> Business Analytics
               </a>
             </li>
           </ul>
         </div>
       </li>
 
-      <!-- System Section -->
-      <li class="nav-item menu-section">
+      <!-- System Section - For admins and above -->
+      <li *ngIf="canAccessSystemSettings()" class="nav-item menu-section">
         <a class="nav-link menu-toggle d-flex justify-content-between align-items-center"
            data-bs-toggle="collapse" href="#systemMenu">
           <span><i class="fe fe-tool me-2"></i> System</span>
@@ -106,6 +389,11 @@
                 <i class="fe fe-user me-2"></i> Profile
               </a>
             </li>
+            <li class="nav-item" *ngIf="canAccessMaster()">
+              <a routerLink="/master/system-logs" routerLinkActive="active" class="nav-link">
+                <i class="fe fe-list me-2"></i> System Logs
+              </a>
+            </li>
           </ul>
         </div>
       </li>
@@ -113,9 +401,9 @@
   </div>
 
   <!-- Fixed Logout Button at Bottom -->
-  <!-- <div class="sidebar-footer p-3 border-top border-white border-opacity-10">
+  <div class="sidebar-footer p-3 border-top border-white border-opacity-10">
     <button (click)="logout()" class="btn btn-light w-100">
       <i class="fe fe-log-out me-2"></i> Logout
     </button>
-  </div> -->
+  </div>
 </div>

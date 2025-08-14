@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SidebarComponent } from '../../features/Shared/sidebar/sidebar.component';
 import { FooterComponent } from '../../features/Shared/footer/footer.component';
 import { Router, RouterOutlet } from '@angular/router';
@@ -9,22 +9,26 @@ import { AdminNavbarComponent } from "../../features/Shared/admin-navbar/admin-n
 
 @Component({
   selector: 'app-master-layout',
+  standalone: true,
   imports: [SidebarComponent, RouterOutlet, NavBarComponent, FooterComponent, AdminSidebarComponent, AdminNavbarComponent],
   templateUrl: './master-layout.component.html',
   styleUrl: './master-layout.component.css'
 })
-export class MasterLayoutComponent {
-  /**
-   *
-   */
+export class MasterLayoutComponent implements OnInit {
+  
   constructor(private authService: AuthService, private router: Router) {
-  console.log("got to master");
-
+    console.log("got to master");
   }
 
-Logout(){
-  this.authService.logout();
-  this.router.navigate(['/login']);
+  ngOnInit() {
+    // Load user data when component initializes
+    if (this.authService.isLoggedIn()) {
+      this.authService.loadUserFullData();
+    }
+  }
 
-}
+  Logout(){
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

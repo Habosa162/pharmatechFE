@@ -1,6 +1,29 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <!-- Debug Buttons -->
+  <div class="debug-section p-2 border-bottom">
+    <button class="btn btn-sm btn-outline-info me-2" (click)="debugUserData()">
+      <i class="fas fa-bug"></i> Debug User Data
+    </button>
+    <button class="btn btn-sm btn-outline-warning" (click)="reloadUserData()">
+      <i class="fas fa-sync-alt"></i> Reload User Data
+    </button>
+  </div>
+
+  <!-- User Info Section -->
+  <div class="user-info-section p-3">
+    <div class="d-flex align-items-center">
+      <div class="user-details">
+        <h6 class="mb-0">User Roles: {{ userRoles().join(', ') || 'None' }}</h6>
+        <small class="text-muted">
+          Doctor: {{ isDoctor() ? 'Yes' : 'No' }} | 
+          Employee: {{ isEmployee() ? 'Yes' : 'No' }}
+        </small>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
-    <a class="navbar-brand" routerLink="/">Navbar</a>
+    <a class="navbar-brand" routerLink="/">PharmaTech</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
       data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
       aria-label="Toggle navigation">
@@ -15,132 +38,130 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/about" routerLinkActive="active">About us</a>
         </li>
+        
+        <!-- Master-specific navigation -->
+        <li *ngIf="canAccessMaster()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Master Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/master/dashboard">Master Dashboard</a></li>
+            <li><a class="dropdown-item" routerLink="/master/system-settings">System Settings</a></li>
+            <li><a class="dropdown-item" routerLink="/master/audit-logs">Audit Logs</a></li>
+            <li><a class="dropdown-item" routerLink="/master/global-config">Global Configuration</a></li>
+          </ul>
+        </li>
+
+        <!-- Owner-specific navigation -->
+        <li *ngIf="canAccessOwner()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Owner Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/owner/dashboard">Owner Dashboard</a></li>
+            <li><a class="dropdown-item" routerLink="/owner/business-analytics">Business Analytics</a></li>
+            <li><a class="dropdown-item" routerLink="/owner/strategic-reports">Strategic Reports</a></li>
+          </ul>
+        </li>
+
+        <!-- Admin navigation -->
+        <li *ngIf="canAccessAdmin()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Admin Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/admin/dashboard">Dashboard</a></li>
+            <li *ngIf="canManageUsers()"><a class="dropdown-item" routerLink="/admin/users">User Management</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/doctors">Doctor Management</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/patients">Patient Management</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/appointments">Appointment Management</a></li>
+            <li *ngIf="canManageInventory()"><a class="dropdown-item" routerLink="/admin/inventory">Inventory</a></li>
+            <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/admin/financial-reports">Financial Reports</a></li>
+          </ul>
+        </li>
+
+        <!-- Doctor-specific navigation -->
+        <li *ngIf="canAccessDoctor()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Doctor Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/doctor/appointments">My Appointments</a></li>
+            <li><a class="dropdown-item" routerLink="/doctor/patients">My Patients</a></li>
+            <li><a class="dropdown-item" routerLink="/doctor/schedule">Schedule</a></li>
+            <li><a class="dropdown-item" routerLink="/doctor/medical-records">Medical Records</a></li>
+            <li><a class="dropdown-item" routerLink="/doctor/prescriptions">Prescriptions</a></li>
+          </ul>
+        </li>
+
+        <!-- Employee-specific navigation -->
+        <li *ngIf="canAccessEmployee()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Employee Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/employee/dashboard">Employee Dashboard</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/payments">Payments</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/transactions">Transactions</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/invoices">Invoices</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/customer-service">Customer Service</a></li>
+          </ul>
+        </li>
+
+        <!-- Accountant-specific navigation -->
+        <li *ngIf="canAccessAccountant()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Financial Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/accountant/dashboard">Financial Dashboard</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/reports">Financial Reports</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/transactions">All Transactions</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/invoices">Invoice Management</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/tax-reports">Tax Reports</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/budget-planning">Budget Planning</a></li>
+          </ul>
+        </li>
+
+        <!-- User-specific navigation (for regular users) -->
+        <li *ngIf="!canAccessAdmin() && !canAccessDoctor() && !canAccessEmployee() && !canAccessAccountant() && !canAccessMaster() && !canAccessOwner()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            User Panel
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/user/dashboard">User Dashboard</a></li>
+            <li><a class="dropdown-item" routerLink="/user/appointments">My Appointments</a></li>
+            <li><a class="dropdown-item" routerLink="/user/profile">Profile</a></li>
+            <li><a class="dropdown-item" routerLink="/user/settings">Settings</a></li>
+          </ul>
+        </li>
       </ul>
 
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li *ngIf="!authService.isLoggedIn()" class="nav-item">
           <a class="nav-link" routerLink="/login">Login</a>
         </li>
-        <li class="nav-item" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
-							<a class="nav-link header-login" routerLink="/register">Create New User </a>
-						</li>
-        <li *ngIf="authService.isLoggedIn()" class="nav-item">
-          <a class="nav-link header-logout" (click)="logout()">Logout</a>
+        
+        <!-- User creation - only for high-level roles -->
+        <li *ngIf="canCreateUser()" class="nav-item">
+          <a class="nav-link header-login" routerLink="/register">Create New User</a>
+        </li>
+        
+        <!-- User profile dropdown when logged in -->
+        <li *ngIf="authService.isLoggedIn()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i> {{ authService.getUsername() || 'User' }}
+            <span *ngIf="authService.getHighestRole()" class="badge bg-secondary ms-1">{{ authService.getHighestRole() }}</span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
+            <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+            <li *ngIf="canAccessSystemSettings()"><a class="dropdown-item" routerLink="/system-settings">System Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Logout</a></li>
+          </ul>
         </li>
       </ul>
-
     </div>
   </div>
 </nav>
-<!-- <header class="header">
-				<nav class="navbar navbar-expand-lg header-nav">
-					<div class="navbar-header">
-						<a id="mobile_btn" href="javascript:void(0);">
-							<span class="bar-icon">
-								<span></span>
-								<span></span>
-								<span></span>
-							</span>
-						</a>
-						<a href="index-2.html" class="navbar-brand logo">
-							<img src="./img/logo.png" class="img-fluid" alt="Logo">
-						</a>
-					</div>
-					<div class="main-menu-wrapper">
-						<div class="menu-header">
-							<a routerLink="/patients" class="menu-logo">
-								<img src="./img/logo.png" class="img-fluid" alt="Logo">
-
-							</a>
-							<a id="menu_close" class="menu-close" href="javascript:void(0);">
-								<i class="fas fa-times"></i>
-							</a>
-						</div>
-						<ul class="main-nav" *ngIf="!authService.isLoggedIn()">
-							<li class="active">
-								<a href="index-2.html">Home</a>
-							</li>
-							<li class="has-submenu">
-								<a href="#">Doctors <i class="fas fa-chevron-down"></i></a>
-								<ul class="submenu">
-									<li><a href="doctor-dashboard.html">Doctor Dashboard</a></li>
-									<li><a href="appointments.html">Appointments</a></li>
-									<li><a href="schedule-timings.html">Schedule Timing</a></li>
-									<li><a href="my-patients.html">Patients List</a></li>
-									<li><a href="patient-profile.html">Patients Profile</a></li>
-									<li><a href="chat-doctor.html">Chat</a></li>
-									<li><a href="invoices.html">Invoices</a></li>
-									<li><a href="doctor-profile-settings.html">Profile Settings</a></li>
-									<li><a href="reviews.html">Reviews</a></li>
-									<li><a href="doctor-register.html">Doctor Register</a></li>
-								</ul>
-							</li>
-							<li class="has-submenu">
-								<a href="#">Patients <i class="fas fa-chevron-down"></i></a>
-								<ul class="submenu">
-									<li><a href="search.html">Search Doctor</a></li>
-									<li><a href="doctor-profile.html">Doctor Profile</a></li>
-									<li><a href="booking.html">Booking</a></li>
-									<li><a href="checkout.html">Checkout</a></li>
-									<li><a href="booking-success.html">Booking Success</a></li>
-									<li><a href="patient-dashboard.html">Patient Dashboard</a></li>
-									<li><a href="favourites.html">Favourites</a></li>
-									<li><a href="chat.html">Chat</a></li>
-									<li><a href="profile-settings.html">Profile Settings</a></li>
-									<li><a href="change-password.html">Change Password</a></li>
-								</ul>
-							</li>
-							<li class="has-submenu">
-								<a routerLink="">Pages <i class="fas fa-chevron-down"></i></a>
-								<ul class="submenu">
-									<li><a href="voice-call.html">Voice Call</a></li>
-									<li><a href="video-call.html">Video Call</a></li>
-									<li><a href="search.html">Search Doctors</a></li>
-									<li><a href="calendar.html">Calendar</a></li>
-									<li><a href="components.html">Components</a></li>
-									<li class="has-submenu">
-										<a href="invoices.html">Invoices</a>
-										<ul class="submenu">
-											<li><a href="invoices.html">Invoices</a></li>
-											<li><a href="invoice-view.html">Invoice View</a></li>
-										</ul>
-									</li>
-									<li><a href="blank-page.html">Starter Page</a></li>
-									<li><a routerLink="/login" routerLinkActive="active">Login</a></li>
-									<li><a href="register.html">Register</a></li>
-									<li><a href="forgot-password.html">Forgot Password</a></li>
-								</ul>
-							</li>
-
-
-
-							<li>
-								<a href="admin/index.html" target="_blank">Admin</a>
-							</li>
-							 <li class="login-link">
-								<a href="login.html">Login / Signup</a>
-							</li>
-
-
-
-						</ul>
-					</div>
-					<ul class="nav header-navbar-rht">
-						<li class="nav-item contact-item">
-							<div class="header-contact-img">
-								<i class="far fa-hospital"></i>
-							</div>
-							<div class="header-contact-detail">
-								<p class="contact-header">Contact</p>
-								<p class="contact-info-header"> +1 315 369 5943</p>
-							</div>
-						</li>
-						<li class="nav-item" *ngIf="!authService.isLoggedIn()">
-							<a class="nav-link header-login" routerLink="/login">login</a>
-						</li>
-						<li class="nav-item" *ngIf="authService.getUserRole()=='Admin' || authService.getUserRole()=='Master' || authService.getUserRole()=='Owner'">
-							<a class="nav-link header-login" routerLink="/register">Create New User </a>
-						</li>
-					</ul>
-				</nav>
-			</header> -->

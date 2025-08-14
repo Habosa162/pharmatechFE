@@ -8,6 +8,7 @@ import { DoctorSidebarComponent } from "../../features/doctors/doctor-sidebar";
 
 @Component({
   selector: 'app-user-layout',
+  standalone: true,
   imports: [SidebarComponent, FooterComponent, RouterModule, NavBarComponent, DoctorSidebarComponent],
   templateUrl: './user-layout.component.html',
   styleUrl: './user-layout.component.css'

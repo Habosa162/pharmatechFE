@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MedicalrecordService } from '../../../services/patients/medicalrecord.service';
 import { PatientService } from '../../../services/patients/patient.service';
+import { PatientlabtestsService } from '../../../services/patients/patientlabtests.service';
 import { Allmedicalrecords } from '../../../Interfaces/patient/medicalrecords/medicalrecord';
 import { PatientDto } from '../../../Interfaces/patient/patients/patient';
 
@@ -18,6 +19,7 @@ export class PatientMedicalRecordsComponent implements OnInit {
   patientId!: number;
   patient: PatientDto | null = null;
   medicalRecords: Allmedicalrecords[] = [];
+  labTestsCount: number = 0;
   
   loading = false;
   error: string | null = null;
@@ -33,13 +35,15 @@ export class PatientMedicalRecordsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private medicalRecordService: MedicalrecordService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private patientLabTestsService: PatientlabtestsService
   ) {}
 
   ngOnInit(): void {
     this.patientId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadPatientInfo();
     this.loadMedicalRecords();
+    this.loadLabTestsCount();
   }
 
   loadPatientInfo(): void {
@@ -49,6 +53,18 @@ export class PatientMedicalRecordsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading patient info:', err);
+      }
+    });
+  }
+
+  loadLabTestsCount(): void {
+    this.patientLabTestsService.getByPatientId(this.patientId).subscribe({
+      next: (labTests) => {
+        this.labTestsCount = labTests.length;
+      },
+      error: (err) => {
+        console.error('Error loading lab tests count:', err);
+        this.labTestsCount = 0;
       }
     });
   }

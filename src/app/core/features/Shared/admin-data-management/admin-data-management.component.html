@@ -17,9 +17,9 @@
          >
           <i class="fas fa-city"></i> Surgeries
         </button>
-    <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setActiveTab('payments')">
+    <!-- <button class="tab-btn" [class.active]="activeTab === 'payments'" (click)="setActiveTab('payments')">
       <i class="fas fa-city"></i> Payment Methods
-    </button>
+    </button> -->
     <button class="tab-btn" [class.active]="activeTab === 'positions'" (click)="setActiveTab('positions')">
       <i class="fas fa-code"></i> Positions
         </button>
@@ -392,23 +392,68 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="surgeryName">Position Name</label>
-          <input type="text" id="positionName" [(ngModel)]="newPosition.name" placeholder="Enter position name" required>
+      <form #positionForm="ngForm" (ngSubmit)="addPosition()">
+        <div class="modal-body">
+          <!-- Debug info -->
+          <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 12px;">
+            <strong>Debug:</strong> Departments loaded: {{departments.length}} | 
+            <span *ngIf="departments.length > 0">First department: {{departments[0].name}}</span>
+            <span *ngIf="departments.length === 0">No departments loaded</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="positionName">Position Name</label>
+            <input 
+              type="text" 
+              id="positionName" 
+              name="positionName"
+              [(ngModel)]="newPosition.name" 
+              placeholder="Enter position name" 
+              required
+              class="form-control"
+              #positionName="ngModel"
+              [ngClass]="{'is-invalid': positionName.invalid && (positionName.dirty || positionName.touched)}"
+            >
+            <div
+              *ngIf="positionName.invalid && (positionName.dirty || positionName.touched)"
+              class="invalid-feedback"
+            >
+              Position name is required.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="departmentSelect">Department</label>
+            <select 
+              id="departmentSelect" 
+              name="departmentId"
+              [(ngModel)]="newPosition.departmentId" 
+              required
+              class="form-control"
+              #departmentId="ngModel"
+              [ngClass]="{'is-invalid': departmentId.invalid && (departmentId.dirty || departmentId.touched)}"
+            >
+              <option [ngValue]="0" disabled>Select a department</option>
+              <option *ngFor="let department of departments" [ngValue]="department.id">{{department.name}}</option>
+            </select>
+            <div
+              *ngIf="departmentId.invalid && (departmentId.dirty || departmentId.touched)"
+              class="invalid-feedback"
+            >
+              Department is required.
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="departmentSelect">Parent Department</label>
-          <select id="Select" [(ngModel)]="newPosition.departmentId" required>
-            <option [ngValue]="0" disabled>Select a department</option>
-            <option *ngFor="let department of departments" [ngValue]="department.id">{{department.name}}</option>
-          </select>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="positionForm.invalid"
+          >
+            Save
+          </button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
-        <button type="button" class="btn btn-primary" (click)="addPosition()">Save</button>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -421,23 +466,68 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="updatePositionName">Position Name</label>
-          <input type="text" id="updatePositionName" [(ngModel)]="updatePositionModel.name" placeholder="Enter position name" required>
+      <form #updatePositionForm="ngForm" (ngSubmit)="updatePosition()">
+        <div class="modal-body">
+          <!-- Debug info -->
+          <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 12px;">
+            <strong>Debug:</strong> Departments loaded: {{departments.length}} | 
+            <span *ngIf="departments.length > 0">First department: {{departments[0].name}}</span>
+            <span *ngIf="departments.length === 0">No departments loaded</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="updatePositionName">Position Name</label>
+            <input 
+              type="text" 
+              id="updatePositionName" 
+              name="updatePositionName"
+              [(ngModel)]="updatePositionModel.name" 
+              placeholder="Enter position name" 
+              required
+              class="form-control"
+              #updatePositionName="ngModel"
+              [ngClass]="{'is-invalid': updatePositionName.invalid && (updatePositionName.dirty || updatePositionName.touched)}"
+            >
+            <div
+              *ngIf="updatePositionName.invalid && (updatePositionName.dirty || updatePositionName.touched)"
+              class="invalid-feedback"
+            >
+              Position name is required.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="updateDepartmentSelect">Department</label>
+            <select 
+              id="updateDepartmentSelect" 
+              name="updateDepartmentId"
+              [(ngModel)]="updatePositionModel.departmentId" 
+              required
+              class="form-control"
+              #updateDepartmentId="ngModel"
+              [ngClass]="{'is-invalid': updateDepartmentId.invalid && (updateDepartmentId.dirty || updateDepartmentId.touched)}"
+            >
+              <option [ngValue]="0" disabled>Select a department</option>
+              <option *ngFor="let department of departments" [ngValue]="department.id">{{department.name}}</option>
+            </select>
+            <div
+              *ngIf="updateDepartmentId.invalid && (updateDepartmentId.dirty || updateDepartmentId.touched)"
+              class="invalid-feedback"
+            >
+              Department is required.
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="updateDepartmentSelect">Parent Department</label>
-          <select id="updateDepartmentSelect" [(ngModel)]="updatePositionModel.departmentId" required>
-            <option [ngValue]="0" disabled>Select a department</option>
-            <option *ngFor="let department of departments" [ngValue]="department.id">{{department.name}}</option>
-          </select>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="updatePositionForm.invalid"
+          >
+            Update
+          </button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeAllModals()">Cancel</button>
-        <!-- <button type="button" class="btn btn-primary" (click)="updatePosition()">Update</button> -->
-      </div>
+      </form>
     </div>
   </div>
 

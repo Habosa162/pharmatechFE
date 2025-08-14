@@ -1,0 +1,1 @@
+export { MedicalRecordDetailsComponent } from './medical-record-details.component'; 

@@ -1,21 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MedicationService } from '../../../services/clinics/medication.service';
-import { CreateMedication, MedicationDto } from '../../../Interfaces/clinic/medications/medication';
-import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { CreatePosition, PositionDto } from '../../../Interfaces/employee/positions/position';
-import { CreateSurgery, SurgeryDto } from '../../../Interfaces/patient/surgeries/surgery';
-import { AddLabtest, LabtestDto } from '../../../Interfaces/patient/labtests/labtest';
-import { PositionService } from '../../../services/employees/position.service';
-import { SurgeryService } from '../../../services/patients/surgery.service';
-// import { LabtestService } from '../../../services/patients/labtest.service';
 import { CommonModule } from '@angular/common';
-import { PatientService } from '../../../services/patients/patient.service';
-import { TransactionService } from '../../../services/transactions/transaction.service';
-import { InvoiceService } from '../../../services/appintments/invoice.service';
-import { LabtestService } from '../../../services/clinics/labtest.service';
-
-
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { DashboardService, DashboardStats, RoleBasedStats } from '../../../services/dashboard.service';
 
 @Component({
   selector: 'app-master-dashboadr',
@@ -26,78 +14,224 @@ import { LabtestService } from '../../../services/clinics/labtest.service';
 })
 export class MasterDashboadrComponent implements OnInit {
   // Dashboard statistics
-  totalMedications: number = 0;
-  totalSurgeries: number = 0;
-  totalLabTests: number = 0;
-  totalPositions: number = 0;
-  totalPatients: number = 0;
-  totalTransactions: number = 0;
-  totalInvoices: number = 0;
-  totalRevenue: number = 0;
+  dashboardStats: DashboardStats | null = null;
+  roleStats: RoleBasedStats | null = null;
+  
+  // Loading states
+  loading = true;
+  error: string | null = null;
 
-  // Lists for different entities
-  medications: MedicationDto[] = [];
-  surgeries: SurgeryDto[] = [];
-  labTests: LabtestDto[] = [];
-  positions: PositionDto[] = [];
-  recentTransactions: any[] = [];
-  recentInvoices: any[] = [];
+  // User role information
+  userRole: string = '';
+  isDoctor: boolean = false;
+  isEmployee: boolean = false;
 
   constructor(
-    private medicationService: MedicationService,
-    private surgeryService: SurgeryService,
-    private labtestService: LabtestService,
-    private positionService: PositionService,
-    private patientService: PatientService,
-    private transactionService: TransactionService,
-    private invoiceService: InvoiceService
+    private dashboardService: DashboardService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.loadDashboardData();
+    // Load user data when component initializes
+    if (this.authService.isLoggedIn()) {
+      this.authService.loadUserFullData();
+      this.loadDashboardData();
+    }
   }
 
   loadDashboardData() {
-    // Load medications
-    this.medicationService.getAllMedications().subscribe(data => {
-      this.medications = data;
-      this.totalMedications = data.length;
-    });
+    this.loading = true;
+    this.error = null;
 
-    // Load surgeries
-    this.surgeryService.getAllSurgeries().subscribe(data => {
-      this.surgeries = data;
-      this.totalSurgeries = data.length;
+    // Get both general and role-based dashboard data
+    this.dashboardService.getRoleDashboardData().subscribe({
+      next: (data) => {
+        this.dashboardStats = data.general;
+        this.roleStats = data.role;
+        this.userRole = data.role.role;
+        this.isDoctor = data.role.isDoctor;
+        this.isEmployee = data.role.isEmployee;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading dashboard data:', error);
+        this.error = 'Failed to load dashboard data. Please try again.';
+        this.loading = false;
+      }
     });
+  }
 
-    // Load lab tests
-    this.labtestService.getAllLabtests().subscribe(data => {
-      this.labTests = data;
-      this.totalLabTests = data.length;
-    });
+  // Helper methods for template
+  getTotalPatients(): number {
+    return this.dashboardStats?.totalPatients || 0;
+  }
 
-    // Load positions
-    this.positionService.getAllPositions().subscribe(data => {
-      this.positions = data;
-      this.totalPositions = data.length;
-    });
+  getTotalDoctors(): number {
+    return this.dashboardStats?.totalDoctors || 0;
+  }
 
-    // Load patients count
-    this.patientService.getAllPatients().subscribe(data => {
-      this.totalPatients = data.length;
-    });
+  getTotalEmployees(): number {
+    return this.dashboardStats?.totalEmployees || 0;
+  }
 
-    // Load transactions
-    // this.transactionService.getRecentTransactions().subscribe(data => {
-    //   this.recentTransactions = data;
-    //   this.totalTransactions = data.length;
-    //   this.totalRevenue = data.reduce((sum, transaction) => sum + transaction.amount, 0);
-    // });
+  getTotalAppointments(): number {
+    return this.dashboardStats?.totalAppointments || 0;
+  }
 
-    // Load invoices
-    this.invoiceService.getAllInvoices().subscribe(data => {
-      this.recentInvoices = data;
-      this.totalInvoices = data.length;
-    });
+  getTotalRevenue(): number {
+    return this.dashboardStats?.totalRevenue || 0;
+  }
+
+  getTotalInvoices(): number {
+    return this.dashboardStats?.totalInvoices || 0;
+  }
+
+  getTotalMedicalRecords(): number {
+    return this.dashboardStats?.totalMedicalRecords || 0;
+  }
+
+  getTotalSurgeries(): number {
+    return this.dashboardStats?.totalSurgeries || 0;
+  }
+
+  getTotalLabTests(): number {
+    return this.dashboardStats?.totalLabTests || 0;
+  }
+
+  getTotalMedications(): number {
+    return this.dashboardStats?.totalMedications || 0;
+  }
+
+  getTotalPositions(): number {
+    return this.dashboardStats?.totalPositions || 0;
+  }
+
+  getTotalDepartments(): number {
+    return this.dashboardStats?.totalDepartments || 0;
+  }
+
+  getPendingAppointments(): number {
+    return this.dashboardStats?.pendingAppointments || 0;
+  }
+
+  getCompletedAppointments(): number {
+    return this.dashboardStats?.completedAppointments || 0;
+  }
+
+  getCancelledAppointments(): number {
+    return this.dashboardStats?.cancelledAppointments || 0;
+  }
+
+  getPaidInvoices(): number {
+    return this.dashboardStats?.paidInvoices || 0;
+  }
+
+  getUnpaidInvoices(): number {
+    return this.dashboardStats?.unpaidInvoices || 0;
+  }
+
+  // Doctor-specific methods
+  getMyPatients(): number {
+    return this.roleStats?.doctorStats?.myPatients || 0;
+  }
+
+  getMyAppointments(): number {
+    return this.roleStats?.doctorStats?.myAppointments || 0;
+  }
+
+  getMySurgeries(): number {
+    return this.roleStats?.doctorStats?.mySurgeries || 0;
+  }
+
+  getMyMedicalRecords(): number {
+    return this.roleStats?.doctorStats?.myMedicalRecords || 0;
+  }
+
+  // Employee-specific methods
+  getProcessedPayments(): number {
+    return this.roleStats?.employeeStats?.processedPayments || 0;
+  }
+
+  getProcessedInvoices(): number {
+    return this.roleStats?.employeeStats?.processedInvoices || 0;
+  }
+
+  getCustomerInteractions(): number {
+    return this.roleStats?.employeeStats?.customerInteractions || 0;
+  }
+
+  // Navigation methods
+  navigateToPatients() {
+    if (this.isDoctor) {
+      this.router.navigate(['/doctor/patients']);
+    } else {
+      this.router.navigate(['/admin/patients']);
+    }
+  }
+
+  navigateToAppointments() {
+    if (this.isDoctor) {
+      this.router.navigate(['/doctor/appointments']);
+    } else {
+      this.router.navigate(['/admin/appointments']);
+    }
+  }
+
+  navigateToInvoices() {
+    if (this.isEmployee) {
+      this.router.navigate(['/employee/invoices']);
+    } else {
+      this.router.navigate(['/admin/invoices']);
+    }
+  }
+
+  navigateToTransactions() {
+    if (this.isEmployee) {
+      this.router.navigate(['/employee/transactions']);
+    } else {
+      this.router.navigate(['/transactions']);
+    }
+  }
+
+  // Refresh dashboard data
+  refreshDashboard() {
+    this.loadDashboardData();
+  }
+
+  // Get dashboard title based on user role
+  getDashboardTitle(): string {
+    if (this.userRole === 'MASTER') {
+      return 'Master Dashboard';
+    } else if (this.userRole === 'OWNER') {
+      return 'Owner Dashboard';
+    } else if (this.userRole === 'ADMIN') {
+      return 'Admin Dashboard';
+    } else if (this.isDoctor) {
+      return 'Doctor Dashboard';
+    } else if (this.isEmployee) {
+      return 'Employee Dashboard';
+    } else if (this.userRole === 'ACCOUNTANT') {
+      return 'Financial Dashboard';
+    } else {
+      return 'User Dashboard';
+    }
+  }
+
+  // Check if user can access specific features
+  canAccessAdminFeatures(): boolean {
+    return this.authService.hasAnyRole(['MASTER', 'OWNER', 'ADMIN']);
+  }
+
+  canAccessFinancialFeatures(): boolean {
+    return this.authService.hasAnyRole(['ACCOUNTANT', 'ADMIN', 'OWNER', 'MASTER']);
+  }
+
+  canAccessDoctorFeatures(): boolean {
+    return this.isDoctor;
+  }
+
+  canAccessEmployeeFeatures(): boolean {
+    return this.isEmployee;
   }
 }

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../../services/account.service';
-import { DoctorViewDTO, CreateDoctorDTO } from '../../../Interfaces/all';
+import { DepartmentService } from '../../../services/clinics/department.service';
+import { DoctorViewDTO, CreateDoctorDTO, DepartmentViewDTO } from '../../../Interfaces/all';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -15,6 +16,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class DoctorListComponent implements OnInit {
   doctors: DoctorViewDTO[] = [];
   filteredDoctors: DoctorViewDTO[] = [];
+  departments: DepartmentViewDTO[] = [];
+  doctorDepartments: any[] = []; // Store doctor-department relationships
   loading = false;
   error: string | null = null;
   success: string | null = null;
@@ -38,8 +41,15 @@ export class DoctorListComponent implements OnInit {
   addDoctorForm: FormGroup;
   addingDoctor = false;
 
+  // Assign Doctor to Department Modal properties
+  showAssignDepartmentModal = false;
+  assignDepartmentForm: FormGroup;
+  selectedDoctorForAssignment: DoctorViewDTO | null = null;
+  assigningDoctor = false;
+
   constructor(
     private accountService: AccountService,
+    private departmentService: DepartmentService,
     private router: Router,
     private formBuilder: FormBuilder
   ) {
@@ -50,10 +60,17 @@ export class DoctorListComponent implements OnInit {
       startDate: ['', [Validators.required]],
       appUserId: [null, ]
     });
+
+    this.assignDepartmentForm = this.formBuilder.group({
+      departmentId: ['', [Validators.required]],
+      percentage: [100, [Validators.required, Validators.min(1), Validators.max(100)]]
+    });
   }
 
   ngOnInit(): void {
     this.loadDoctors();
+    this.loadDepartments();
+    this.loadDoctorDepartments();
   }
 
   loadDoctors(): void {
@@ -71,6 +88,51 @@ export class DoctorListComponent implements OnInit {
         console.error('Error loading doctors:', error);
         this.error = 'Failed to load doctors. Please try again.';
         this.loading = false;
+      }
+    });
+  }
+
+  loadDepartments(): void {
+    this.departmentService.getAllDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
+        console.log('Loaded departments:', departments);
+      },
+      error: (error) => {
+        console.error('Error loading departments:', error);
+        this.error = 'Failed to load departments.';
+      }
+    });
+  }
+
+  loadDoctorDepartments(): void {
+    this.departmentService.getDoctorDepartments().subscribe({
+      next: (doctorDepts) => {
+        this.doctorDepartments = doctorDepts;
+        console.log('Loaded doctor departments:', doctorDepts);
+        
+        // Check for unknown departments
+        const unknownDepts = doctorDepts.filter(dd => 
+          !this.departments.some(dept => dept.id === dd.departmentId)
+        );
+        
+        if (unknownDepts.length > 0) {
+          console.warn('Found doctor assignments to unknown departments:', unknownDepts);
+          console.warn('Available department IDs:', this.departments.map(d => d.id));
+        }
+        
+        // Log filtering summary
+        setTimeout(() => {
+          const stats = this.getDepartmentAssignmentStats();
+          console.log('Department Assignment Statistics:', stats);
+          if (stats.filteredOut > 0) {
+            console.warn(`⚠️  ${stats.filteredOut} department assignments were filtered out due to unknown departments`);
+          }
+        }, 100);
+      },
+      error: (error) => {
+        console.error('Error loading doctor departments:', error);
+        this.error = 'Failed to load doctor departments.';
       }
     });
   }
@@ -273,5 +335,133 @@ export class DoctorListComponent implements OnInit {
       if (field.errors['pattern']) return `${fieldName} format is invalid`;
     }
     return '';
+  }
+
+  // Assign Doctor to Department Modal Methods
+  showAssignDepartmentForm(doctor: DoctorViewDTO): void {
+    this.selectedDoctorForAssignment = doctor;
+    this.assignDepartmentForm.reset({
+      departmentId: '',
+      percentage: 100
+    });
+    this.showAssignDepartmentModal = true;
+    this.clearMessages();
+  }
+
+  closeAssignDepartmentModal(): void {
+    this.showAssignDepartmentModal = false;
+    this.selectedDoctorForAssignment = null;
+    this.assignDepartmentForm.reset();
+    this.clearMessages();
+  }
+
+  assignDoctorToDepartment(): void {
+    if (this.assignDepartmentForm.valid && this.selectedDoctorForAssignment) {
+      this.assigningDoctor = true;
+      this.error = null;
+
+      const formValue = this.assignDepartmentForm.value;
+      
+      this.departmentService.assignDoctorToDepartment(
+        this.selectedDoctorForAssignment.id,
+        formValue.departmentId,
+        formValue.percentage
+      ).subscribe({
+        next: () => {
+          this.success = `Doctor ${this.selectedDoctorForAssignment?.name} assigned to department successfully!`;
+          this.assigningDoctor = false;
+          this.closeAssignDepartmentModal();
+          // Refresh doctor departments to show the new assignment
+          this.loadDoctorDepartments();
+        },
+        error: (error) => {
+          console.error('Error assigning doctor to department:', error);
+          this.error = 'Failed to assign doctor to department. Please try again.';
+          this.assigningDoctor = false;
+        }
+      });
+    } else {
+      this.error = 'Please fill in all required fields correctly.';
+    }
+  }
+
+  // Assign Department Form validation helpers
+  isAssignDepartmentFieldInvalid(fieldName: string): boolean {
+    const field = this.assignDepartmentForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getAssignDepartmentFieldError(fieldName: string): string {
+    const field = this.assignDepartmentForm.get(fieldName);
+    if (field && field.errors) {
+      if (field.errors['required']) return `${fieldName} is required`;
+      if (field.errors['min']) return `${fieldName} must be at least ${field.errors['min'].min}`;
+      if (field.errors['max']) return `${fieldName} must be at most ${field.errors['max'].max}`;
+    }
+    return '';
+  }
+
+  // Helper methods for displaying doctor departments
+  getDoctorDepartments(doctorId: number): any[] {
+    return this.doctorDepartments.filter(dd => dd.doctorId === doctorId);
+  }
+
+  getValidDoctorDepartments(doctorId: number): any[] {
+    const allDepts = this.doctorDepartments.filter(dd => dd.doctorId === doctorId);
+    const validDepts = allDepts.filter(dd => {
+      // Only include if department exists in our departments list
+      return this.departments.some(dept => dept.id === dd.departmentId);
+    });
+    
+    // Log if any departments were filtered out
+    if (allDepts.length !== validDepts.length) {
+      const filteredOut = allDepts.filter(dd => 
+        !this.departments.some(dept => dept.id === dd.departmentId)
+      );
+      console.log(`Doctor ${doctorId}: Filtered out ${filteredOut.length} unknown department assignments:`, filteredOut);
+    }
+    
+    return validDepts;
+  }
+
+  getDoctorDepartmentsText(doctorId: number): string {
+    const validDepts = this.getValidDoctorDepartments(doctorId);
+    if (validDepts.length === 0) {
+      return 'No departments assigned';
+    }
+    
+    return validDepts.map(dd => {
+      const deptName = this.getDepartmentName(dd.departmentId);
+      return `${deptName} (${dd.percentage}%)`;
+    }).join(', ');
+  }
+
+  getDepartmentName(departmentId: number): string {
+    const dept = this.departments.find(d => d.id === departmentId);
+    return dept ? dept.name : 'Unknown Department';
+  }
+
+  hasDepartments(doctorId: number): boolean {
+    return this.getValidDoctorDepartments(doctorId).length > 0;
+  }
+
+  getDepartmentsCount(doctorId: number): number {
+    return this.getValidDoctorDepartments(doctorId).length;
+  }
+
+  // Debug method to get department assignment statistics
+  getDepartmentAssignmentStats(): any {
+    const totalAssignments = this.doctorDepartments.length;
+    const validAssignments = this.doctorDepartments.filter(dd => 
+      this.departments.some(dept => dept.id === dd.departmentId)
+    ).length;
+    const invalidAssignments = totalAssignments - validAssignments;
+    
+    return {
+      total: totalAssignments,
+      valid: validAssignments,
+      invalid: invalidAssignments,
+      filteredOut: invalidAssignments
+    };
   }
 }

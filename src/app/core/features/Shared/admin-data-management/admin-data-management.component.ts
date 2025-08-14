@@ -7,6 +7,7 @@ import { MedicationService } from '../../../services/clinics/medication.service'
 import { PositionService } from '../../../services/employees/position.service';
 import { SurgeryService } from '../../../services/patients/surgery.service';
 import { LabtestService } from '../../../services/clinics/labtest.service';
+import { DepartmentService } from '../../../services/clinics/department.service';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule } from '@angular/forms';
@@ -84,13 +85,16 @@ medications: MedicationDto[] = [];
     // private toastr: ToastrService,
     private labtestService: LabtestService,
     private patientService: PatientService,
-    private doctorService: AccountService
+    private doctorService: AccountService,
+    private departmentService: DepartmentService
   ) {}
 
   ngOnInit(): void {
+    console.log('Component initializing...');
     this.loadAllData();
     this.loadPatients();
     this.loadDoctors();
+    console.log('Component initialization complete');
   }
 
   ngAfterViewChecked(): void {
@@ -100,10 +104,13 @@ medications: MedicationDto[] = [];
     });
   }
   loadAllData(): void {
+    console.log('Loading all data...');
     this.loadMedications();
     this.loadSurgeries();
     this.loadPositions();
     this.loadLabtests();
+    this.loadDepartments();
+    console.log('All data loading initiated');
     // this.loadSkills();
   }
 
@@ -377,12 +384,17 @@ medications: MedicationDto[] = [];
   }
 
   addPosition(): void {
+    if (!this.newPosition.name.trim() || !this.newPosition.departmentId) {
+      return;
+    }
+    
     this.positionService.addPosition(this.newPosition).subscribe({
       next: () => {
         this.loadPositions();
-        this.toggleModal('addPositions', false);
+        this.toggleModal('addPosition', false);
         this.newPosition = { name: '', departmentId: 0 };
-        // this.toastr.success('Positiion added successfully');
+        this.cdr.detectChanges();
+        // this.toastr.success('Position added successfully');
       },
       error: (err) => {
         alert('Failed to add position: ' + (err.message || 'Unknown error'));
@@ -399,30 +411,35 @@ medications: MedicationDto[] = [];
     this.toggleModal('updatePosition', true);
   }
 
-  // updatePosition(): void {
-  //   this.positionService.updatePosition(
-  //     this.updatePositionModel.id,
-  //     this.updatePositionModel
-  //   ).subscribe({
-  //     next: () => {
-  //       this.loadPositions();
-  //       this.toggleModal('updatePosition', false);
-  //       this.selectedPosition = null;
-  //       // this.toastr.success('position updated successfully');
-  //     },
-  //     error: (err) => {
-  //       console.error('Error updating position:', err);
-  //       alert('Failed to update position: ' + (err.message || 'Unknown error'));
-  //     }
-  //   });
-  // }
+  updatePosition(): void {
+    if (!this.updatePositionModel.name.trim() || !this.updatePositionModel.departmentId) {
+      return;
+    }
+    
+    this.positionService.updatePosition(
+      this.selectedPosition.id,
+      this.updatePositionModel
+    ).subscribe({
+      next: () => {
+        this.loadPositions();
+        this.toggleModal('updatePosition', false);
+        this.selectedPosition = null;
+        this.cdr.detectChanges();
+        // this.toastr.success('position updated successfully');
+      },
+      error: (err) => {
+        console.error('Error updating position:', err);
+        alert('Failed to update position: ' + (err.message || 'Unknown error'));
+      }
+    });
+  }
 
   deletePosition(): void {
     // Using the subcategory service's API URL
     console.log('Deleting position with ID:', this.selectedPosition.id);
     this.positionService.deletePosition(this.selectedPosition.id).subscribe({
       next: (response) => {
-        this.toggleModal('deletePositoin', false);
+        this.toggleModal('deletePosition', false);
         this.selectedPosition = null;
         this.loadPositions();
         this.cdr.detectChanges(); // Force change detection
@@ -538,6 +555,7 @@ updatinglabtestid:number=0;
   }
 
   openAddPositionModal(){
+    console.log('Opening add position modal, departments:', this.departments);
     this.newPosition = { name: '', departmentId: 0 };
     this.toggleModal('addPosition', true);
   }
@@ -550,7 +568,7 @@ updatinglabtestid:number=0;
   openUpdatePositionModal(position: UpdatePosition): void {
     this.selectedPosition = position;
     this.updatePositionModel = {name: position.name, departmentId: position.departmentId};
-    this.toggleModal('updateposition', true);
+    this.toggleModal('updatePosition', true);
   }
 
   openUpdateLabtestModal(labtest: UpdateLabtest): void {
@@ -607,6 +625,20 @@ updatinglabtestid:number=0;
     this.doctorService.getAllDoctors().subscribe({
       next: (data) => { this.doctors = data; },
       error: (err) => { console.error('Error loading doctors:', err); }
+    });
+  }
+
+  loadDepartments(): void {
+    console.log('Loading departments...');
+    this.departmentService.getAllDepartments().subscribe({
+      next: (data) => {
+        this.departments = data;
+        console.log('Loaded departments:', data);
+        console.log('Departments array length:', this.departments.length);
+      },
+      error: (err) => {
+        console.error('Error loading departments:', err);
+      }
     });
   }
 

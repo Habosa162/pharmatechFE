@@ -1,252 +1,451 @@
 <div class="admin-layout mt-2">
+  <!-- Debug Section -->
+  <div class="profile-container mb-2">
+    <div class="d-flex gap-2">
+      <button (click)="debugUserData()" class="btn btn-sm btn-warning">
+        <i class="fa fa-bug"></i> Debug User Data
+      </button>
+      <button (click)="reloadUserData()" class="btn btn-sm btn-info">
+        <i class="fa fa-refresh"></i> Reload User Data
+      </button>
+    </div>
+  </div>
+
   <div class="profile-container">
     <!-- Add Tab Navigation -->
     <div class="d-flex flex-row">
       <div class="profile-tabs">
-        <div class="">
-          <ul
-            class="nav nav-tabs d-flex flex-column"
-            *ngIf="
-              authService.getUserRole() == 'Admin' ||
-              authService.getUserRole() == 'Master' ||
-              authService.getUserRole() == 'Owner'
-            "
-          >
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                routerLink="/admin/admin-dashboard"
-                routerLinkActive="active"
-              >
-                <i class="fa fa-folder"></i> Dashboard
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                routerLink="/MyAppointments"
-                routerLinkActive="active"
-              >
-                <i class="fa fa-folder"></i> Appointments
-              </a>
-            </li>
-            <li class="nav-item submenu">
-              <a
-                class="nav-link"
-                data-bs-toggle="collapse"
-                href="#Clinics"
-                role="button"
-                aria-expanded="false"
-                aria-controls="Clinics"
-              >
-                <i class="fas fa-list"></i>
-                Clinic
-              </a>
-              <div class="collapse" id="Clinics">
-                <li>
-                  <a
-                    routerLink="departments"
-                    routerLinkActive="active"
-                    class="ps-5 nav-link"
-                  >
-                    <i class="fa fa-certificate"></i>
-                    Departments
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="ps-5 nav-link"
-                    routerLink="allemployees"
-                    routerLinkActive="active"
-                  >
-                    <i class="fa fa-certificate"></i>
-                    Employees
-                  </a>
-                </li>
-              </div>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                routerLink="admin/doctors"
-                routerLinkActive="active"
-              >
-                <i class="fa fa-briefcase"></i> Doctors
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                routerLink="/admin/patients"
-                routerLinkActive="active"
-              >
-                <i class="fa fa-user"></i>
-                Patients
-              </a>
-            </li>
+        
+        <!-- Master-specific navigation -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="canAccessMaster()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/master/dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-crown"></i> Master Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/master/system-settings"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-cog"></i> System Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/master/audit-logs"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-list"></i> Audit Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/master/global-config"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-sliders"></i> Global Configuration
+            </a>
+          </li>
+        </ul>
 
-            <li class="nav-item submenu">
-              <a
-                class="nav-link"
-                data-bs-toggle="collapse"
-                href="#Reports"
-                role="button"
-                aria-expanded="false"
-                aria-controls="Reports"
-              >
-                <i class="fas fa-list"></i>
-                Reports
-              </a>
-              <div class="collapse" id="Reports">
-                <li>
-                  <a
-                    routerLink="/admin/invoices"
-                    routerLinkActive="active"
-                    class="ps-5 nav-link"
-                  >
-                    <i class="fa fa-certificate"></i>
-                    Invoice
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="ps-5 nav-link"
-                    routerLink="transactions"
-                    routerLinkActive="active"
-                  >
-                    <i class="fa fa-certificate"></i>
-                    Transactions
-                  </a>
-                </li>
-              </div>
-            </li>
+        <!-- Owner-specific navigation -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="canAccessOwner()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/owner/dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-briefcase"></i> Owner Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/owner/business-analytics"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-bar-chart"></i> Business Analytics
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/owner/strategic-reports"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-file-text"></i> Strategic Reports
+            </a>
+          </li>
+        </ul>
 
-            <!-- <li class="nav-item submenu">
-              <a
-                class="nav-link"
-                data-bs-toggle="collapse"
-                role="button"
-                aria-expanded="false"
-                aria-controls="Inventory"
-                href="#Inventory"
-              >
-                <i class="fa fa-certificate"></i>
-                Inventory
-              </a>
-              <div class="collapse" id="Inventory">
-                <li class="nav-item">
-                  <a
-                    class="ps-5 nav-link"
-                    routerLink="/admin/inventorycategories"
-                    routerLinkActive="active"
-                  >
-                    <i class="fa fa-certificate"></i> Categories
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="ps-5 nav-link"
-                    routerLink="/admin/inventoryitmes"
-                    routerLinkActive="active"
-                  >
-                    <i class="fa fa-certificate"></i> Items
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a
-                    class="ps-5 nav-link"
-                    routerLink="/admin/inventorytransactions"
-                    routerLinkActive="active"
-                  >
-                    <i class="fa fa-certificate"></i> Inventory Transactions
-                  </a>
-                </li>
-              </div>
-            </li> -->
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                routerLink="inventory"
-                routerLinkActive="active"
-              >
-                <i class="fa fa-user"></i>
-                Inventory
-              </a>
-            </li>
-            <!-- <li class="nav-item">
-              <a
-                class="nav-link"
-                [class.active]="activeTab === 'reviews'"
-                (click)="setActiveTab('reviews')"
-              >
-                <i class="fa fa-user"></i>
-                Reviews
-              </a>
-            </li> -->
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                routerLink="/admin/admin-data-management"
-                routerLinkActive="active"
-              >
-                <i class="fa fa-user"></i> Admin data management
-              </a>
-            </li>
-          </ul>
-        </div>
+        <!-- Admin navigation -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="canAccessAdmin()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/admin/admin-dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-folder"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/my-appointments-clinic"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-calendar"></i> Appointments
+            </a>
+          </li>
+          <li class="nav-item submenu">
+            <a
+              class="nav-link"
+              data-bs-toggle="collapse"
+              href="#Clinics"
+              role="button"
+              aria-expanded="false"
+              aria-controls="Clinics"
+            >
+              <i class="fas fa-list"></i>
+              Clinic
+            </a>
+            <div class="collapse" id="Clinics">
+              <li>
+                <a
+                  routerLink="departments"
+                  routerLinkActive="active"
+                  class="ps-5 nav-link"
+                >
+                  <i class="fa fa-certificate"></i>
+                  Departments
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="ps-5 nav-link"
+                  routerLink="allemployees"
+                  routerLinkActive="active"
+                >
+                  <i class="fa fa-certificate"></i>
+                  Employees
+                </a>
+              </li>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="admin/doctors"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-briefcase"></i> Doctors
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/admin/patients"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-user"></i>
+              Patients
+            </a>
+          </li>
+
+          <li class="nav-item submenu">
+            <a
+              class="nav-link"
+              data-bs-toggle="collapse"
+              href="#Reports"
+              role="button"
+              aria-expanded="false"
+              aria-controls="Reports"
+            >
+              <i class="fas fa-list"></i>
+              Reports
+            </a>
+            <div class="collapse" id="Reports">
+              <li>
+                <a
+                  routerLink="/admin/invoices"
+                  routerLinkActive="active"
+                  class="ps-5 nav-link"
+                >
+                  <i class="fa fa-file"></i>
+                  Invoice
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="ps-5 nav-link"
+                  routerLink="transactions"
+                  routerLinkActive="active"
+                >
+                  <i class="fa fa-credit-card"></i>
+                  Transactions
+                </a>
+              </li>
+            </div>
+          </li>
+
+          <li class="nav-item" *ngIf="canManageInventory()">
+            <a
+              class="nav-link"
+              routerLink="inventory"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-package"></i>
+              Inventory
+            </a>
+          </li>
+
+          <li class="nav-item" *ngIf="canManageUsers()">
+            <a
+              class="nav-link"
+              routerLink="/admin/admin-data-management"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-users"></i> Admin data management
+            </a>
+          </li>
+        </ul>
+
+        <!-- Doctor-specific navigation -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="canAccessDoctor()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/doctor/dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-stethoscope"></i> Doctor Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/doctor/my-appointments"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-calendar"></i> My Appointments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/doctor/my-patients"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-users"></i> My Patients
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/doctor/schedule"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-clock"></i> Schedule
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/doctor/medical-records"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-file-text"></i> Medical Records
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/doctor/prescriptions"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-paper"></i> Prescriptions
+            </a>
+          </li>
+        </ul>
+
+        <!-- Employee-specific navigation -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="canAccessEmployee()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/employee/dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-briefcase"></i> Employee Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/employee/payments"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-credit-card"></i> Payments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/employee/transactions"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-activity"></i> Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/employee/invoices"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-file"></i> Invoices
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/employee/customer-service"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-headphones"></i> Customer Service
+            </a>
+          </li>
+        </ul>
+
+        <!-- Accountant-specific navigation -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="canAccessAccountant()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/accountant/dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-dollar-sign"></i> Financial Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/accountant/reports"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-bar-chart"></i> Financial Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/accountant/transactions"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-activity"></i> All Transactions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/accountant/invoices"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-file"></i> Invoice Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/accountant/tax-reports"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-file-text"></i> Tax Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/accountant/budget-planning"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-pie-chart"></i> Budget Planning
+            </a>
+          </li>
+        </ul>
+
+        <!-- User-specific navigation (for regular users) -->
+        <ul
+          class="nav nav-tabs d-flex flex-column"
+          *ngIf="!canAccessAdmin() && !canAccessDoctor() && !canAccessEmployee() && !canAccessAccountant() && !canAccessMaster() && !canAccessOwner()"
+        >
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/user/dashboard"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-home"></i> User Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/user/appointments"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-calendar"></i> My Appointments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/user/profile"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-user"></i> Profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/user/settings"
+              routerLinkActive="active"
+            >
+              <i class="fa fa-cog"></i> Settings
+            </a>
+          </li>
+        </ul>
       </div>
-
-      <!-- <div class="container col-9">
-      <div class="row">
-
-        <div class="col-lg-12">
-          <div *ngIf="activeTab === 'admin-dashboard'">
-            <app-master-dashboadr></app-master-dashboadr>
-          </div>
-
-          <div *ngIf="activeTab === 'appointments'">
-            <app-appointment-list></app-appointment-list>
-             <app-patient-appointments></app-patient-appointments>
-          </div>
-
-          <div *ngIf="activeTab === 'doctors'">
-            <app-doctor-list></app-doctor-list>
-          </div>
-
-          <div *ngIf="activeTab === 'patients'">
-            <app-patient-list></app-patient-list>
-          </div>
-
-          <div *ngIf="activeTab === 'transactions'">
-            <app-transactions-list></app-transactions-list>
-          </div>
-
-          <div *ngIf="activeTab === 'categories'">
-            <app-inventory-category></app-inventory-category>
-          </div>
-
-          <div *ngIf="activeTab === 'items'">
-            <app-inventory-items></app-inventory-items>
-          </div>
-
-          <div *ngIf="activeTab === 'inventorytransactions'">
-            <app-inventory-transactions></app-inventory-transactions>
-          </div>
-
-          <div *ngIf="activeTab === 'reviews'">
-            <app-review-list></app-review-list>
-          </div>
-
-          <div *ngIf="activeTab === 'invoices'">
-            <app-invoice-list></app-invoice-list>
-          </div>
-
-          <div *ngIf="activeTab === 'admin-data-management'">
-            <app-admin-data-management></app-admin-data-management>
-          </div>
-        </div>
-      </div>
-      </div> -->
     </div>
   </div>
 </div>

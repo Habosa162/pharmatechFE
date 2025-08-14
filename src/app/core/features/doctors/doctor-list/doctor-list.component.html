@@ -168,6 +168,13 @@
                 <span class="badge" [ngClass]="getStatusBadgeClass(doctor.isActive)">
                   {{ getStatusText(doctor.isActive) }}
                 </span>
+                <!-- Departments Indicator Badge -->
+                <span class="badge departments-badge" 
+                      [ngClass]="hasDepartments(doctor.id) ? 'departments-assigned' : 'departments-none'"
+                      [title]="hasDepartments(doctor.id) ? 'Has departments assigned' : 'No departments assigned'">
+                  <i class="fas fa-building"></i>
+                  {{ getDepartmentsCount(doctor.id) }}
+                </span>
               </div>
             </div>
             <div class="card-body">
@@ -192,13 +199,28 @@
                     <i class="fas fa-calendar-times"></i>
                     <span>Ended: {{ formatDate(doctor.endDate.toString()) }}</span>
                   </div>
+                  
+                  <!-- Departments Section -->
+                  <div class="detail-item departments-section">
+                    <i class="fas fa-building"></i>
+                    <div class="departments-info">
+                      <span class="departments-label">Departments:</span>
+                      <span class="departments-text" [ngClass]="{'no-departments': !hasDepartments(doctor.id)}">
+                        {{ getDoctorDepartmentsText(doctor.id) }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="card-footer">
-              <button class="btn btn-outline-primary btn-sm" (click)="viewDoctorProfile(doctor.id); $event.stopPropagation()">
+              <button class="btn btn-outline-primary btn-sm me-2" (click)="viewDoctorProfile(doctor.id); $event.stopPropagation()">
                 <i class="fas fa-eye"></i>
                 View Profile
+              </button>
+              <button class="btn btn-outline-success btn-sm" (click)="showAssignDepartmentForm(doctor); $event.stopPropagation()">
+                <i class="fas fa-building"></i>
+                Assign to Department
               </button>
             </div>
           </div>
@@ -379,6 +401,90 @@
             <i *ngIf="addingDoctor" class="fas fa-spinner fa-spin"></i>
             <i *ngIf="!addingDoctor" class="fas fa-save"></i>
             {{ addingDoctor ? 'Adding...' : 'Add Doctor' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Assign Doctor to Department Modal -->
+  <div *ngIf="showAssignDepartmentModal" class="modal-overlay" (click)="closeAssignDepartmentModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <i class="fas fa-building"></i>
+          Assign Doctor to Department
+        </h4>
+        <button type="button" class="btn-close" (click)="closeAssignDepartmentModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <form [formGroup]="assignDepartmentForm" (ngSubmit)="assignDoctorToDepartment()">
+        <div class="modal-body">
+          <!-- Doctor Info Display -->
+          <div class="doctor-info-display mb-3 p-3 bg-light rounded">
+            <h6 class="mb-2">Doctor Information</h6>
+            <p class="mb-1"><strong>Name:</strong> {{ selectedDoctorForAssignment?.name }}</p>
+            <p class="mb-1"><strong>Specialization:</strong> {{ selectedDoctorForAssignment?.specialization }}</p>
+            <p class="mb-0"><strong>Phone:</strong> {{ selectedDoctorForAssignment?.phoneNumber }}</p>
+          </div>
+
+          <!-- Department Selection -->
+          <div class="form-group">
+            <label class="form-label" for="departmentSelect">
+              <i class="fas fa-building"></i>
+              Department *
+            </label>
+            <select
+              id="departmentSelect"
+              class="form-select"
+              formControlName="departmentId"
+              [class.is-invalid]="isAssignDepartmentFieldInvalid('departmentId')">
+              <option value="">Select a department</option>
+              <option *ngFor="let department of departments" [value]="department.id">
+                {{ department.name }} - {{ department.clinicName }}
+              </option>
+            </select>
+            <div *ngIf="isAssignDepartmentFieldInvalid('departmentId')" class="invalid-feedback">
+              {{ getAssignDepartmentFieldError('departmentId') }}
+            </div>
+          </div>
+
+          <!-- Assignment Percentage -->
+          <div class="form-group">
+            <label class="form-label" for="assignmentPercentage">
+              <i class="fas fa-percentage"></i>
+              Assignment Percentage *
+            </label>
+            <input
+              type="number"
+              id="assignmentPercentage"
+              class="form-control"
+              formControlName="percentage"
+              [class.is-invalid]="isAssignDepartmentFieldInvalid('percentage')"
+              min="1"
+              max="100"
+              placeholder="100">
+            <div *ngIf="isAssignDepartmentFieldInvalid('percentage')" class="invalid-feedback">
+              {{ getAssignDepartmentFieldError('percentage') }}
+            </div>
+            <small class="form-text text-muted">Percentage of time the doctor will work in this department (1-100)</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeAssignDepartmentModal()">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-success" 
+            [disabled]="assignDepartmentForm.invalid || assigningDoctor">
+            <i *ngIf="assigningDoctor" class="fas fa-spinner fa-spin"></i>
+            <i *ngIf="!assigningDoctor" class="fas fa-building"></i>
+            {{ assigningDoctor ? 'Assigning...' : 'Assign to Department' }}
           </button>
         </div>
       </form>

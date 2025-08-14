@@ -1,8 +1,9 @@
 
-<ng-container [ngSwitch]="authService.getUserRole()">
-<app-main-layout *ngSwitchCase="'null'"></app-main-layout>
-<app-user-layout *ngSwitchCase="'Employee'"></app-user-layout>
-<app-admin-layout *ngSwitchCase="'Admin'"></app-admin-layout>
-<app-owner-layout *ngSwitchCase="'Owner'"></app-owner-layout>
-<app-master-layout *ngSwitchCase="'Master'"></app-master-layout>
+<ng-container [ngSwitch]="authService.getHighestRole()">
+  <app-main-layout *ngSwitchCase="null"></app-main-layout>
+  <app-user-layout *ngSwitchCase="'USER'"></app-user-layout>
+  <app-admin-layout *ngSwitchCase="'ADMIN'"></app-admin-layout>
+  <app-owner-layout *ngSwitchCase="'OWNER'"></app-owner-layout>
+  <app-master-layout *ngSwitchCase="'MASTER'"></app-master-layout>
+  <app-main-layout *ngSwitchDefault></app-main-layout>
 </ng-container>

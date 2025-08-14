@@ -27,17 +27,34 @@ export class LoginComponent {
  
     this.authService.login(loginData).subscribe({
       next: (res) => {
-        localStorage.setItem('token', res.token);
-        const role = this.authService.getUserRole();
-        if (role === 'Admin') {
-          this.router.navigate(['/admin']);
-        } else if (role === 'Master') {
-          this.router.navigate(['/master']);
-        } else if (role === 'Employee') {
-          this.router.navigate(['/employee']);
-        } else {
-          this.router.navigate(['/']);
-        }
+        // Use the new signal-based login state management
+        this.authService.setLoginState(res.token);
+        
+        // Load user full data after successful login
+        this.authService.loadUserFullData();
+        
+        // Wait a bit for the data to load, then navigate based on role
+        setTimeout(() => {
+          const highestRole = this.authService.getHighestRole();
+          const isDoctor = this.authService.isDoctor();
+          const isEmployee = this.authService.isEmployee();
+          
+          if (highestRole === 'MASTER') {
+            this.router.navigate(['/master']);
+          } else if (highestRole === 'OWNER') {
+            this.router.navigate(['/owner']);
+          } else if (highestRole === 'ADMIN') {
+            this.router.navigate(['/admin']);
+          } else if (isDoctor) {
+            this.router.navigate(['/doctor/dashboard']);
+          } else if (isEmployee) {
+            this.router.navigate(['/employee/dashboard']);
+          } else if (highestRole === 'ACCOUNTANT') {
+            this.router.navigate(['/accountant/dashboard']);
+          } else {
+            this.router.navigate(['/user/dashboard']);
+          }
+        }, 500);
       },
       error: (err) => {
         console.error('Login failed:', err);

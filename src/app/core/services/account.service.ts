@@ -17,6 +17,7 @@ import {
   UpdateUserDTO,
   ChangePasswordDTO
 } from '../Interfaces/all';
+import { UserFullData } from '../Models/auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -150,9 +151,16 @@ export class AccountService {
   editAccount(username: string, accountData: FormData): Observable<any> {
     return this.http.put(`${this.apiUrl}EditAccount/${username}`, accountData);
   }
+
+  userfulldata():Observable<UserFullData>
+  {
+    console.log('AccountService - Calling userfulldata API:', `${this.apiUrl}userfulldata`);
+    return this.http.get<UserFullData>(`${this.apiUrl}userfulldata`);
+  }
 }
 export interface  changingroleDTO
 {
 	 userId:string;
 	 role:string;
 }
+
