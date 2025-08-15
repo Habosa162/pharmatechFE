@@ -23,6 +23,12 @@ export class NavBarComponent implements OnInit {
   ngOnInit() {
     // Debug user data on component initialization
     this.debugUserData();
+    // Log navigation state for debugging
+    this.logNavigationState();
+    // Log current route for debugging
+    this.logCurrentRoute();
+    // Debug navigation conflicts
+    this.debugNavigationConflicts();
   }
 
   // Debug method to log user data
@@ -130,5 +136,133 @@ export class NavBarComponent implements OnInit {
     const result = this.authService.hasAnyRole(['MASTER', 'OWNER', 'ADMIN']);
     console.log('Main Navbar - canAccessSystemSettings:', result);
     return result;
+  }
+
+  // New method to determine primary role for navigation when user has multiple roles
+  getPrimaryRole(): string {
+    const roles = this.authService.userRoles();
+    const rolePriority = ['MASTER', 'OWNER', 'ADMIN', 'ACCOUNTANT', 'USER'];
+    
+    for (const priorityRole of rolePriority) {
+      if (roles.includes(priorityRole)) {
+        return priorityRole;
+      }
+    }
+    return 'USER';
+  }
+
+  // Method to check if user should see multiple role panels
+  shouldShowMultiplePanels(): boolean {
+    const roles = this.authService.userRoles();
+    const hasDoctorAccess = this.authService.isDoctor();
+    const hasEmployeeAccess = this.authService.isEmployee();
+    
+    return roles.length > 1 || hasDoctorAccess || hasEmployeeAccess;
+  }
+
+  // Method to get all accessible roles for the user
+  getAccessibleRoles(): string[] {
+    const roles = this.authService.userRoles();
+    return roles.filter((role: string) => 
+      this.authService.hasRole(role)
+    );
+  }
+
+  // Method to check if a specific role panel should be shown
+  shouldShowRolePanel(role: string): boolean {
+    if (role === 'DOCTOR') {
+      return this.authService.isDoctor();
+    }
+    
+    if (role === 'EMPLOYEE') {
+      return this.authService.isEmployee();
+    }
+    
+    // For other roles, use the role-based logic
+    const primaryRole = this.getPrimaryRole();
+    const roles = this.authService.userRoles();
+    
+    // Always show the primary role panel
+    if (role === primaryRole) {
+      return true;
+    }
+    
+    // Show secondary role panels only if user has multiple roles
+    if (roles.length > 1) {
+      return this.authService.hasRole(role);
+    }
+    
+    return false;
+  }
+
+  // Method to get navigation suggestions for users with multiple roles
+  getNavigationSuggestions(): string[] {
+    const suggestions = [];
+    
+    if (this.authService.isDoctor()) {
+      suggestions.push('Use Doctor Panel for patient care and appointments');
+    }
+    
+    if (this.authService.isEmployee()) {
+      suggestions.push('Use Employee Panel for administrative tasks');
+    }
+    
+    const roles = this.authService.userRoles();
+    if (roles.includes('ADMIN')) {
+      suggestions.push('Use Admin Panel for system management');
+    }
+    
+    return suggestions;
+  }
+
+  // Method to log current navigation state
+  logNavigationState(): void {
+    console.log('Navigation State Debug:', {
+      currentRoles: this.authService.userRoles(),
+      primaryRole: this.getPrimaryRole(),
+      hasMultipleRoles: this.shouldShowMultiplePanels(),
+      canAccessDoctor: this.canAccessDoctor(),
+      canAccessEmployee: this.canAccessEmployee(),
+      shouldShowDoctorPanel: this.shouldShowRolePanel('DOCTOR'),
+      shouldShowEmployeePanel: this.shouldShowRolePanel('EMPLOYEE'),
+      navigationSuggestions: this.getNavigationSuggestions()
+    });
+  }
+
+  // Method to log current route information
+  logCurrentRoute(): void {
+    console.log('Current Route Debug:', {
+      currentUrl: window.location.href,
+      currentPath: window.location.pathname,
+      userRoles: this.authService.userRoles(),
+      isDoctor: this.authService.isDoctor(),
+      isEmployee: this.authService.isEmployee(),
+      primaryRole: this.getPrimaryRole()
+    });
+  }
+
+  // Method to debug navigation conflicts
+  debugNavigationConflicts(): void {
+    console.log('Navigation Conflicts Debug:', {
+      doctorRoutes: [
+        '/doctor',
+        '/doctor/dashboard', 
+        '/doctor/appointments',
+        '/doctor/patients',
+        '/doctor/schedule'
+      ],
+      employeeRoutes: [
+        '/employee',
+        '/employee/dashboard',
+        '/employee/payments',
+        '/employee/transactions',
+        '/employee/invoices'
+      ],
+      currentPath: window.location.pathname,
+      shouldShowDoctorPanel: this.shouldShowRolePanel('DOCTOR'),
+      shouldShowEmployeePanel: this.shouldShowRolePanel('EMPLOYEE'),
+      canAccessDoctor: this.canAccessDoctor(),
+      canAccessEmployee: this.canAccessEmployee()
+    });
   }
 }

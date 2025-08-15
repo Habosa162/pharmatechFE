@@ -115,4 +115,110 @@ export class DoctorSidebarComponent implements OnInit {
       });
     }
   }
+
+  // Enhanced helper methods for the new template
+  getTabIcon(): string {
+    switch (this.activeTab) {
+      case 'appointments': return '📅';
+      case 'patients': return '👤';
+      case 'surgeries': return '🩺';
+      case 'labtests': return '🧪';
+      default: return '📋';
+    }
+  }
+
+  getTabTitle(): string {
+    switch (this.activeTab) {
+      case 'appointments': return 'Appointments';
+      case 'patients': return 'Patients';
+      case 'surgeries': return 'Surgeries';
+      case 'labtests': return 'Lab Tests';
+      default: return 'Dashboard';
+    }
+  }
+
+  getTabDescription(): string {
+    switch (this.activeTab) {
+      case 'appointments': return 'Manage your patient appointments and examinations';
+      case 'patients': return 'View and manage your patient list';
+      case 'surgeries': return 'Manage your surgical procedures and schedules';
+      case 'labtests': return 'View and manage laboratory test results';
+      default: return 'Overview of your medical practice';
+    }
+  }
+
+  refreshCurrentTab() {
+    this.error = null;
+    switch (this.activeTab) {
+      case 'appointments': this.loadAppointments(); break;
+      case 'patients': this.loadPatients(); break;
+      case 'surgeries': this.loadSurgeries(); break;
+      case 'labtests': this.loadLabtests(); break;
+    }
+  }
+
+  getAppointmentsByStatus(status: number): any[] {
+    return this.appointments.filter(apt => apt.status === status);
+  }
+
+  getAppointmentCardClass(status: number): string {
+    switch (status) {
+      case 0: return 'scheduled';
+      case 1: return 'completed';
+      case 2: return 'cancelled';
+      case 3: return 'noshow';
+      default: return '';
+    }
+  }
+
+  getStatusClass(status: number): string {
+    switch (status) {
+      case 0: return 'scheduled';
+      case 1: return 'completed';
+      case 2: return 'cancelled';
+      case 3: return 'noshow';
+      default: return 'scheduled';
+    }
+  }
+
+  getStatusText(status: number): string {
+    switch (status) {
+      case 0: return 'Scheduled';
+      case 1: return 'Completed';
+      case 2: return 'Cancelled';
+      case 3: return 'No Show';
+      default: return 'Unknown';
+    }
+  }
+
+  formatAppointmentTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
+
+  formatAppointmentDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  formatSurgeryDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  viewPatientProfile(patientId: number): void {
+    this.router.navigate(['/patient-profile', patientId]);
+  }
 } 

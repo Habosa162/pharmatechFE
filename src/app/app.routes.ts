@@ -40,6 +40,7 @@ import { AdminLayoutComponent } from './core/layouts/admin-layout/admin-layout.c
 import { MedicalRecordDetailsComponent } from './core/features/patients/medical-record-details/medical-record-details.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   // {path:'appointments', component: AppointmentComponent},
   // {path:'patients',component:PatientListComponent},
@@ -57,7 +58,7 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component:MasterDashboadrComponent
+        component:AdminDashboardComponent
       },
       { path: 'doctors', component: DoctorListComponent },
       { path: 'patients', component: PatientListComponent },
@@ -78,7 +79,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        component:MasterDashboadrComponent
+        component:OwnerDashboardComponent
       },
     ]
   },
@@ -101,10 +102,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { role: 'Employee' },
     children: [
-      {
-        path: '',
-        component:EmployeeComponent
-      }
+      { path: 'dashboard', component: EmployeeComponent },
+      { path: 'payments', component: TransactionComponent },
+      { path: 'transactions', component: TransactionComponent },
+      { path: 'invoices', component: InvoiceListComponent },
+      { path: 'customer-service', component: EmployeeComponent },
     ]
   },
 
@@ -125,30 +127,17 @@ export const routes: Routes = [
     ]
   },
 
-  // Employee-specific routes
-  {
-    path: 'employee',
-    canActivate: [AuthGuard],
-    children: [
-      { path: 'dashboard', component: EmployeeComponent },
-      { path: 'payments', component: TransactionComponent },
-      { path: 'transactions', component: TransactionComponent },
-      { path: 'invoices', component: InvoiceListComponent },
-      { path: 'customer-service', component: EmployeeComponent },
-    ]
-  },
-
   // Accountant-specific routes
   {
     path: 'accountant',
     canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: MasterDashboadrComponent },
-      { path: 'reports', component: MasterDashboadrComponent },
+      { path: 'dashboard', component: EmployeeComponent },
+      { path: 'reports', component: EmployeeComponent },
       { path: 'transactions', component: TransactionComponent },
       { path: 'invoices', component: InvoiceListComponent },
-      { path: 'tax-reports', component: MasterDashboadrComponent },
-      { path: 'budget-planning', component: MasterDashboadrComponent },
+      { path: 'tax-reports', component: EmployeeComponent },
+      { path: 'budget-planning', component: EmployeeComponent },
     ]
   },
 
@@ -157,17 +146,16 @@ export const routes: Routes = [
     path: 'user',
     canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: MasterDashboadrComponent },
+      { path: 'dashboard', component: EmployeeComponent },
       { path: 'appointments', component: MyAppointmentsComponent },
       { path: 'profile', component: PatientProfileComponent },
-      { path: 'settings', component: MasterDashboadrComponent },
+      { path: 'settings', component: EmployeeComponent },
     ]
   },
 
   { path: 'patientAppointments/:id', component: PatientAppointmentsComponent },
   { path: 'doctorAppointments/:id', component: DoctorAppointmentsComponent },
   { path: 'MyAppointments', component: MyAppointmentsComponent },
-  { path: 'doctorview', component: DoctorSidebarComponent },
   { path: 'prescriptions/:id', component: PrescriptionDetailsComponent },
   { path: 'appointment-details/:id', component: AppointmentDetailsComponent },
   // { path: 'appointment', component: AppointmentComponent },

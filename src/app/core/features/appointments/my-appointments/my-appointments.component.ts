@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AppointmentService } from '../../../services/appintments/appointment.service';
 import { AuthService } from '../../../services/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppointmentDetails } from '../../../Interfaces/all';
 import { CommonModule } from '@angular/common';
 
@@ -19,7 +19,8 @@ export class MyAppointmentsComponent {
   constructor(
     private appointmentService: AppointmentService,
     private authService: AuthService,
-    private route:ActivatedRoute
+    private route:ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -107,5 +108,9 @@ export class MyAppointmentsComponent {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  startExamination(appointmentId: number): void {
+    this.router.navigate(['/appointment-details', appointmentId]);
   }
 }

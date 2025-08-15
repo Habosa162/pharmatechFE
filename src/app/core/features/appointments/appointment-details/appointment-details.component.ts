@@ -540,7 +540,7 @@ export class AppointmentDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/doctorview']);
+    this.router.navigate(['/doctor/dashboard']);
   }
 
   clearMessages() {

@@ -3,10 +3,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../../../services/appintments/appointment.service';
 import { PatientService } from '../../../services/patients/patient.service';
-import { AppointmentDetails, AppointmentStatus, CreateAppointmentDTO, DoctorDepartment, DoctorDepartmentViewDTO } from '../../../Interfaces/all';
+import { AppointmentDetails, AppointmentStatus, CreateAppointmentDTO, DoctorDepartment, DoctorDepartmentViewDTO, PaymentMethod } from '../../../Interfaces/all';
 import { PatientDto } from '../../../Interfaces/patient/patients/patient';
 import { DepartmentService } from '../../../services/clinics/department.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { InvoiceService } from '../../../services/appintments/invoice.service';
+import { CreateInvoice } from '../../../Interfaces/appointment/invoices/invoice';
+import { TransactionService } from '../../../services/transactions/transaction.service';
+import { CreateTransactionDTO, TransactionType } from '../../../Models/transactions/transactions.model';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-patient-appointments',
@@ -27,6 +32,7 @@ export class PatientAppointmentsComponent implements OnInit {
   loading: boolean = true;
   error: string = '';
   showModal: boolean = false;
+  success: string = ''; // Added for success messages
   
   // Search and filter properties
   searchTerm: string = '';
@@ -49,11 +55,23 @@ export class PatientAppointmentsComponent implements OnInit {
   
   // Enum reference
   AppointmentStatus = AppointmentStatus;
+  
+  // Payment methods for invoice
+  paymentMethods = [
+    { value: PaymentMethod.Cash, label: 'Cash' },
+    { value: PaymentMethod.CreditCard, label: 'Credit Card' },
+    { value: PaymentMethod.Wallet, label: 'Wallet' },
+    { value: PaymentMethod.Insurance, label: 'Insurance' },
+    { value: PaymentMethod.Other, label: 'Other' }
+  ];
 
   constructor(
     private appointmentService: AppointmentService,
     private patientService: PatientService,
     private departmentService: DepartmentService,
+    private invoiceService: InvoiceService,
+    private transactionService: TransactionService,
+    private authService: AuthService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router
@@ -73,8 +91,24 @@ export class PatientAppointmentsComponent implements OnInit {
       appointmentDate: ['', Validators.required],
       notes: [''],
       departmentId: ['', Validators.required],
-      doctorId: ['', Validators.required]
-    });
+      doctorId: ['', Validators.required],
+      // Invoice and payment fields
+      totalAmount: ['', [Validators.required, Validators.min(0)]],
+      paidAmount: ['', [Validators.required, Validators.min(0)]],
+      paymentMethod: [PaymentMethod.Cash, Validators.required]
+    }, { validators: this.paymentAmountValidator });
+  }
+
+  // Custom validator for payment amounts
+  paymentAmountValidator(group: FormGroup): { [key: string]: any } | null {
+    const totalAmount = group.get('totalAmount')?.value;
+    const paidAmount = group.get('paidAmount')?.value;
+    
+    if (totalAmount && paidAmount && paidAmount > totalAmount) {
+      return { 'paidAmountExceedsTotal': true };
+    }
+    
+    return null;
   }
 
   setupFormSubscriptions(): void {
@@ -93,6 +127,14 @@ export class PatientAppointmentsComponent implements OnInit {
         if (doctorDepartment) {
           this.appointmentForm.patchValue({ doctorDepartmentId: doctorDepartment.id }, { emitEvent: false });
         }
+      }
+    });
+
+    // Subscribe to total amount changes to auto-calculate paid amount
+    this.appointmentForm.get('totalAmount')?.valueChanges.subscribe(totalAmount => {
+      if (totalAmount && !this.appointmentForm.get('paidAmount')?.value) {
+        // Auto-set paid amount to total amount for convenience
+        this.appointmentForm.patchValue({ paidAmount: totalAmount }, { emitEvent: false });
       }
     });
   }
@@ -329,6 +371,264 @@ export class PatientAppointmentsComponent implements OnInit {
   closeModal(): void {
     this.showModal = false;
     this.appointmentForm.reset();
+    this.error = '';
+    this.success = '';
+  }
+
+  // Calculate remaining balance for payment
+  calculateRemainingBalance(): number {
+    const totalAmount = this.appointmentForm.get('totalAmount')?.value || 0;
+    const paidAmount = this.appointmentForm.get('paidAmount')?.value || 0;
+    return Math.max(0, totalAmount - paidAmount);
+  }
+
+  // Check if payment is complete
+  isPaymentComplete(): boolean {
+    const totalAmount = this.appointmentForm.get('totalAmount')?.value || 0;
+    const paidAmount = this.appointmentForm.get('paidAmount')?.value || 0;
+    return paidAmount >= totalAmount;
+  }
+
+  // Check if paid amount exceeds total amount
+  hasPaidAmountError(): boolean {
+    return this.appointmentForm.hasError('paidAmountExceedsTotal');
+  }
+
+  // Get paid amount error message
+  getPaidAmountErrorMessage(): string {
+    if (this.hasPaidAmountError()) {
+      return 'Paid amount cannot exceed total amount';
+    }
+    return '';
+  }
+
+  // Get suggested appointment fee based on department
+  getSuggestedFee(): number {
+    const departmentId = this.appointmentForm.get('departmentId')?.value;
+    if (!departmentId) return 0;
+    
+    // Common fee suggestions based on department type
+    const feeSuggestions: { [key: number]: number } = {
+      1: 150, // General Medicine
+      2: 200, // Cardiology
+      3: 180, // Orthopedics
+      4: 160, // Pediatrics
+      5: 220, // Neurology
+      6: 190, // Dermatology
+      7: 170, // Ophthalmology
+      8: 250, // Surgery
+      9: 140, // Emergency
+      10: 130  // Consultation
+    };
+    
+    return feeSuggestions[departmentId] || 150; // Default fee
+  }
+
+  // Apply suggested fee
+  applySuggestedFee(): void {
+    const suggestedFee = this.getSuggestedFee();
+    if (suggestedFee > 0) {
+      this.appointmentForm.patchValue({
+        totalAmount: suggestedFee,
+        paidAmount: suggestedFee
+      });
+    }
+  }
+
+  // Create transaction record for the invoice payment
+  createTransactionRecord(amount: number, description: string): void {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      console.error('User ID not available for transaction creation');
+      return;
+    }
+
+    const transactionData: CreateTransactionDTO = {
+      amount: amount,
+      date: new Date(),
+      description: description,
+      type: TransactionType.Income, // This is income for the clinic
+      userId: userId
+    };
+
+    this.transactionService.createTransaction(transactionData).subscribe({
+      next: (transactionResponse) => {
+        console.log('Transaction created successfully:', transactionResponse);
+      },
+      error: (transactionError) => {
+        console.error('Error creating transaction:', transactionError);
+        // Don't show error to user as this is secondary to appointment/invoice creation
+      }
+    });
+  }
+
+  // Create transaction records for invoice payment (handles full and partial payments)
+  createPaymentTransactions(totalAmount: number, paidAmount: number, patientName: string): void {
+    if (paidAmount > 0) {
+      // Create transaction for the paid amount
+      const paidDescription = `Appointment payment received - Patient: ${patientName}, Paid: $${paidAmount}`;
+      this.createTransactionRecord(paidAmount, paidDescription);
+    }
+
+    // If there's a remaining balance, we could create a pending transaction record
+    // This would be useful for tracking outstanding payments
+    const remainingBalance = totalAmount - paidAmount;
+    if (remainingBalance > 0) {
+      console.log(`Remaining balance of $${remainingBalance} will be tracked for future payment`);
+      // Optionally create a pending transaction record here if needed
+    }
+  }
+
+  // Create comprehensive transaction summary
+  createTransactionSummary(appointmentData: any, invoiceData: any, patientName: string): void {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      console.error('User ID not available for transaction summary');
+      return;
+    }
+
+    // Validate transaction data
+    if (!this.validateTransactionData(invoiceData)) {
+      console.error('Invalid transaction data, skipping transaction creation');
+      return;
+    }
+
+    // Create main payment transaction
+    if (invoiceData.paidAmount > 0) {
+      const mainTransactionData: CreateTransactionDTO = {
+        amount: invoiceData.paidAmount,
+        date: new Date(),
+        description: `Appointment #${appointmentData.id} - ${patientName} - ${invoiceData.paidAmount >= invoiceData.totalAmount ? 'Full Payment' : 'Partial Payment'}`,
+        type: TransactionType.Income,
+        userId: userId
+      };
+
+      this.transactionService.createTransaction(mainTransactionData).subscribe({
+        next: (response) => {
+          console.log('Main payment transaction created successfully:', response);
+        },
+        error: (error) => {
+          console.error('Error creating main payment transaction:', error);
+          // Log detailed error information for debugging
+          if (error.error) {
+            console.error('Transaction creation error details:', error.error);
+          }
+        }
+      });
+    }
+  }
+
+  // Validate transaction data before creation
+  validateTransactionData(invoiceData: any): boolean {
+    if (!invoiceData || typeof invoiceData.paidAmount !== 'number' || invoiceData.paidAmount < 0) {
+      console.error('Invalid paid amount for transaction:', invoiceData?.paidAmount);
+      return false;
+    }
+
+    if (!invoiceData.totalAmount || typeof invoiceData.totalAmount !== 'number' || invoiceData.totalAmount <= 0) {
+      console.error('Invalid total amount for transaction:', invoiceData?.totalAmount);
+      return false;
+    }
+
+    if (invoiceData.paidAmount > invoiceData.totalAmount) {
+      console.error('Paid amount exceeds total amount:', invoiceData.paidAmount, '>', invoiceData.totalAmount);
+      return false;
+    }
+
+    return true;
+  }
+
+  // Create detailed transaction records based on payment scenario
+  createDetailedTransactions(appointmentData: any, invoiceData: any, patientName: string): void {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      console.error('User ID not available for detailed transactions');
+      return;
+    }
+
+    // Get payment method name for better transaction description
+    const paymentMethodName = this.getPaymentMethodName(invoiceData.paymentMethod);
+
+    // Create main payment transaction
+    if (invoiceData.paidAmount > 0) {
+      const paymentType = invoiceData.paidAmount >= invoiceData.totalAmount ? 'Full Payment' : 'Partial Payment';
+      const mainTransactionData: CreateTransactionDTO = {
+        amount: invoiceData.paidAmount,
+        date: new Date(),
+        description: `Appointment #${appointmentData.id} - ${patientName} - ${paymentType} via ${paymentMethodName}`,
+        type: TransactionType.Income,
+        userId: userId
+      };
+
+      this.transactionService.createTransaction(mainTransactionData).subscribe({
+        next: (response) => {
+          console.log(`${paymentType} transaction created successfully:`, response);
+        },
+        error: (error) => {
+          console.error(`Error creating ${paymentType.toLowerCase()} transaction:`, error);
+        }
+      });
+    }
+
+    // Log payment summary for financial tracking
+    this.logPaymentSummary(appointmentData, invoiceData, patientName);
+  }
+
+  // Get payment method name from enum value
+  getPaymentMethodName(paymentMethod: number): string {
+    const methodNames: { [key: number]: string } = {
+      [PaymentMethod.Cash]: 'Cash',
+      [PaymentMethod.CreditCard]: 'Credit Card',
+      [PaymentMethod.Wallet]: 'Wallet',
+      [PaymentMethod.Insurance]: 'Insurance',
+      [PaymentMethod.Other]: 'Other'
+    };
+    return methodNames[paymentMethod] || 'Unknown';
+  }
+
+  // Handle transaction creation with better error handling
+  handleTransactionCreation(appointmentData: any, invoiceData: any, patientName: string): void {
+    try {
+      this.createDetailedTransactions(appointmentData, invoiceData, patientName);
+    } catch (error) {
+      console.error('Error in transaction creation process:', error);
+      // Transaction creation failure shouldn't affect the main appointment/invoice creation
+      // Log the error but don't show it to the user
+    }
+  }
+
+  // Get comprehensive success message based on what was created
+  getSuccessMessage(appointmentCreated: boolean, invoiceCreated: boolean, transactionCreated: boolean): string {
+    if (appointmentCreated && invoiceCreated && transactionCreated) {
+      return 'Appointment, invoice, and transaction records created successfully!';
+    } else if (appointmentCreated && invoiceCreated) {
+      return 'Appointment and invoice created successfully! (Transaction creation failed)';
+    } else if (appointmentCreated) {
+      return 'Appointment created successfully! (Invoice and transaction creation failed)';
+    } else {
+      return 'Failed to create appointment. Please try again.';
+    }
+  }
+
+  // Log payment summary for financial tracking
+  logPaymentSummary(appointmentData: any, invoiceData: any, patientName: string): void {
+    const paymentStatus = invoiceData.paidAmount >= invoiceData.totalAmount ? 'FULLY PAID' : 'PARTIALLY PAID';
+    const remainingBalance = Math.max(0, invoiceData.totalAmount - invoiceData.paidAmount);
+    const paymentMethodName = this.getPaymentMethodName(invoiceData.paymentMethod);
+    
+    console.log('=== PAYMENT SUMMARY ===');
+    console.log(`Appointment ID: ${appointmentData.id}`);
+    console.log(`Patient: ${patientName}`);
+    console.log(`Total Amount: $${invoiceData.totalAmount}`);
+    console.log(`Paid Amount: $${invoiceData.paidAmount}`);
+    console.log(`Payment Status: ${paymentStatus}`);
+    console.log(`Payment Method: ${paymentMethodName}`);
+    if (remainingBalance > 0) {
+      console.log(`Remaining Balance: $${remainingBalance}`);
+    }
+    console.log(`Transaction Type: Income`);
+    console.log(`Date: ${new Date().toISOString()}`);
+    console.log('========================');
   }
 
   createAppointment(): void {
@@ -351,14 +651,66 @@ export class PatientAppointmentsComponent implements OnInit {
         patientId: this.patientId
       };
 
+      // Create appointment first
       this.appointmentService.createAppointment(appointmentData).subscribe({
-        next: () => {
+        next: (appointmentResponse) => {
+          console.log('Appointment created successfully:', appointmentResponse);
+          
+          // Extract appointment ID from response
+          const appointmentId = appointmentResponse.id || appointmentResponse.appointmentId;
+          
+          if (appointmentId) {
+            // Create invoice for the appointment
+            const invoiceData: CreateInvoice = {
+              appointmentId: appointmentId,
+              totalAmount: +formValue.totalAmount,
+              paidAmount: +formValue.paidAmount,
+              isPaid: +formValue.paidAmount >= +formValue.totalAmount,
+              paymentMethod: +formValue.paymentMethod
+            };
+
+            this.invoiceService.addInvoice(invoiceData).subscribe({
+              next: (invoiceResponse) => {
+                console.log('Invoice created successfully:', invoiceResponse);
+                
+                // Create detailed transaction records
+                const patientName = this.patient?.name || 'Unknown';
+                const appointmentData = { id: appointmentId };
+                this.handleTransactionCreation(appointmentData, invoiceData, patientName);
+                
+                this.success = this.getSuccessMessage(true, true, true); // Use the new method
+                this.loadAppointments();
+                this.closeModal();
+                
+                // Clear success message after 3 seconds
+                setTimeout(() => {
+                  this.success = '';
+                }, 3000);
+              },
+              error: (invoiceError) => {
+                console.error('Error creating invoice:', invoiceError);
+                this.error = 'Appointment created but failed to create invoice. Please contact support.';
+                
+                // Clear error message after 5 seconds
+                setTimeout(() => {
+                  this.error = '';
+                }, 5000);
+              }
+            });
+          } else {
+            this.error = 'Appointment created but could not retrieve ID for invoice creation.';
           this.loadAppointments();
           this.closeModal();
+          }
         },
         error: (error) => {
           console.error('Error creating appointment:', error);
-          this.error = 'Failed to create appointment';
+          this.error = 'Failed to create appointment: ' + (error.error?.message || error.message || 'Unknown error');
+          
+          // Clear error message after 5 seconds
+          setTimeout(() => {
+            this.error = '';
+          }, 5000);
         }
       });
     }

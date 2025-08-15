@@ -1,98 +1,264 @@
 <div class="doctor-sidebar-layout">
+  <!-- Enhanced Sidebar Navigation -->
   <nav class="sidebar-list">
-    <ul>
+    <div class="sidebar-header">
+      <div class="doctor-avatar">
+        <i class="fas fa-user-md"></i>
+      </div>
+      <h3>Doctor Portal</h3>
+      <p>Schedule Management</p>
+    </div>
+    
+    <ul class="nav-menu">
       <li [class.active]="activeTab === 'appointments'" (click)="setActiveTab('appointments')">
-        <span class="icon">📅</span> Appointments
+        <span class="icon">📅</span>
+        <span class="nav-text">Appointments</span>
+        <span class="badge" *ngIf="appointments.length > 0">{{ appointments.length }}</span>
       </li>
       <li [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">
-        <span class="icon">👤</span> Patients
+        <span class="icon">👤</span>
+        <span class="nav-text">Patients</span>
+        <span class="badge" *ngIf="patients.length > 0">{{ patients.length }}</span>
       </li>
       <li [class.active]="activeTab === 'surgeries'" (click)="setActiveTab('surgeries')">
-        <span class="icon">🩺</span> Surgeries
+        <span class="icon">🩺</span>
+        <span class="nav-text">Surgeries</span>
+        <span class="badge" *ngIf="surgeries.length > 0">{{ surgeries.length }}</span>
       </li>
       <li [class.active]="activeTab === 'labtests'" (click)="setActiveTab('labtests')">
-        <span class="icon">🧪</span> Labtests
+        <span class="icon">🧪</span>
+        <span class="nav-text">Lab Tests</span>
+        <span class="badge" *ngIf="labtests.length > 0">{{ labtests.length }}</span>
       </li>
     </ul>
   </nav>
+
+  <!-- Enhanced Main Content -->
   <div class="main-content">
+    <div class="content-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <span class="title-icon" [innerHTML]="getTabIcon()"></span>
+          {{ getTabTitle() }}
+        </h1>
+        <p class="page-subtitle">{{ getTabDescription() }}</p>
+      </div>
+      <div class="header-actions">
+        <button class="refresh-btn" (click)="refreshCurrentTab()" [disabled]="loading">
+          <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+          <span *ngIf="!loading">Refresh</span>
+          <span *ngIf="loading">Loading...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading {{ activeTab }}...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-container">
+      <div class="error-message">
+        <i class="error-icon">⚠️</i>
+        <p>{{ error }}</p>
+        <button class="retry-btn" (click)="refreshCurrentTab()">Retry</button>
+      </div>
+    </div>
+
+    <!-- Content Sections -->
     <ng-container [ngSwitch]="activeTab">
-      <div *ngSwitchCase="'appointments'">
-        <h3>Appointments</h3>
-        <div *ngIf="appointments.length; else noAppointments">
-          <div *ngFor="let appointment of appointments" class="card">
-            <div class="appointment-header">
-              <div class="appointment-info">
-                <div><b>ID:</b> {{ appointment.id }}</div>
-                <div><b>Name:</b> {{ appointment.name }} 
-                  <span *ngIf="appointment.status === 2" class="badge bg-danger ms-2">CANCELLED</span>
-                </div>
-                <div><b>Date:</b> {{ appointment.appointmentDate }}</div>
-                <div><b>Status:</b> {{ appointment.status }}</div>
-                <div><b>Notes:</b> {{ appointment.notes }}</div>
+      
+      <!-- Appointments Section -->
+      <div *ngSwitchCase="'appointments'" class="content-section">
+        <div class="section-header">
+          <div class="section-info">
+            <h3>Today's Schedule</h3>
+            <p>Manage your patient appointments and examinations</p>
+          </div>
+          <div class="section-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ getAppointmentsByStatus(0).length }}</span>
+              <span class="stat-label">Scheduled</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ getAppointmentsByStatus(1).length }}</span>
+              <span class="stat-label">Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="appointments.length; else noAppointments" class="appointments-grid">
+          <div *ngFor="let appointment of appointments" class="appointment-card" [ngClass]="getAppointmentCardClass(appointment.status)">
+            <div class="card-header">
+              <div class="appointment-time">
+                <div class="time-primary">{{ formatAppointmentTime(appointment.appointmentDate) }}</div>
+                <div class="time-secondary">{{ formatAppointmentDate(appointment.appointmentDate) }}</div>
               </div>
-              <div class="appointment-actions">
-                <button 
-                  class="btn btn-primary btn-sm me-2" 
-                  (click)="startExamination(appointment)"
-                  [disabled]="appointment.status === 2">
-                  <i class="fas fa-stethoscope"></i> Start Examination
-                </button>
-                <button 
-                  *ngIf="appointment.status !== 2"
-                  class="btn btn-danger btn-sm" 
-                  (click)="cancelAppointment(appointment)"
-                  [disabled]="loading">
-                  <i class="fas fa-times-circle"></i> Cancel
-                </button>
+              <div class="status-indicator" [ngClass]="getStatusClass(appointment.status)">
+                {{ getStatusText(appointment.status) }}
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <div class="patient-info">
+                <div class="patient-avatar">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="patient-details">
+                  <h4 class="patient-name">{{ appointment.name }}</h4>
+                  <p class="patient-id">Patient ID: {{ appointment.patientId }}</p>
+                  <p class="appointment-id">Appointment #{{ appointment.id }}</p>
+                </div>
+              </div>
+              
+              <div class="appointment-notes" *ngIf="appointment.notes">
+                <i class="fas fa-sticky-note"></i>
+                <p>{{ appointment.notes }}</p>
+              </div>
+            </div>
+            
+            <div class="card-actions">
+              <button 
+                class="action-btn primary" 
+                (click)="startExamination(appointment)"
+                [disabled]="appointment.status === 2">
+                <i class="fas fa-stethoscope"></i>
+                Start Examination
+              </button>
+              <button 
+                *ngIf="appointment.status !== 2"
+                class="action-btn danger" 
+                (click)="cancelAppointment(appointment)"
+                [disabled]="loading">
+                <i class="fas fa-times-circle"></i>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <ng-template #noAppointments>
+          <div class="empty-state">
+            <div class="empty-icon">📅</div>
+            <h3>No Appointments Today</h3>
+            <p>You don't have any appointments scheduled for today. Enjoy your free time!</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Patients Section -->
+      <div *ngSwitchCase="'patients'" class="content-section">
+        <div class="section-header">
+          <div class="section-info">
+            <h3>My Patients</h3>
+            <p>View and manage your patient list</p>
+          </div>
+        </div>
+
+        <div *ngIf="patients.length; else noPatients" class="patients-grid">
+          <div *ngFor="let patient of patients" class="patient-card">
+            <div class="patient-avatar-large">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="patient-info-detailed">
+              <h4 class="patient-name">{{ patient.name }}</h4>
+              <p class="patient-email">{{ patient.email }}</p>
+              <p class="patient-id">ID: {{ patient.id }}</p>
+            </div>
+            <div class="patient-actions">
+              <button class="action-btn secondary" (click)="viewPatientProfile(patient.id)">
+                <i class="fas fa-eye"></i>
+                View Profile
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <ng-template #noPatients>
+          <div class="empty-state">
+            <div class="empty-icon">👤</div>
+            <h3>No Patients Assigned</h3>
+            <p>You don't have any patients assigned yet. Patients will appear here once assigned.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Surgeries Section -->
+      <div *ngSwitchCase="'surgeries'" class="content-section">
+        <div class="section-header">
+          <div class="section-info">
+            <h3>Surgery Schedule</h3>
+            <p>Manage your surgical procedures and schedules</p>
+          </div>
+        </div>
+
+        <div *ngIf="surgeries.length; else noSurgeries" class="surgeries-grid">
+          <div *ngFor="let surgery of surgeries" class="surgery-card">
+            <div class="surgery-header">
+              <div class="surgery-date">
+                <i class="fas fa-calendar-alt"></i>
+                <span>{{ formatSurgeryDate(surgery.surgeryDate) }}</span>
+              </div>
+              <div class="surgery-type">Surgery</div>
+            </div>
+            <div class="surgery-details">
+              <div class="surgery-info">
+                <h4>{{ surgery.patientName }}</h4>
+                <p>Doctor: {{ surgery.doctorName }}</p>
+                <p>Surgery ID: {{ surgery.id }}</p>
               </div>
             </div>
           </div>
         </div>
-        <ng-template #noAppointments>
-          <div class="empty-state">No appointments found.</div>
-        </ng-template>
-      </div>
-      <div *ngSwitchCase="'patients'">
-        <h3>Patients</h3>
-        <div *ngIf="patients.length; else noPatients">
-          <div *ngFor="let patient of patients" class="card">
-            <div><b>ID:</b> {{ patient.id }}</div>
-            <div><b>Name:</b> {{ patient.name }}</div>
-            <div><b>Email:</b> {{ patient.email }}</div>
-          </div>
-        </div>
-        <ng-template #noPatients>
-          <div class="empty-state">No patients found.</div>
-        </ng-template>
-      </div>
-      <div *ngSwitchCase="'surgeries'">
-        <h3>Surgeries</h3>
-        <div *ngIf="surgeries.length; else noSurgeries">
-          <div *ngFor="let surgery of surgeries" class="card">
-            <div><b>ID:</b> {{ surgery.id }}</div>
-            <div><b>Name:</b> {{ surgery.doctorName }}</div>
-            <div><b>Date:</b> {{ surgery.surgeryDate }}</div>
-            <div><b>Patient:</b> {{ surgery.patientName }}</div>
-          </div>
-        </div>
+        
         <ng-template #noSurgeries>
-          <div class="empty-state">No surgeries found.</div>
+          <div class="empty-state">
+            <div class="empty-icon">🩺</div>
+            <h3>No Surgeries Scheduled</h3>
+            <p>You don't have any surgeries scheduled at the moment.</p>
+          </div>
         </ng-template>
       </div>
-      <div *ngSwitchCase="'labtests'">
-        <h3>Labtests</h3>
-        <div *ngIf="labtests.length; else noLabtests">
-          <div *ngFor="let labtest of labtests" class="card">
-            <div><b>ID:</b> {{ labtest.id }}</div>
-            <div><b>Name:</b> {{ labtest.name }}</div>
-            <div><b>Reference:</b> {{ labtest.reference }}</div>
+
+      <!-- Lab Tests Section -->
+      <div *ngSwitchCase="'labtests'" class="content-section">
+        <div class="section-header">
+          <div class="section-info">
+            <h3>Lab Tests</h3>
+            <p>View and manage laboratory test results</p>
           </div>
         </div>
+
+        <div *ngIf="labtests.length; else noLabtests" class="labtests-grid">
+          <div *ngFor="let labtest of labtests" class="labtest-card">
+            <div class="labtest-icon">
+              <i class="fas fa-flask"></i>
+            </div>
+            <div class="labtest-info">
+              <h4>{{ labtest.name }}</h4>
+              <p>Reference: {{ labtest.reference }}</p>
+              <p>ID: {{ labtest.id }}</p>
+            </div>
+            <div class="labtest-actions">
+              <button class="action-btn info">
+                <i class="fas fa-file-medical"></i>
+                View Results
+              </button>
+            </div>
+          </div>
+        </div>
+        
         <ng-template #noLabtests>
-          <div class="empty-state">No labtests found.</div>
+          <div class="empty-state">
+            <div class="empty-icon">🧪</div>
+            <h3>No Lab Tests Available</h3>
+            <p>No laboratory tests are currently available for viewing.</p>
+          </div>
         </ng-template>
       </div>
+
     </ng-container>
   </div>
 </div> 

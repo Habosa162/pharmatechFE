@@ -323,6 +323,103 @@
   font-weight: 500;
 }
 
+/* Actions Section */
+.actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.start-exam-btn {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+}
+
+.start-exam-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.start-exam-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.start-exam-btn:hover::before {
+  left: 100%;
+}
+
+.start-exam-btn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+.start-exam-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3), 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+/* Add a subtle icon to the button */
+.start-exam-btn::after {
+  content: '🔬';
+  margin-left: 8px;
+  font-size: 16px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Responsive button adjustments */
+@media (max-width: 768px) {
+  .actions {
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+
+  .start-exam-btn {
+    padding: 12px 24px;
+    font-size: 14px;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .start-exam-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: 140px;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .doctor-appointments-container {

@@ -28,6 +28,20 @@
     </div>
   </div>
 
+  <!-- Success and Error Messages -->
+  <div class="messages-section" *ngIf="success || error">
+    <div class="alert alert-success alert-dismissible fade show" *ngIf="success" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      {{ success }}
+      <button type="button" class="btn-close" (click)="success = ''"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" *ngIf="error" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  </div>
+
   <!-- Quick Actions Section -->
   <!-- <div class="quick-actions-section">
     <div class="card">
@@ -329,7 +343,7 @@
       <div class="modal-header">
         <h5 class="modal-title">
           <i class="fas fa-calendar-plus"></i>
-          Create New Appointment
+          New Appointment & Invoice
         </h5>
         <button type="button" class="btn-close" (click)="closeModal()">
           <i class="fas fa-times"></i>
@@ -337,12 +351,17 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="appointmentForm">
-          <div class="row g-3">
+          <div class="row g-2">
+            <!-- Appointment Details Section -->
+            <div class="col-12">
+              <h6 class="text-primary mb-2">
+                <i class="fas fa-calendar me-2"></i>Appointment Details
+              </h6>
+            </div>
+            
             <div class="col-12">
               <div class="form-group">
-                <label class="form-label">
-                  <i class="fas fa-calendar me-2"></i>Appointment Date & Time
-                </label>
+                <label class="form-label">Date & Time *</label>
                 <input
                   type="datetime-local"
                   class="form-control"
@@ -356,9 +375,7 @@
 
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">
-                  <i class="fas fa-building me-2"></i>Department
-                </label>
+                <label class="form-label">Department *</label>
                 <select
                   class="form-select"
                   formControlName="departmentId"
@@ -376,9 +393,7 @@
 
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">
-                  <i class="fas fa-user-md me-2"></i>Doctor
-                </label>
+                <label class="form-label">Doctor *</label>
                 <select
                   class="form-select"
                   formControlName="doctorId"
@@ -397,14 +412,108 @@
 
             <div class="col-12">
               <div class="form-group">
-                <label class="form-label">
-                  <i class="fas fa-sticky-note me-2"></i>Notes (Optional)
-                </label>
+                <label class="form-label">Notes</label>
                 <textarea
                   class="form-control"
                   formControlName="notes"
-                  rows="3"
-                  placeholder="Enter any additional notes or special instructions..."></textarea>
+                  rows="2"
+                  placeholder="Additional notes or instructions..."></textarea>
+              </div>
+            </div>
+
+            <!-- Invoice and Payment Section -->
+            <div class="col-12">
+              <hr class="my-2">
+              <h6 class="text-primary mb-2">
+                <i class="fas fa-file-invoice-dollar me-2"></i>Payment Details
+              </h6>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Total Amount *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="totalAmount"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    [class.is-invalid]="appointmentForm.get('totalAmount')?.invalid && appointmentForm.get('totalAmount')?.touched">
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary btn-sm" 
+                    (click)="applySuggestedFee()"
+                    title="Apply suggested fee">
+                    <i class="fas fa-lightbulb"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback" *ngIf="appointmentForm.get('totalAmount')?.invalid && appointmentForm.get('totalAmount')?.touched">
+                  Total amount is required and must be greater than 0
+                </div>
+                <small class="form-text text-muted">
+                  Suggested: ${{ getSuggestedFee() | number:'1.2-2' }}
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Paid Amount *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="paidAmount"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    [class.is-invalid]="appointmentForm.get('paidAmount')?.invalid && appointmentForm.get('paidAmount')?.touched">
+                </div>
+                <div class="invalid-feedback" *ngIf="appointmentForm.get('paidAmount')?.invalid && appointmentForm.get('paidAmount')?.touched">
+                  Paid amount is required and must be greater than 0
+                </div>
+                <div class="invalid-feedback text-danger" *ngIf="hasPaidAmountError()">
+                  <i class="fas fa-exclamation-triangle me-1"></i>
+                  {{ getPaidAmountErrorMessage() }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Payment Method *</label>
+                <select
+                  class="form-select"
+                  formControlName="paymentMethod"
+                  [class.is-invalid]="appointmentForm.get('paymentMethod')?.invalid && appointmentForm.get('paymentMethod')?.touched">
+                  <option *ngFor="let method of paymentMethods" [value]="method.value">
+                    {{ method.label }}
+                  </option>
+                </select>
+                <div class="invalid-feedback" *ngIf="appointmentForm.get('paymentMethod')?.invalid && appointmentForm.get('paymentMethod')?.touched">
+                  Payment method is required
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Payment Status</label>
+                <div class="form-control-plaintext">
+                  <span *ngIf="isPaymentComplete()" class="badge bg-success">
+                    <i class="fas fa-check-circle me-1"></i>Fully Paid
+                  </span>
+                  <span *ngIf="!isPaymentComplete()" class="badge bg-warning">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Partial Payment
+                  </span>
+                </div>
+                <small class="form-text text-muted" *ngIf="!isPaymentComplete()">
+                  Balance: ${{ calculateRemainingBalance() | number:'1.2-2' }}
+                </small>
               </div>
             </div>
           </div>

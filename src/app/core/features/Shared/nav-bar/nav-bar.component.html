@@ -15,6 +15,8 @@
       <div class="user-details">
         <h6 class="mb-0">User Roles: {{ userRoles().join(', ') || 'None' }}</h6>
         <small class="text-muted">
+          Primary Role: {{ getPrimaryRole() }} | 
+          Multiple Roles: {{ shouldShowMultiplePanels() ? 'Yes' : 'No' }} |
           Doctor: {{ isDoctor() ? 'Yes' : 'No' }} | 
           Employee: {{ isEmployee() ? 'Yes' : 'No' }}
         </small>
@@ -32,23 +34,17 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/about" routerLinkActive="active">About us</a>
-        </li>
-        
+
         <!-- Master-specific navigation -->
         <li *ngIf="canAccessMaster()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Master Panel
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/master/dashboard">Master Dashboard</a></li>
-            <li><a class="dropdown-item" routerLink="/master/system-settings">System Settings</a></li>
-            <li><a class="dropdown-item" routerLink="/master/audit-logs">Audit Logs</a></li>
-            <li><a class="dropdown-item" routerLink="/master/global-config">Global Configuration</a></li>
+            <li><a class="dropdown-item" routerLink="/master/masterdashboard">Master Dashboard</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">System Settings (coming Soon)</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">Audit Logs (coming Soon)</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">Global Configuration (coming Soon)</a></li>
           </ul>
         </li>
 
@@ -58,9 +54,9 @@
             Owner Panel
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/owner/dashboard">Owner Dashboard</a></li>
-            <li><a class="dropdown-item" routerLink="/owner/business-analytics">Business Analytics</a></li>
-            <li><a class="dropdown-item" routerLink="/owner/strategic-reports">Strategic Reports</a></li>
+            <li><a class="dropdown-item" routerLink="/master">Owner Dashboard</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">business analytics (coming Soon)</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">Strategic reports (coming Soon)</a></li>
           </ul>
         </li>
 
@@ -70,34 +66,36 @@
             Admin Panel
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/admin/dashboard">Dashboard</a></li>
+            <li><a class="dropdown-item" routerLink="/master/masterdashboard">Dashboard</a></li>
             <li *ngIf="canManageUsers()"><a class="dropdown-item" routerLink="/admin/users">User Management</a></li>
             <li><a class="dropdown-item" routerLink="/admin/doctors">Doctor Management</a></li>
             <li><a class="dropdown-item" routerLink="/admin/patients">Patient Management</a></li>
-            <li><a class="dropdown-item" routerLink="/admin/appointments">Appointment Management</a></li>
-            <li *ngIf="canManageInventory()"><a class="dropdown-item" routerLink="/admin/inventory">Inventory</a></li>
-            <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/admin/financial-reports">Financial Reports</a></li>
+            <li><a class="dropdown-item" routerLink="/my-appointments-clinic">Appointment Management</a></li>
+            <li><a class="dropdown-item" routerLink="accountant/invoices">Invoices</a></li>
+
+            <li *ngIf="canManageInventory()"><a class="dropdown-item" routerLink="/inventory">Inventory</a></li>
+            <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/transactions">Financial Reports</a></li>
           </ul>
         </li>
 
         <!-- Doctor-specific navigation -->
-        <li *ngIf="canAccessDoctor()" class="nav-item dropdown">
+        <li *ngIf="shouldShowRolePanel('DOCTOR')" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Doctor Panel
+            <span *ngIf="shouldShowMultiplePanels()" class="badge bg-info ms-1">Secondary</span>
           </a>
           <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/doctor">Doctor Dashboard</a></li>
             <li><a class="dropdown-item" routerLink="/doctor/appointments">My Appointments</a></li>
-            <li><a class="dropdown-item" routerLink="/doctor/patients">My Patients</a></li>
-            <li><a class="dropdown-item" routerLink="/doctor/schedule">Schedule</a></li>
-            <li><a class="dropdown-item" routerLink="/doctor/medical-records">Medical Records</a></li>
-            <li><a class="dropdown-item" routerLink="/doctor/prescriptions">Prescriptions</a></li>
+              <li><a class="dropdown-item" routerLink="/doctor/schedule">Schedule</a></li>
           </ul>
         </li>
 
         <!-- Employee-specific navigation -->
-        <li *ngIf="canAccessEmployee()" class="nav-item dropdown">
+        <li *ngIf="shouldShowRolePanel('EMPLOYEE')" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Employee Panel
+            <span *ngIf="shouldShowMultiplePanels() && getPrimaryRole() !== 'EMPLOYEE'" class="badge bg-info ms-1">Secondary</span>
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" routerLink="/employee/dashboard">Employee Dashboard</a></li>

@@ -297,7 +297,8 @@ export class DashboardService {
   // Helper methods
   private calculateTotalRevenue(transactions: any[], invoices: any[]): number {
     const transactionRevenue = transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
-    const invoiceRevenue = invoices.reduce((sum, i) => sum + (i.paidAmount || 0), 0);
+    const invoiceRevenue = 0;
+    //invoices.reduce((sum, i) => sum + (i.paidAmount || 0), 0);
     return transactionRevenue + invoiceRevenue;
   }
 
