@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../services/account.service';
 import { ToastService } from '../../../services/toast.service';
-import { 
-  UserViewDTO, 
-  CreateUserDTO, 
+import {
+  UserViewDTO,
+  CreateUserDTO,
   UpdateUserDTO,
   ChangePasswordDTO
 } from '../../../Interfaces/all';
@@ -22,13 +22,13 @@ export class UserManagementComponent implements OnInit {
   // Data arrays
   users: UserViewDTO[] = [];
   filteredUsers: UserViewDTO[] = [];
-  
+
   // Loading states
   loading = false;
   saving = false;
   deleting = false;
   changingPassword = false;
-  
+
   // Modal states
   showCreateModal = false;
   showEditModal = false;
@@ -36,24 +36,24 @@ export class UserManagementComponent implements OnInit {
   showDetailsModal = false;
   showChangePasswordModal = false;
   showAssignRoleModal = false;
-  
+
   // Selected items
   selectedUser: UserViewDTO | null = null;
   editingUser: UserViewDTO | null = null;
-  
+
   // Filters
   searchTerm = '';
   selectedRole: string = 'all';
   selectedStatus: string = 'all';
-  
+
   // Forms
   userForm: FormGroup;
   changePasswordForm: FormGroup;
   assignRoleForm: FormGroup;
-  
+
   // Available roles
   availableRoles = ['Master', 'Owner', 'Admin', 'User', 'Accountant'];
-  
+
   // File handling
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -99,19 +99,19 @@ export class UserManagementComponent implements OnInit {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password') || form.get('newPassword');
     const confirmPassword = form.get('confirmPassword') || form.get('confirmNewPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     }
-    
+
     if (confirmPassword && confirmPassword.errors) {
       delete confirmPassword.errors['passwordMismatch'];
       if (Object.keys(confirmPassword.errors).length === 0) {
         confirmPassword.setErrors(null);
       }
     }
-    
+
     return null;
   }
 
@@ -167,26 +167,26 @@ export class UserManagementComponent implements OnInit {
     console.log('Search term:', this.searchTerm);
     console.log('Selected role:', this.selectedRole);
     console.log('Selected status:', this.selectedStatus);
-    
+
     this.filteredUsers = this.users.filter(user => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         user.userName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.firstName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.lastName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.phoneNumber?.toString().toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      const matchesRole = this.selectedRole === 'all' || 
+
+      const matchesRole = this.selectedRole === 'all' ||
         user.roles.includes(this.selectedRole);
-      
-      const matchesStatus = this.selectedStatus === 'all' || 
+
+      const matchesStatus = this.selectedStatus === 'all' ||
         (this.selectedStatus === 'active' && user.isActive) ||
         (this.selectedStatus === 'inactive' && !user.isActive);
-      
+
       return matchesSearch && matchesRole && matchesStatus;
     });
-    
+
     console.log('Filtered users count:', this.filteredUsers.length);
   }
 
@@ -229,7 +229,7 @@ export class UserManagementComponent implements OnInit {
     this.userForm.get('confirmPassword')?.clearValidators();
     this.userForm.get('password')?.updateValueAndValidity();
     this.userForm.get('confirmPassword')?.updateValueAndValidity();
-    
+
     this.previewUrl = user.profilePicture;
     this.showEditModal = true;
     this.toastService.clear(); // Clear previous messages
@@ -276,13 +276,13 @@ export class UserManagementComponent implements OnInit {
     this.assignRoleForm.reset();
     this.selectedFile = null;
     this.previewUrl = null;
-    
+
     // Restore password validators for create mode
     this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(8), this.complexPasswordValidator()]);
     this.userForm.get('confirmPassword')?.setValidators([Validators.required]);
     this.userForm.get('password')?.updateValueAndValidity();
     this.userForm.get('confirmPassword')?.updateValueAndValidity();
-    
+
     // Reset role controls to false
     this.userForm.patchValue({
       roleMaster: false,
@@ -336,9 +336,9 @@ export class UserManagementComponent implements OnInit {
 
     this.saving = true;
     const formValue = this.userForm.value;
-    
+
     console.log('Creating user with data:', formValue);
-    
+
     const formData = new FormData();
     formData.append('userName', formValue.userName);
     formData.append('email', formValue.email);
@@ -348,18 +348,18 @@ export class UserManagementComponent implements OnInit {
     formData.append('password', formValue.password);
     formData.append('confirmPassword', formValue.confirmPassword);
     formData.append('phoneNumber', formValue.phoneNumber);
-    
+
     // Append each role individually instead of as JSON string
     if (formValue.roleMaster) formData.append('roles', 'Master');
     if (formValue.roleOwner) formData.append('roles', 'Owner');
     if (formValue.roleAdmin) formData.append('roles', 'Admin');
     if (formValue.roleUser) formData.append('roles', 'User');
     if (formValue.roleAccountant) formData.append('roles', 'Accountant');
-    
+
     if (this.selectedFile) {
       formData.append('profilePicture', this.selectedFile);
     }
-    
+
     this.accountService.createUser(formData).subscribe({
       next: () => {
         this.toastService.success('User created successfully');
@@ -369,7 +369,7 @@ export class UserManagementComponent implements OnInit {
       },
       error: (err) => {
         console.log('Error creating user:', err);
-        this.toastService.error('Failed to create user: ' + err.message);
+        // this.toastService.error( );
         this.saving = false;
       },
       complete: () => {
@@ -389,7 +389,7 @@ export class UserManagementComponent implements OnInit {
 
     this.saving = true;
     const formValue = this.userForm.value;
-    
+
     const formData = new FormData();
     formData.append('userName', formValue.userName);
     formData.append('email', formValue.email);
@@ -398,18 +398,18 @@ export class UserManagementComponent implements OnInit {
     formData.append('dateOfBirth', formValue.dateOfBirth);
     formData.append('phoneNumber', formValue.phoneNumber);
     formData.append('isActive', this.editingUser.isActive.toString());
-    
+
     // Append each role individually instead of as JSON string
     if (formValue.roleMaster) formData.append('roles', 'Master');
     if (formValue.roleOwner) formData.append('roles', 'Owner');
     if (formValue.roleAdmin) formData.append('roles', 'Admin');
     if (formValue.roleUser) formData.append('roles', 'User');
     if (formValue.roleAccountant) formData.append('roles', 'Accountant');
-    
+
     if (this.selectedFile) {
       formData.append('profilePicture', this.selectedFile);
     }
-    
+
     this.accountService.updateUser(this.editingUser.userName, formData).subscribe({
       next: () => {
         this.toastService.success('User updated successfully');
@@ -453,14 +453,14 @@ export class UserManagementComponent implements OnInit {
 
     this.changingPassword = true;
     const formValue = this.changePasswordForm.value;
-    
+
     const passwordData: ChangePasswordDTO = {
       userId: this.selectedUser.id,
       currentPassword: formValue.currentPassword,
       newPassword: formValue.newPassword,
       confirmNewPassword: formValue.confirmNewPassword
     };
-    
+
     this.accountService.changePassword(passwordData).subscribe({
       next: () => {
         this.toastService.success('Password changed successfully');
@@ -482,7 +482,7 @@ export class UserManagementComponent implements OnInit {
 
     this.saving = true;
     const formValue = this.assignRoleForm.value;
-    
+
     this.accountService.assignRole(this.selectedUser.id, formValue.role).subscribe({
       next: () => {
         this.toastService.success(`Role ${formValue.role} assigned successfully`);
@@ -502,7 +502,7 @@ export class UserManagementComponent implements OnInit {
 
   removeRole(user: UserViewDTO, role: string): void {
     this.saving = true;
-    
+
     this.accountService.removeRole(user.id, role).subscribe({
       next: () => {
         this.toastService.success(`Role ${role} removed successfully`);
@@ -521,7 +521,7 @@ export class UserManagementComponent implements OnInit {
 
   toggleUserStatus(user: UserViewDTO): void {
     this.saving = true;
-    
+
     if (user.isActive) {
       this.accountService.deactivateUser(user.id).subscribe({
         next: () => {
@@ -591,7 +591,7 @@ fileurl:string=environment.filesurl;
     if (user.profilePicture && user.profilePicture.trim() !== '') {
       console.log(this.fileurl+"/"+user.profilePicture);
       return  this.fileurl+"/"+user.profilePicture;
-      
+
     }
     // Return a simple colored circle with user initials
     const initials = this.getUserInitials(user);
@@ -639,7 +639,7 @@ fileurl:string=environment.filesurl;
     const input = event.target;
     const value = input.value;
     const numbersOnly = value.replace(/[^0-9]/g, '');
-    
+
     if (value !== numbersOnly) {
       input.value = numbersOnly;
       this.userForm.patchValue({ phoneNumber: numbersOnly });
@@ -671,7 +671,7 @@ fileurl:string=environment.filesurl;
         return `Please enter a valid ${fieldName}`;
       }
       if (field.errors['passwordMismatch']) return 'Passwords do not match';
-      
+
       // Complex password validation errors
       if (field.errors['missingUpperCase']) return 'Password must contain at least one uppercase letter (A-Z)';
       if (field.errors['missingLowerCase']) return 'Password must contain at least one lowercase letter (a-z)';
@@ -717,4 +717,4 @@ fileurl:string=environment.filesurl;
       this.toastService.info(`Phone "${number}" is ${isValid ? 'valid' : 'invalid'}`, 'Validation Test');
     });
   }
-} 
+}

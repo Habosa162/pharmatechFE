@@ -1,28 +1,28 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <!-- Debug Buttons -->
-  <div class="debug-section p-2 border-bottom">
+  <!-- <div class="debug-section p-2 border-bottom">
     <button class="btn btn-sm btn-outline-info me-2" (click)="debugUserData()">
       <i class="fas fa-bug"></i> Debug User Data
     </button>
     <button class="btn btn-sm btn-outline-warning" (click)="reloadUserData()">
       <i class="fas fa-sync-alt"></i> Reload User Data
     </button>
-  </div>
+  </div> -->
 
   <!-- User Info Section -->
-  <div class="user-info-section p-3">
+  <!-- <div class="user-info-section p-3">
     <div class="d-flex align-items-center">
       <div class="user-details">
         <h6 class="mb-0">User Roles: {{ userRoles().join(', ') || 'None' }}</h6>
         <small class="text-muted">
-          Primary Role: {{ getPrimaryRole() }} | 
+          Primary Role: {{ getPrimaryRole() }} |
           Multiple Roles: {{ shouldShowMultiplePanels() ? 'Yes' : 'No' }} |
-          Doctor: {{ isDoctor() ? 'Yes' : 'No' }} | 
+          Doctor: {{ isDoctor() ? 'Yes' : 'No' }} |
           Employee: {{ isEmployee() ? 'Yes' : 'No' }}
         </small>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="container">
     <a class="navbar-brand" routerLink="/">PharmaTech</a>
@@ -122,7 +122,7 @@
         </li>
 
         <!-- User-specific navigation (for regular users) -->
-        <li *ngIf="!canAccessAdmin() && !canAccessDoctor() && !canAccessEmployee() && !canAccessAccountant() && !canAccessMaster() && !canAccessOwner()" class="nav-item dropdown">
+        <li *ngIf="!canAccessAdmin() && !canAccessDoctor() && !canAccessEmployee() && !canAccessAccountant() && !canAccessMaster() && !canAccessOwner() && isLoggedIn()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             User Panel
           </a>
@@ -139,12 +139,12 @@
         <li *ngIf="!authService.isLoggedIn()" class="nav-item">
           <a class="nav-link" routerLink="/login">Login</a>
         </li>
-        
+
         <!-- User creation - only for high-level roles -->
-        <li *ngIf="canCreateUser()" class="nav-item">
+        <!-- <li *ngIf="canCreateUser()" class="nav-item">
           <a class="nav-link header-login" routerLink="/register">Create New User</a>
-        </li>
-        
+        </li> -->
+
         <!-- User profile dropdown when logged in -->
         <li *ngIf="authService.isLoggedIn()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

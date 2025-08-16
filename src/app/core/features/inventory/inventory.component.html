@@ -11,8 +11,8 @@
           Manage categories, items, and track inventory transactions
         </p>
       </div>
-      
-      
+
+
       <div class="quick-actions">
         <div class="row">
           <div class="col-md-4">
@@ -59,9 +59,9 @@
           <label class="form-label">
             <i class="fas fa-hospital"></i> Filter by Clinic
           </label>
-          <select 
-            class="form-select" 
-            [(ngModel)]="selectedClinicId" 
+          <select
+            class="form-select"
+            [(ngModel)]="selectedClinicId"
             (change)="onClinicChange()">
             <option [value]="null">All Clinics</option>
             <option *ngFor="let clinic of clinics" [value]="clinic.id">
@@ -77,24 +77,24 @@
   <div class="nav-tabs-container">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <button 
-          class="nav-link" 
+        <button
+          class="nav-link"
           [class.active]="activeTab === 'categories'"
           (click)="setActiveTab('categories')">
           <i class="fas fa-tags"></i> Categories
         </button>
       </li>
       <li class="nav-item">
-        <button 
-          class="nav-link" 
+        <button
+          class="nav-link"
           [class.active]="activeTab === 'items'"
           (click)="setActiveTab('items')">
           <i class="fas fa-cube"></i> Items
         </button>
       </li>
       <li class="nav-item">
-        <button 
-          class="nav-link" 
+        <button
+          class="nav-link"
           [class.active]="activeTab === 'transactions'"
           (click)="setActiveTab('transactions')">
           <i class="fas fa-exchange-alt"></i> Transactions
@@ -104,7 +104,7 @@
   </div>
 
   <!-- Quick Add Section (shown when no data) -->
-  <!-- <div class="quick-add-section" *ngIf="!loading && 
+  <!-- <div class="quick-add-section" *ngIf="!loading &&
     (activeTab === 'categories' && categories.length === 0) ||
     (activeTab === 'items' && activeItems.length === 0) ||
     (activeTab === 'transactions' && transactions.length === 0)">
@@ -186,7 +186,7 @@
         </div>
 
         <div *ngIf="!loading && categories.length > 0" class="categories-grid">
-          
+
           <div *ngFor="let category of categories" class="category-card">
             <div class="card-header">
               <h5 class="category-name">{{ category.name }}</h5>
@@ -383,7 +383,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      
+
       <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
         <div class="modal-body">
           <div class="form-group">
@@ -404,9 +404,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeCategoryModal()">
             <i class="fas fa-times"></i> Cancel
           </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
+          <button
+            type="submit"
+            class="btn btn-primary"
             [disabled]="categoryForm.invalid">
             <i class="fas fa-save"></i>
             {{ editingCategory ? 'Update' : 'Create' }}
@@ -428,7 +428,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      
+
       <form [formGroup]="itemForm" (ngSubmit)="saveItem()">
         <div class="modal-body">
           <div class="row">
@@ -540,9 +540,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeItemModal()">
             <i class="fas fa-times"></i> Cancel
           </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
+          <button
+            type="submit"
+            class="btn btn-primary"
             [disabled]="itemForm.invalid">
             <i class="fas fa-save"></i>
             {{ editingItem ? 'Update' : 'Create' }}
@@ -564,7 +564,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      
+
       <form [formGroup]="transactionForm" (ngSubmit)="saveTransaction()">
         <div class="modal-body">
           <div class="row">
@@ -633,9 +633,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">
             <i class="fas fa-times"></i> Cancel
           </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
+          <button
+            type="submit"
+            class="btn btn-primary"
             [disabled]="transactionForm.invalid">
             <i class="fas fa-save"></i>
             Record Transaction
@@ -662,4 +662,4 @@
       </button>
     </div>
   </div>
-</div> 
+</div>

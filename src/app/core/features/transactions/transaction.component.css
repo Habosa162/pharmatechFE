@@ -2,7 +2,7 @@
 .transaction-container {
   background-color: #f8fafc;
   min-height: 100vh;
-  padding: 1.25rem;
+  padding: 1rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -716,4 +716,4 @@
   .modal-footer .btn {
     width: 100%;
   }
-} 
+}

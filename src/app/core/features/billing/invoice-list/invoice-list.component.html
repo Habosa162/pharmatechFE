@@ -40,10 +40,10 @@
             <div class="col-md-3">
               <div class="form-group">
                 <label class="form-label">Search</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  [(ngModel)]="searchTerm" 
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="searchTerm"
                   (input)="onFilterChange()"
                   placeholder="Search by ID or amount">
               </div>
@@ -72,20 +72,20 @@
             <div class="col-md-2">
               <div class="form-group">
                 <label class="form-label">Start Date</label>
-                <input 
-                  type="date" 
-                  class="form-control" 
-                  [(ngModel)]="startDate" 
+                <input
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="startDate"
                   (change)="onFilterChange()">
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-group">
                 <label class="form-label">End Date</label>
-                <input 
-                  type="date" 
-                  class="form-control" 
-                  [(ngModel)]="endDate" 
+                <input
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="endDate"
                   (change)="onFilterChange()">
               </div>
             </div>
@@ -107,9 +107,9 @@
         <i class="fas fa-file-invoice-dollar"></i>
         Invoices ({{ filteredInvoices.length }})
       </h3>
-      <button 
-        class="btn btn-primary" 
-        (click)="showAddInvoiceModal()" 
+      <button
+        class="btn btn-primary"
+        (click)="showAddInvoiceModal()"
         [disabled]="appointments.length === 0"
         [title]="appointments.length === 0 ? 'No completed appointments available for creating invoices' : 'Create new invoice'">
         <i class="fas fa-plus"></i>
@@ -285,7 +285,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      
+
       <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()">
         <div class="modal-body">
           <div class="row">
@@ -421,9 +421,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeInvoiceModal()">
             <i class="fas fa-times"></i> Cancel
           </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
+          <button
+            type="submit"
+            class="btn btn-primary"
             [disabled]="invoiceForm.invalid">
             <i class="fas fa-save"></i>
             {{ editingInvoice ? 'Update' : 'Create' }}

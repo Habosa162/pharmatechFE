@@ -29,27 +29,27 @@
     <div class="filters-content">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input 
-          type="text" 
-          placeholder="Search users..." 
+        <input
+          type="text"
+          placeholder="Search users..."
           [(ngModel)]="searchTerm"
           (input)="onFilterChange()"
           class="form-control"
         >
       </div>
-      
+
       <div class="filter-controls">
-        <select 
-          [(ngModel)]="selectedRole" 
+        <select
+          [(ngModel)]="selectedRole"
           (change)="onFilterChange()"
           class="form-select"
         >
           <option value="all">All Roles</option>
           <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
         </select>
-        
-        <select 
-          [(ngModel)]="selectedStatus" 
+
+        <select
+          [(ngModel)]="selectedStatus"
           (change)="onFilterChange()"
           class="form-select"
         >
@@ -57,7 +57,7 @@
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
-        
+
         <button class="btn btn-outline-secondary" (click)="clearFilters()">
           <i class="fas fa-times"></i>
           Clear Filters
@@ -80,8 +80,8 @@
       <div class="user-card" *ngFor="let user of filteredUsers">
         <div class="user-card-header">
           <div class="user-avatar">
-            <img 
-              [src]="getProfilePictureUrl(user)" 
+            <img
+              [src]="getProfilePictureUrl(user)"
               [alt]="user.fullName"
               class="avatar-image"
               (error)="onImageError($event)"
@@ -105,7 +105,7 @@
             </button>
           </div>
         </div>
-        
+
         <div class="user-card-body">
           <div class="user-details">
             <div class="detail-item">
@@ -121,25 +121,25 @@
               <span class="detail-value">{{ user.lastLoginDate ? formatDateTime(user.lastLoginDate) : 'Never' }}</span>
             </div>
           </div>
-          
+
           <div class="user-roles">
             <span class="detail-label">Roles:</span>
             <div class="roles-container">
-              <span 
-                *ngFor="let role of user.roles" 
+              <span
+                *ngFor="let role of user.roles"
                 class="badge"
                 [class]="getRoleBadgeClass(role)"
               >
                 {{ role }}
-                <button 
-                  class="role-remove-btn" 
+                <button
+                  class="role-remove-btn"
                   (click)="removeRole(user, role)"
                   title="Remove role"
                 >
                   <i class="fas fa-times"></i>
                 </button>
               </span>
-              <button 
+              <button
                 class="btn btn-sm btn-outline-primary add-role-btn"
                 (click)="openAssignRoleModal(user)"
               >
@@ -147,15 +147,15 @@
               </button>
             </div>
           </div>
-          
+
           <div class="user-status">
-            <span 
+            <span
               class="badge"
               [class]="getStatusBadgeClass(user.isActive)"
             >
               {{ getStatusText(user.isActive) }}
             </span>
-            <button 
+            <button
               class="btn btn-sm"
               [class]="user.isActive ? 'btn-warning' : 'btn-success'"
               (click)="toggleUserStatus(user)"
@@ -166,9 +166,9 @@
             </button>
           </div>
         </div>
-        
+
         <div class="user-card-footer">
-          <button 
+          <button
             class="btn btn-sm btn-outline-info"
             (click)="openChangePasswordModal(user)"
           >
@@ -200,13 +200,13 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <form [formGroup]="userForm" (ngSubmit)="createUser()" class="modal-body">
       <div class="form-row">
         <div class="form-group">
           <label for="userName">Username *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="userName"
             formControlName="userName"
             class="form-control"
@@ -216,11 +216,11 @@
             {{ getFieldError(userForm, 'userName') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="email">Email *</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             id="email"
             formControlName="email"
             class="form-control"
@@ -231,12 +231,12 @@
           </div>
         </div>
       </div>
-      
+
       <div class="form-row">
         <div class="form-group">
           <label for="firstName">First Name *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="firstName"
             formControlName="firstName"
             class="form-control"
@@ -246,11 +246,11 @@
             {{ getFieldError(userForm, 'firstName') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="lastName">Last Name *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="lastName"
             formControlName="lastName"
             class="form-control"
@@ -261,11 +261,11 @@
           </div>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="dateOfBirth">Date of Birth *</label>
-        <input 
-          type="date" 
+        <input
+          type="date"
           id="dateOfBirth"
           formControlName="dateOfBirth"
           class="form-control"
@@ -275,12 +275,12 @@
           {{ getFieldError(userForm, 'dateOfBirth') }}
         </div>
       </div>
-      
+
       <div class="form-row">
         <div class="form-group">
           <label for="password">Password *</label>
-          <input 
-            type="password" 
+          <input
+            type="password"
             id="password"
             formControlName="password"
             class="form-control"
@@ -293,11 +293,11 @@
             {{ getFieldError(userForm, 'password') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="confirmPassword">Confirm Password *</label>
-          <input 
-            type="password" 
+          <input
+            type="password"
             id="confirmPassword"
             formControlName="confirmPassword"
             class="form-control"
@@ -308,11 +308,11 @@
           </div>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="phoneNumber">Phone Number *</label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           id="phoneNumber"
           formControlName="phoneNumber"
           class="form-control"
@@ -325,13 +325,13 @@
           {{ getFieldError(userForm, 'phoneNumber') }}
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="roles">Roles *</label>
         <div class="roles-checkboxes">
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="role-Master"
               formControlName="roleMaster"
               class="form-check-input"
@@ -341,8 +341,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="role-Owner"
               formControlName="roleOwner"
               class="form-check-input"
@@ -352,8 +352,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="role-Admin"
               formControlName="roleAdmin"
               class="form-check-input"
@@ -363,8 +363,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="role-User"
               formControlName="roleUser"
               class="form-check-input"
@@ -374,8 +374,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="role-Accountant"
               formControlName="roleAccountant"
               class="form-check-input"
@@ -389,11 +389,11 @@
           At least one role must be selected
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="profilePicture">Profile Picture</label>
-        <input 
-          type="file" 
+        <input
+          type="file"
           id="profilePicture"
           (change)="onFileSelected($event)"
           accept="image/*"
@@ -407,11 +407,11 @@
         </div>
       </div>
     </form>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-      <button 
-        class="btn btn-primary" 
+      <button
+        class="btn btn-primary"
         (click)="createUser()"
         [disabled]="userForm.invalid || saving"
       >
@@ -431,13 +431,13 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <form [formGroup]="userForm" (ngSubmit)="updateUser()" class="modal-body">
       <div class="form-row">
         <div class="form-group">
           <label for="editUserName">Username *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="editUserName"
             formControlName="userName"
             class="form-control"
@@ -447,11 +447,11 @@
             {{ getFieldError(userForm, 'userName') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="editEmail">Email *</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             id="editEmail"
             formControlName="email"
             class="form-control"
@@ -462,12 +462,12 @@
           </div>
         </div>
       </div>
-      
+
       <div class="form-row">
         <div class="form-group">
           <label for="editFirstName">First Name *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="editFirstName"
             formControlName="firstName"
             class="form-control"
@@ -477,11 +477,11 @@
             {{ getFieldError(userForm, 'firstName') }}
           </div>
         </div>
-        
+
         <div class="form-group">
           <label for="editLastName">Last Name *</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             id="editLastName"
             formControlName="lastName"
             class="form-control"
@@ -492,11 +492,11 @@
           </div>
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="editDateOfBirth">Date of Birth *</label>
-        <input 
-          type="date" 
+        <input
+          type="date"
           id="editDateOfBirth"
           formControlName="dateOfBirth"
           class="form-control"
@@ -506,11 +506,11 @@
           {{ getFieldError(userForm, 'dateOfBirth') }}
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="editPhoneNumber">Phone Number *</label>
-        <input 
-          type="text" 
+        <input
+          type="text"
           id="editPhoneNumber"
           formControlName="phoneNumber"
           class="form-control"
@@ -523,13 +523,13 @@
           {{ getFieldError(userForm, 'phoneNumber') }}
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="editRoles">Roles *</label>
         <div class="roles-checkboxes">
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="editRole-Master"
               formControlName="roleMaster"
               class="form-check-input"
@@ -539,8 +539,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="editRole-Owner"
               formControlName="roleOwner"
               class="form-check-input"
@@ -550,8 +550,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="editRole-Admin"
               formControlName="roleAdmin"
               class="form-check-input"
@@ -561,8 +561,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="editRole-User"
               formControlName="roleUser"
               class="form-check-input"
@@ -572,8 +572,8 @@
             </label>
           </div>
           <div class="role-checkbox">
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               id="editRole-Accountant"
               formControlName="roleAccountant"
               class="form-check-input"
@@ -587,11 +587,11 @@
           At least one role must be selected
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="editProfilePicture">Profile Picture</label>
-        <input 
-          type="file" 
+        <input
+          type="file"
           id="editProfilePicture"
           (change)="onFileSelected($event)"
           accept="image/*"
@@ -605,11 +605,11 @@
         </div>
       </div>
     </form>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-      <button 
-        class="btn btn-primary" 
+      <button
+        class="btn btn-primary"
         (click)="updateUser()"
         [disabled]="userForm.invalid || saving"
       >
@@ -629,7 +629,7 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <div class="modal-body">
       <div class="delete-confirmation">
         <i class="fas fa-exclamation-triangle text-warning"></i>
@@ -637,11 +637,11 @@
         <p class="text-muted">This action cannot be undone.</p>
       </div>
     </div>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-      <button 
-        class="btn btn-danger" 
+      <button
+        class="btn btn-danger"
         (click)="deleteUser()"
         [disabled]="deleting"
       >
@@ -661,12 +661,12 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <div class="modal-body" *ngIf="selectedUser">
       <div class="user-details-view">
         <div class="user-profile">
-          <img 
-            [src]="getProfilePictureUrl(selectedUser)" 
+          <img
+            [src]="getProfilePictureUrl(selectedUser)"
             [alt]="selectedUser.fullName"
             class="profile-image"
             (error)="onImageError($event)"
@@ -674,7 +674,7 @@
           <div class="profile-info">
             <h4>{{ selectedUser.fullName }}</h4>
             <p class="username">{{ getFormattedUsername(selectedUser.userName) }}</p>
-            <span 
+            <span
               class="badge"
               [class]="getStatusBadgeClass(selectedUser.isActive)"
             >
@@ -682,7 +682,7 @@
             </span>
           </div>
         </div>
-        
+
         <div class="details-grid">
           <div class="detail-item">
             <span class="detail-label">Email:</span>
@@ -705,12 +705,12 @@
             <span class="detail-value">{{ selectedUser.lastLoginDate ? formatDateTime(selectedUser.lastLoginDate) : 'Never' }}</span>
           </div>
         </div>
-        
+
         <div class="roles-section">
           <h5>Roles</h5>
           <div class="roles-list">
-            <span 
-              *ngFor="let role of selectedUser.roles" 
+            <span
+              *ngFor="let role of selectedUser.roles"
               class="badge"
               [class]="getRoleBadgeClass(role)"
             >
@@ -720,7 +720,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Close</button>
     </div>
@@ -736,12 +736,12 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <form [formGroup]="changePasswordForm" (ngSubmit)="changePassword()" class="modal-body">
       <div class="form-group">
         <label for="currentPassword">Current Password *</label>
-        <input 
-          type="password" 
+        <input
+          type="password"
           id="currentPassword"
           formControlName="currentPassword"
           class="form-control"
@@ -751,11 +751,11 @@
           {{ getFieldError(changePasswordForm, 'currentPassword') }}
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="newPassword">New Password *</label>
-        <input 
-          type="password" 
+        <input
+          type="password"
           id="newPassword"
           formControlName="newPassword"
           class="form-control"
@@ -768,11 +768,11 @@
           {{ getFieldError(changePasswordForm, 'newPassword') }}
         </div>
       </div>
-      
+
       <div class="form-group">
         <label for="confirmNewPassword">Confirm New Password *</label>
-        <input 
-          type="password" 
+        <input
+          type="password"
           id="confirmNewPassword"
           formControlName="confirmNewPassword"
           class="form-control"
@@ -783,11 +783,11 @@
         </div>
       </div>
     </form>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-      <button 
-        class="btn btn-primary" 
+      <button
+        class="btn btn-primary"
         (click)="changePassword()"
         [disabled]="changePasswordForm.invalid || changingPassword"
       >
@@ -807,11 +807,11 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    
+
     <form [formGroup]="assignRoleForm" (ngSubmit)="assignRole()" class="modal-body">
       <div class="form-group">
         <label for="role">Select Role *</label>
-        <select 
+        <select
           id="role"
           formControlName="role"
           class="form-select"
@@ -825,11 +825,11 @@
         </div>
       </div>
     </form>
-    
+
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-      <button 
-        class="btn btn-primary" 
+      <button
+        class="btn btn-primary"
         (click)="assignRole()"
         [disabled]="assignRoleForm.invalid || saving"
       >
@@ -838,4 +838,4 @@
       </button>
     </div>
   </div>
-</div> 
+</div>

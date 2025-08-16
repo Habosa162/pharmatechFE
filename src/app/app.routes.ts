@@ -39,11 +39,12 @@ import { MyAppointmentsClinicComponent } from './core/features/appointments/my-a
 import { AdminLayoutComponent } from './core/layouts/admin-layout/admin-layout.component';
 import { MedicalRecordDetailsComponent } from './core/features/patients/medical-record-details/medical-record-details.component';
 
+
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   // {path:'appointments', component: AppointmentComponent},
-  // {path:'patients',component:PatientListComponent},
+  // {path:'list',component:TransactionsListComponent},
 
   {
     path: 'admin',
@@ -71,7 +72,7 @@ export const routes: Routes = [
       { path: 'medical-record-details/:id', component: MedicalRecordDetailsComponent },
     ]
   },
-  
+
   {
     path: 'owner',
     canActivate: [AuthGuard],

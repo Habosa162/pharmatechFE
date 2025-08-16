@@ -36,11 +36,11 @@
                 <span class="input-group-text">
                   <i class="fas fa-user"></i>
                 </span>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  [(ngModel)]="searchTerm" 
-                  (input)="search()" 
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="searchTerm"
+                  (input)="search()"
                   placeholder="Enter patient name...">
               </div>
             </div>
@@ -52,11 +52,11 @@
                 <span class="input-group-text">
                   <i class="fas fa-phone"></i>
                 </span>
-                <input 
-                  type="text" 
-                  class="form-control" 
-                  [(ngModel)]="searchPhone" 
-                  (input)="search()" 
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="searchPhone"
+                  (input)="search()"
                   placeholder="Enter phone number...">
               </div>
             </div>
@@ -135,7 +135,7 @@
               No patients have been added yet. Click "Add New Patient" to get started.
             </span>
           </p>
-          <button *ngIf="searchTerm || searchPhone || selectedGender !== 'all'" 
+          <button *ngIf="searchTerm || searchPhone || selectedGender !== 'all'"
                   class="btn btn-primary" (click)="clearFilters()">
             <i class="fas fa-times"></i> Clear Filters
           </button>
@@ -190,21 +190,21 @@
                 </td>
                 <td class="actions-info">
                   <div class="action-buttons">
-                    <button 
-                      class="btn btn-sm btn-outline-info" 
-                      (click)="viewDetails(patient.id)" 
+                    <button
+                      class="btn btn-sm btn-outline-info"
+                      (click)="viewDetails(patient.id)"
                       title="View Patient Profile">
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button 
-                      class="btn btn-sm btn-outline-primary" 
-                      (click)="editPatient(patient.id)" 
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="editPatient(patient.id)"
                       title="Edit Patient">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button 
-                      class="btn btn-sm btn-outline-success" 
-                      (click)="viewAppointments(patient.id)" 
+                    <button
+                      class="btn btn-sm btn-outline-success"
+                      (click)="viewAppointments(patient.id)"
                       title="View Appointments">
                       <i class="fas fa-calendar"></i>
                     </button>
@@ -226,7 +226,7 @@
           Page {{ currentPage }} of {{ totalPages }}
         </span>
       </div>
-      
+
       <ul class="pagination">
         <!-- First Page -->
         <li class="page-item" [class.disabled]="currentPage === 1">
@@ -234,30 +234,30 @@
             <i class="fas fa-angle-double-left"></i>
           </button>
         </li>
-        
+
         <!-- Previous Page -->
         <li class="page-item" [class.disabled]="currentPage === 1">
           <button class="page-link" (click)="goToPreviousPage()" [disabled]="currentPage === 1">
             <i class="fas fa-angle-left"></i>
           </button>
         </li>
-        
+
         <!-- Page Numbers -->
-        <li *ngFor="let pageNum of getPageNumbers()" 
-            class="page-item" 
+        <li *ngFor="let pageNum of getPageNumbers()"
+            class="page-item"
             [class.active]="pageNum === currentPage">
           <button class="page-link" (click)="onPageChange(pageNum)">
             {{ pageNum }}
           </button>
         </li>
-        
+
         <!-- Next Page -->
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button class="page-link" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
             <i class="fas fa-angle-right"></i>
           </button>
         </li>
-        
+
         <!-- Last Page -->
         <li class="page-item" [class.disabled]="currentPage === totalPages">
           <button class="page-link" (click)="goToLastPage()" [disabled]="currentPage === totalPages">
@@ -291,13 +291,13 @@
                 <label for="name" class="form-label">
                   <i class="fas fa-user me-2"></i>Full Name
                 </label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <input
+                  type="text"
+                  class="form-control"
                   [class.is-invalid]="(submitted || nameInput.touched) && nameInput.invalid"
                   id="name"
-                  [(ngModel)]="newPatient.name" 
-                  name="name" 
+                  [(ngModel)]="newPatient.name"
+                  name="name"
                   #nameInput="ngModel"
                   pattern="^[A-Za-z\s]+$"
                   placeholder="Enter patient's full name"
@@ -313,13 +313,13 @@
                 <label for="phoneNumber" class="form-label">
                   <i class="fas fa-phone me-2"></i>Phone Number
                 </label>
-                <input 
-                  type="tel" 
-                  class="form-control" 
+                <input
+                  type="tel"
+                  class="form-control"
                   [class.is-invalid]="(submitted || phoneInput.touched) && (phoneInput.invalid || validatePhoneNumber(newPatient.phoneNumber))"
                   id="phoneNumber"
-                  [(ngModel)]="newPatient.phoneNumber" 
-                  name="phoneNumber" 
+                  [(ngModel)]="newPatient.phoneNumber"
+                  name="phoneNumber"
                   #phoneInput="ngModel"
                   pattern="^\d{10,12}$"
                   placeholder="Enter phone number"
@@ -335,13 +335,13 @@
                 <label for="dateofBirth" class="form-label">
                   <i class="fas fa-calendar me-2"></i>Date of Birth
                 </label>
-                <input 
-                  type="date" 
-                  class="form-control" 
+                <input
+                  type="date"
+                  class="form-control"
                   [class.is-invalid]="(submitted || dobInput.touched) && dobInput.invalid"
                   id="dateofBirth"
-                  [(ngModel)]="newPatient.dateofBirth" 
-                  name="dateofBirth" 
+                  [(ngModel)]="newPatient.dateofBirth"
+                  name="dateofBirth"
                   #dobInput="ngModel"
                   required>
                 <div class="invalid-feedback" *ngIf="(submitted || dobInput.touched) && dobInput.invalid">
@@ -355,12 +355,12 @@
                 <label for="gender" class="form-label">
                   <i class="fas fa-venus-mars me-2"></i>Gender
                 </label>
-                <select 
-                  class="form-select" 
+                <select
+                  class="form-select"
                   [class.is-invalid]="(submitted || genderInput.touched) && genderInput.invalid"
                   id="gender"
-                  [(ngModel)]="newPatient.gender" 
-                  name="gender" 
+                  [(ngModel)]="newPatient.gender"
+                  name="gender"
                   #genderInput="ngModel"
                   required>
                   <option [ngValue]="0">Male</option>

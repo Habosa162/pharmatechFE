@@ -35,7 +35,7 @@
         <p>Total Income</p>
       </div>
     </div>
-    
+
     <div class="summary-card expense">
       <div class="card-icon">
         <i class="fas fa-arrow-down"></i>
@@ -45,7 +45,7 @@
         <p>Total Expenses</p>
       </div>
     </div>
-    
+
     <div class="summary-card balance" [class.negative]="getTotalAmount() < 0">
       <div class="card-icon">
         <i class="fas fa-balance-scale"></i>
@@ -61,8 +61,8 @@
   <div class="nav-tabs-container">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <button 
-          class="nav-link active" 
+        <button
+          class="nav-link active"
           (click)="setActiveTab('transactions')">
           <i class="fas fa-exchange-alt"></i> Transactions
         </button>
@@ -204,7 +204,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      
+
       <form [formGroup]="transactionForm" (ngSubmit)="saveTransaction()">
         <div class="modal-body">
           <div class="row">
@@ -274,9 +274,9 @@
           <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">
             <i class="fas fa-times"></i> Cancel
           </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
+          <button
+            type="submit"
+            class="btn btn-primary"
             [disabled]="transactionForm.invalid">
             <i class="fas fa-save"></i>
             {{ editingTransaction ? 'Update' : 'Create' }}
@@ -285,4 +285,4 @@
       </form>
     </div>
   </div>
-</div> 
+</div>
