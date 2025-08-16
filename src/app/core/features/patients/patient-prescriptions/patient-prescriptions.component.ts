@@ -12,7 +12,7 @@ import { PatientDto } from '../../../Interfaces/patient/patients/patient';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './patient-prescriptions.component.html',
-  styleUrls: ['./patient-prescriptions.component.css']
+  styleUrl: './patient-prescriptions.component.css'
 })
 export class PatientPrescriptionsComponent implements OnInit {
   patientId!: number;

@@ -64,7 +64,7 @@
           <div class="card-body">
             <div class="profile-header">
               <div class="profile-avatar">
-                <img *ngIf="doctor.profilePicture" [src]="doctor.profilePicture" [alt]="doctor.name" class="avatar-img">
+                <img *ngIf="doctor.profilePicture" [src]="filesurl+'/'+doctor.profilePicture" [alt]="doctor.name" class="avatar-img">
                 <div *ngIf="!doctor.profilePicture" class="avatar-placeholder">
                   <i class="fas fa-user-md"></i>
                 </div>

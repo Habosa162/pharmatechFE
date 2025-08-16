@@ -4,14 +4,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../../services/account.service';
 import { DepartmentService } from '../../../services/clinics/department.service';
-import { DoctorViewDTO, CreateDoctorDTO, DepartmentViewDTO } from '../../../Interfaces/all';
+import { DoctorViewDTO, CreateDoctorDTO, DepartmentViewDTO, UserViewDTO } from '../../../Interfaces/all';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { environment } from '../../../services/enviroment';
 
 @Component({
   selector: 'app-doctor-list',
+  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './doctor-list.component.html',
-  styleUrl: './doctor-list.component.css'
+  styleUrl: './doctor-list.component.css',
 })
 export class DoctorListComponent implements OnInit {
   doctors: DoctorViewDTO[] = [];
@@ -41,6 +43,19 @@ export class DoctorListComponent implements OnInit {
   addDoctorForm: FormGroup;
   addingDoctor = false;
 
+  // User selection properties
+  availableUsers: UserViewDTO[] = [];
+  selectedUser: UserViewDTO | null = null;
+  showUserSelection = false;
+  userSearchTerm = '';
+  filteredUsers: UserViewDTO[] = [];
+
+  // New User Creation properties
+  showCreateUserForm = false;
+  createUserForm: FormGroup;
+  creatingUser = false;
+  userCreationMode: 'select' | 'create' = 'select'; // 'select' or 'create'
+
   // Assign Doctor to Department Modal properties
   showAssignDepartmentModal = false;
   assignDepartmentForm: FormGroup;
@@ -58,12 +73,28 @@ export class DoctorListComponent implements OnInit {
       specialization: ['', [Validators.required]],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{8,15}$/)]],
       startDate: ['', [Validators.required]],
-      appUserId: [null, ]
+      appUserId: [null]
     });
 
     this.assignDepartmentForm = this.formBuilder.group({
       departmentId: ['', [Validators.required]],
       percentage: [100, [Validators.required, Validators.min(1), Validators.max(100)]]
+    });
+
+    this.createUserForm = this.formBuilder.group({
+      userName: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      dateOfBirth: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{8,15}$/)]],
+      roleUser: [true],
+      roleAdmin: [false],
+      roleOwner: [false],
+      roleMaster: [false],
+      roleAccountant: [false]
     });
   }
 
@@ -71,8 +102,10 @@ export class DoctorListComponent implements OnInit {
     this.loadDoctors();
     this.loadDepartments();
     this.loadDoctorDepartments();
+    this.loadAvailableUsers();
   }
 
+  filesurl=environment.filesurl;
   loadDoctors(): void {
     this.loading = true;
     this.error = null;
@@ -81,6 +114,7 @@ export class DoctorListComponent implements OnInit {
       next: (doctors) => {
         this.doctors = doctors;
         this.extractSpecializations();
+        console.log(doctors,'fsafsafasf');
         this.applyFilters();
         this.loading = false;
       },
@@ -133,6 +167,20 @@ export class DoctorListComponent implements OnInit {
       error: (error) => {
         console.error('Error loading doctor departments:', error);
         this.error = 'Failed to load doctor departments.';
+      }
+    });
+  }
+
+  loadAvailableUsers(): void {
+    this.accountService.getAllUsers().subscribe({
+      next: (users) => {
+        this.availableUsers = users;
+        this.filteredUsers = users;
+        console.log('Loaded available users:', users);
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.error = 'Failed to load users.';
       }
     });
   }
@@ -281,13 +329,170 @@ export class DoctorListComponent implements OnInit {
   showAddDoctorForm(): void {
     this.showAddDoctorModal = true;
     this.addDoctorForm.reset();
+    this.selectedUser = null;
     this.clearMessages();
   }
 
   closeAddDoctorModal(): void {
     this.showAddDoctorModal = false;
     this.addDoctorForm.reset();
+    this.selectedUser = null;
     this.clearMessages();
+  }
+
+  // User selection methods
+  showUserSelectionModal(): void {
+    this.showUserSelection = true;
+    this.userSearchTerm = '';
+    this.filteredUsers = this.availableUsers;
+  }
+
+  closeUserSelectionModal(): void {
+    this.showUserSelection = false;
+    this.userSearchTerm = '';
+  }
+
+  // User creation methods
+  switchToCreateUserMode(): void {
+    this.userCreationMode = 'create';
+    this.createUserForm.reset({
+      roleUser: true,
+      roleAdmin: false,
+      roleOwner: false,
+      roleMaster: false,
+      roleAccountant: false
+    });
+    this.selectedUser = null;
+    this.addDoctorForm.patchValue({
+      name: '',
+      phoneNumber: '',
+      appUserId: null
+    });
+  }
+
+  switchToSelectUserMode(): void {
+    this.userCreationMode = 'select';
+    this.createUserForm.reset();
+    this.selectedUser = null;
+    this.addDoctorForm.patchValue({
+      name: '',
+      phoneNumber: '',
+      appUserId: null
+    });
+  }
+
+  createUserAccount(): void {
+    if (this.createUserForm.valid && this.createUserForm.value.password === this.createUserForm.value.confirmPassword) {
+      this.creatingUser = true;
+      this.error = null;
+
+      const formData = new FormData();
+      formData.append('userName', this.createUserForm.value.userName);
+      formData.append('email', this.createUserForm.value.email);
+      formData.append('firstName', this.createUserForm.value.firstName);
+      formData.append('lastName', this.createUserForm.value.lastName);
+      formData.append('dateOfBirth', this.createUserForm.value.dateOfBirth);
+      formData.append('password', this.createUserForm.value.password);
+      formData.append('phoneNumber', this.createUserForm.value.phoneNumber);
+
+      // Append each role individually
+      if (this.createUserForm.value.roleUser) formData.append('roles', 'User');
+      if (this.createUserForm.value.roleAdmin) formData.append('roles', 'Admin');
+      if (this.createUserForm.value.roleOwner) formData.append('roles', 'Owner');
+      if (this.createUserForm.value.roleMaster) formData.append('roles', 'Master');
+      if (this.createUserForm.value.roleAccountant) formData.append('roles', 'Accountant');
+
+      // Call the account service to create user
+      this.accountService.createUser(formData).subscribe({
+        next: (newUser) => {
+          this.success = 'User account created successfully!';
+          this.creatingUser = false;
+          
+          // Auto-select the newly created user
+          this.selectedUser = newUser;
+          this.addDoctorForm.patchValue({
+            name: newUser.fullName,
+            phoneNumber: newUser.phoneNumber || '',
+            appUserId: newUser.id
+          });
+          
+          // Switch back to select mode
+          this.userCreationMode = 'select';
+          
+          // Refresh the users list
+          this.loadAvailableUsers();
+        },
+        error: (error) => {
+          console.error('Error creating user:', error);
+          this.error = 'Failed to create user account. Please try again.';
+          this.creatingUser = false;
+        }
+      });
+    } else {
+      if (this.createUserForm.value.password !== this.createUserForm.value.confirmPassword) {
+        this.error = 'Passwords do not match.';
+      } else {
+        this.error = 'Please fill in all required fields correctly.';
+      }
+    }
+  }
+
+  getSelectedRoles(): string[] {
+    const roles: string[] = [];
+    if (this.createUserForm.value.roleUser) roles.push('User');
+    if (this.createUserForm.value.roleAdmin) roles.push('Admin');
+    if (this.createUserForm.value.roleOwner) roles.push('Owner');
+    if (this.createUserForm.value.roleMaster) roles.push('Master');
+    if (this.createUserForm.value.roleAccountant) roles.push('Accountant');
+    return roles;
+  }
+
+  hasSelectedRoles(): boolean {
+    return this.getSelectedRoles().length > 0;
+  }
+
+  // Form validation helpers for user creation
+  isCreateUserFieldInvalid(fieldName: string): boolean {
+    const field = this.createUserForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getCreateUserFieldError(fieldName: string): string {
+    const field = this.createUserForm.get(fieldName);
+    if (field && field.errors) {
+      if (field.errors['required']) return `${fieldName} is required`;
+      if (field.errors['minlength']) return `${fieldName} must be at least ${field.errors['minlength'].requiredLength} characters`;
+      if (field.errors['email']) return `Please enter a valid email address`;
+      if (field.errors['pattern']) return `${fieldName} format is invalid`;
+    }
+    return '';
+  }
+
+  filterUsers(): void {
+    if (!this.userSearchTerm.trim()) {
+      this.filteredUsers = this.availableUsers;
+    } else {
+      const searchLower = this.userSearchTerm.toLowerCase();
+      this.filteredUsers = this.availableUsers.filter(user => 
+        user.fullName.toLowerCase().includes(searchLower) ||
+        user.userName.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower)
+      );
+    }
+  }
+
+  selectUser(user: UserViewDTO): void {
+    this.selectedUser = user;
+    this.addDoctorForm.patchValue({
+      name: user.fullName,
+      phoneNumber: user.phoneNumber || '',
+      appUserId: user.id
+    });
+    this.closeUserSelectionModal();
+  }
+
+  isUserAlreadyDoctor(userId: string): boolean {
+    return this.doctors.some(doctor => doctor.appUserId === userId);
   }
 
   addDoctor(): void {
@@ -300,7 +505,7 @@ export class DoctorListComponent implements OnInit {
         specialization: this.addDoctorForm.value.specialization,
         phoneNumber: this.addDoctorForm.value.phoneNumber,
         startDate: this.addDoctorForm.value.startDate,
-        appUserId: undefined
+        appUserId: this.selectedUser?.id || undefined
       };
 
       this.accountService.makeDoctor(createDoctorData).subscribe({

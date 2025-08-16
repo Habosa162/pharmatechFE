@@ -1,4 +1,5 @@
 export interface PatientLabTestDTO {
+  id:number;
   result: string;
   testDate: Date;
   labTestName: string;

@@ -11,9 +11,10 @@ import { PatientDto } from '../../../Interfaces/patient/patients/patient';
 
 @Component({
   selector: 'app-patient-lab-tests',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './patient-lab-tests.component.html',
-  styleUrls: ['./patient-lab-tests.component.css']
+  styleUrl: './patient-lab-tests.component.css'
 })
 export class PatientLabTestsComponent implements OnInit {
   patientId!: number;
@@ -162,7 +163,7 @@ export class PatientLabTestsComponent implements OnInit {
       const updateData: UpdatePatientLabTestDTO = {
         result: formValue.result || ''
       };
-
+      
       this.patientLabTestsService.updateLabTest(this.editingId, updateData).subscribe({
         next: () => {
           this.success = 'Lab test updated successfully';

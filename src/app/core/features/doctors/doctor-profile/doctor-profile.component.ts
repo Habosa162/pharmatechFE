@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../services/account.service';
 import { DoctorViewDTO, UpdateDoctorDTO } from '../../../Interfaces/all';
 import { Location } from '@angular/common';
+import { environment } from '../../../services/enviroment';
 
 @Component({
   selector: 'app-doctor-profile',
@@ -13,6 +14,7 @@ import { Location } from '@angular/common';
   styleUrl: './doctor-profile.component.css'
 })
 export class DoctorProfileComponent implements OnInit {
+  filesurl=environment.filesurl;
   doctor: DoctorViewDTO | null = null;
   doctorId: number = 0;
   loading = false;

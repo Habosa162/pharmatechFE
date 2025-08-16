@@ -159,6 +159,8 @@ export const routes: Routes = [
   { path: 'MyAppointments', component: MyAppointmentsComponent },
   { path: 'prescriptions/:id', component: PrescriptionDetailsComponent },
   { path: 'appointment-details/:id', component: AppointmentDetailsComponent },
+  // { path: 'doctors', component: DoctorListComponent },
+
   // { path: 'appointment', component: AppointmentComponent },
 
   {path:'patient-medical-history/:id', component: MedicalHistoryComponent},
@@ -178,5 +180,7 @@ export const routes: Routes = [
   {path:'allemployees', component: EmployeeComponent},
   {path:'my-appointments-clinic', component: MyAppointmentsClinicComponent},
   { path: 'users', component: UserManagementComponent },
+  { path: 'aa', component: DoctorListComponent },
+
   { path: '**', component: NotFoundComponent },
 ];

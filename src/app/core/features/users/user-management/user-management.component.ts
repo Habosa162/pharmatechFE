@@ -7,7 +7,9 @@ import {
   UserViewDTO,
   CreateUserDTO,
   UpdateUserDTO,
-  ChangePasswordDTO
+  ChangePasswordDTO,
+  DoctorViewDTO,
+  CreateDoctorDTO
 } from '../../../Interfaces/all';
 import { environment } from '../../../services/enviroment';
 
@@ -22,12 +24,14 @@ export class UserManagementComponent implements OnInit {
   // Data arrays
   users: UserViewDTO[] = [];
   filteredUsers: UserViewDTO[] = [];
+  doctors: DoctorViewDTO[] = [];
 
   // Loading states
   loading = false;
   saving = false;
   deleting = false;
   changingPassword = false;
+  makingDoctor = false;
 
   // Modal states
   showCreateModal = false;
@@ -36,6 +40,7 @@ export class UserManagementComponent implements OnInit {
   showDetailsModal = false;
   showChangePasswordModal = false;
   showAssignRoleModal = false;
+  showMakeDoctorModal = false;
 
   // Selected items
   selectedUser: UserViewDTO | null = null;
@@ -50,6 +55,7 @@ export class UserManagementComponent implements OnInit {
   userForm: FormGroup;
   changePasswordForm: FormGroup;
   assignRoleForm: FormGroup;
+  makeDoctorForm: FormGroup;
 
   // Available roles
   availableRoles = ['Master', 'Owner', 'Admin', 'User', 'Accountant'];
@@ -89,10 +95,17 @@ export class UserManagementComponent implements OnInit {
     this.assignRoleForm = this.fb.group({
       role: ['', Validators.required]
     });
+
+    this.makeDoctorForm = this.fb.group({
+      specialization: ['', [Validators.required, Validators.minLength(2)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{8,15}$/)]],
+      startDate: ['', [Validators.required]]
+    });
   }
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadDoctors();
   }
 
   // Password match validator
@@ -157,6 +170,18 @@ export class UserManagementComponent implements OnInit {
       error: (err) => {
         this.toastService.error('Failed to load users: ' + err.message);
         this.loading = false;
+      }
+    });
+  }
+
+  loadDoctors(): void {
+    this.accountService.getAllDoctors().subscribe({
+      next: (doctors) => {
+        this.doctors = doctors;
+        console.log('Loaded doctors:', doctors);
+      },
+      error: (err) => {
+        console.error('Failed to load doctors:', err);
       }
     });
   }
@@ -262,6 +287,17 @@ export class UserManagementComponent implements OnInit {
     this.toastService.clear(); // Clear previous messages
   }
 
+  openMakeDoctorModal(user: UserViewDTO): void {
+    this.closeAllModals();
+    this.selectedUser = user;
+    this.makeDoctorForm.patchValue({
+      phoneNumber: user.phoneNumber || '',
+      startDate: new Date().toISOString().split('T')[0]
+    });
+    this.showMakeDoctorModal = true;
+    this.toastService.clear();
+  }
+
   closeAllModals(): void {
     this.showCreateModal = false;
     this.showEditModal = false;
@@ -269,11 +305,13 @@ export class UserManagementComponent implements OnInit {
     this.showDetailsModal = false;
     this.showChangePasswordModal = false;
     this.showAssignRoleModal = false;
+    this.showMakeDoctorModal = false;
     this.selectedUser = null;
     this.editingUser = null;
     this.userForm.reset();
     this.changePasswordForm.reset();
     this.assignRoleForm.reset();
+    this.makeDoctorForm.reset();
     this.selectedFile = null;
     this.previewUrl = null;
 
@@ -519,6 +557,38 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
+  makeDoctor(): void {
+    if (this.makeDoctorForm.invalid || !this.selectedUser) return;
+
+    this.makingDoctor = true;
+    const formValue = this.makeDoctorForm.value;
+
+    const createDoctorData: CreateDoctorDTO = {
+      name: this.selectedUser.fullName,
+      specialization: formValue.specialization,
+      phoneNumber: formValue.phoneNumber,
+      startDate: formValue.startDate,
+      appUserId: this.selectedUser.id
+    };
+
+    this.accountService.makeDoctor(createDoctorData).subscribe({
+      next: () => {
+        this.toastService.success(`User ${this.selectedUser?.fullName} successfully made into a doctor!`);
+        this.makingDoctor = false;
+        this.closeAllModals();
+        this.loadUsers();
+        this.loadDoctors();
+      },
+      error: (err) => {
+        this.toastService.error('Failed to make user a doctor: ' + err.message);
+        this.makingDoctor = false;
+      },
+      complete: () => {
+        this.makingDoctor = false;
+      }
+    });
+  }
+
   toggleUserStatus(user: UserViewDTO): void {
     this.saving = true;
 
@@ -586,7 +656,12 @@ export class UserManagementComponent implements OnInit {
   getFormattedUsername(username: string): string {
     return '@' + username;
   }
-fileurl:string=environment.filesurl;
+
+  isUserAlreadyDoctor(userId: string): boolean {
+    return this.doctors.some(doctor => doctor.appUserId === userId);
+  }
+
+  fileurl:string=environment.filesurl;
   getProfilePictureUrl(user: UserViewDTO): string {
     if (user.profilePicture && user.profilePicture.trim() !== '') {
       console.log(this.fileurl+"/"+user.profilePicture);

@@ -140,7 +140,7 @@
             <button 
               type="submit" 
               class="btn btn-success"
-              [disabled]="medicalRecordForm.invalid || loading || appointment?.status === 2">
+              [disabled]="medicalRecordForm.invalid || loading || appointment?.status === 2 || appointment?.status === 1">
               <i class="fas fa-save"></i> Update Medical Record
             </button>
           </form>
@@ -162,7 +162,7 @@
             <button 
               class="btn btn-primary btn-sm" 
               (click)="showAddPrescriptionForm()"
-              [disabled]="appointment?.status === 2"
+              [disabled]="appointment?.status === 2 || appointment?.status === 1"
               *ngIf="!showPrescriptionForm">
               <i class="fas fa-plus"></i> Add Prescription
             </button>
@@ -319,6 +319,7 @@
                   <button 
                     type="button" 
                     class="btn btn-primary btn-sm" 
+                    [disabled]="appointment?.status == 1  "
                     (click)="addMedicationToForm()">
                     <i class="fas fa-plus"></i> Add First Medication
                   </button>
@@ -390,7 +391,7 @@
             <button 
               class="btn btn-primary" 
               (click)="showAddPrescriptionForm()"
-              [disabled]="appointment?.status === 2">
+              [disabled]="appointment?.status === 2 || appointment?.status === 1">
               <i class="fas fa-plus"></i> Add First Prescription
             </button>
           </div>
