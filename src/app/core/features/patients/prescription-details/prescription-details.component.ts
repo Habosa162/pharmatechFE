@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule,Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PrescriptionService } from '../../../services/patients/prescription.service';
 import { PrescriptionDto, AllPrescriptions } from '../../../Interfaces/patient/prescriptions/prescription';
@@ -8,6 +8,7 @@ import { PrescriptionDto, AllPrescriptions } from '../../../Interfaces/patient/p
   selector: 'app-prescription-details',
   standalone: true,
   imports: [CommonModule],
+  providers: [Location],
   templateUrl: './prescription-details.component.html',
   styleUrl: './prescription-details.component.css'
 })
@@ -16,11 +17,13 @@ export class PrescriptionDetailsComponent implements OnInit {
   loading = false;
   downloading = false;
   error = '';
+  isPdfDownloadMode = false;
 
   constructor(
     public route: ActivatedRoute,
     private router: Router,
-    private prescriptionService: PrescriptionService
+    private prescriptionService: PrescriptionService,
+    private location : Location
   ) {}
 
   ngOnInit(): void {
@@ -53,12 +56,13 @@ export class PrescriptionDetailsComponent implements OnInit {
 
   backToPatientPrescriptions(): void {
     // Get patient ID from route query parameters or navigate back to general list
-    const patientId = this.route.snapshot.queryParamMap.get('patientId');
-    if (patientId) {
-      this.router.navigate(['/patient-prescriptions', patientId]);
-    } else {
-      this.backToList();
-    }
+    // const patientId = this.route.snapshot.queryParamMap.get('patientId');
+    // if (patientId) {
+    //   this.router.navigate(['/patient-prescriptions', patientId]);
+    // } else {
+    //   this.backToList();
+    // }
+    this.location.back();
   }
 
   printPrescription(): void {
@@ -75,17 +79,27 @@ export class PrescriptionDetailsComponent implements OnInit {
     }
 
     this.downloading = true;
-
-    // Import jsPDF dynamically
-    import('jspdf').then(({ default: jsPDF }) => {
-      const doc = new jsPDF();
-      // Set document properties
-      doc.setProperties({
-        title: `Prescription - ${this.prescription!.patientName}`,
-        subject: 'Medical Prescription',
-        author: this.prescription!.doctorName,
-        creator: 'PharmaTech System'
-      });
+    
+    // Set PDF download mode to apply different styling
+    this.isPdfDownloadMode = true;
+    
+    // Use setTimeout to ensure the class is applied before printing
+    setTimeout(() => {
+      // Import jsPDF dynamically
+      import('jspdf').then(({ default: jsPDF }) => {
+        // Create PDF with custom size between A4 and A5
+        const doc = new jsPDF({
+          format: [148, 210], // Size in mm (between A4 and A5)
+          unit: 'mm'
+        });
+        
+        // Set document properties
+        doc.setProperties({
+          title: `Prescription - ${this.prescription!.patientName}`,
+          subject: 'Medical Prescription',
+          author: this.prescription!.doctorName,
+          creator: 'PharmaTech System'
+        });
 
       // Add header
       doc.setFontSize(24);
@@ -203,11 +217,16 @@ export class PrescriptionDetailsComponent implements OnInit {
       doc.save(fileName);
 
       this.downloading = false;
+      // Reset PDF download mode after download completes
+      this.isPdfDownloadMode = false;
     }).catch(error => {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF. Please try again.');
       this.downloading = false;
+      // Reset PDF download mode on error
+      this.isPdfDownloadMode = false;
     });
+    }, 100);
   }
 
   formatDate(dateString: string): string {

@@ -147,7 +147,7 @@ html, body {
 
 /* Ensure the page header stays visible */
 .page-header {
-  position: sticky;
+  position: relative;
   top: 0;
   background: #f8fafc;
   z-index: 10;
@@ -235,8 +235,9 @@ html, body {
 
 /* Filters section sticky positioning */
 .filters-section {
-  position: sticky;
-  top: 120px; /* Adjust based on header height */
+  /* position: relative; */
+  /* top: 120px; */
+   /* Adjust based on header height */
   background: #f8fafc;
   z-index: 9;
   margin-bottom: 1rem;
@@ -354,11 +355,12 @@ html, body {
 
 /* Results summary sticky positioning */
 .results-section {
-  position: sticky;
-  top: 200px; /* Adjust based on header + filters height */
+  /* position: fixed;
+  top: 200px; */
+   /* Adjust based on header + filters height */
   background: #f8fafc;
-  z-index: 8;
-  margin-bottom: 1rem;
+  /* z-index: 8; */
+  /* margin-bottom: 1rem; */
 }
 
 .results-summary {
