@@ -57,7 +57,7 @@ export class LoginComponent {
         }, 500);
       },
       error: (err) => {
-        console.error('Login failed:', err);
+       // console.error('Login failed:', err);
         this.errorMessage = 'Invalid credentials. Please try again.';
       }
     });

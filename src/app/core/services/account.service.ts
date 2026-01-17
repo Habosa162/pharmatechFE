@@ -4,13 +4,13 @@ import { Observable } from 'rxjs';
 // import { Environment } from '../../../base/environment';
 // import { CreateAccountDTO, LoginDTO, RefreshTokenDTO, CreateDoctorDTO, UpdateDoctorDTO, CreateEmployeeDTO, UpdateEmployeeDTO } from '../../Interfaces/AccountModels';
 import { environment } from './enviroment';
-import { 
-  LoginDTO, 
-  RefreshTokenDTO, 
-  CreateDoctorDTO, 
-  UpdateDoctorDTO, 
-  CreateEmployeeDTO, 
-  UpdateEmployeeDTO, 
+import {
+  LoginDTO,
+  RefreshTokenDTO,
+  CreateDoctorDTO,
+  UpdateDoctorDTO,
+  CreateEmployeeDTO,
+  UpdateEmployeeDTO,
   DoctorViewDTO,
   UserViewDTO,
   CreateUserDTO,
@@ -154,7 +154,7 @@ export class AccountService {
 
   userfulldata():Observable<UserFullData>
   {
-    console.log('AccountService - Calling userfulldata API:', `${this.apiUrl}userfulldata`);
+   // console.log('AccountService - Calling userfulldata API:', `${this.apiUrl}userfulldata`);
     return this.http.get<UserFullData>(`${this.apiUrl}userfulldata`);
   }
 }

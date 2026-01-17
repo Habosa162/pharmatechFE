@@ -7,8 +7,10 @@ import {
   Transaction,
   TransactionCategory,
   CreateCategoryDTO,
-  UpdateCategoryDTO
+  UpdateCategoryDTO,
+  TransactionSearchDto
 } from '../../Models/transactions/transactions.model';
+import { PagedResult } from '../../Models/Helpers/helperModels.model';
 
 
 @Injectable({
@@ -41,8 +43,8 @@ export class TransactionService {
   }
 
   // Transactions
-  getAllTransactions(): Observable<Transaction[]> {
-    return this.http.get<Transaction[]>(`${this.apiUrl}`);
+  getAllTransactions(transactionSearchDto : TransactionSearchDto): Observable<PagedResult<Transaction>> {
+    return this.http.post<PagedResult<Transaction>>(`${this.apiUrl}`, transactionSearchDto);
   }
 
   getTransactionById(transactionId: number): Observable<Transaction> {

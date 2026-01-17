@@ -22,27 +22,27 @@ export class InvoiceListComponent implements OnInit {
   loading = false;
   success = '';
   error = '';
-  
+
   // View states
   activeView: 'list' | 'details' = 'list';
-  
+
   // Modal states
   showInvoiceModal = false;
   editingInvoice: AllInvoices | null = null;
-  
+
   // Filters
   searchTerm = '';
   selectedPaymentMethod: PaymentMethod | 'all' = 'all';
   selectedPaymentStatus: 'all' | 'paid' | 'unpaid' = 'all';
   startDate = '';
   endDate = '';
-  
+
   // Form
   invoiceForm: FormGroup;
-  
+
   // Payment methods for dropdown
   paymentMethods: PaymentMethod[] = [PaymentMethod.Cash, PaymentMethod.CreditCard, PaymentMethod.Wallet, PaymentMethod.Insurance, PaymentMethod.Other];
-  
+
   constructor(
     private invoiceService: InvoiceService,
     private appointmentService: AppointmentService,
@@ -81,10 +81,10 @@ export class InvoiceListComponent implements OnInit {
     this.appointmentService.getAppointments().subscribe({
       next: (appointments) => {
         // Filter only completed appointments
-        const completedAppointments = appointments.filter(appointment => 
+        const completedAppointments = appointments.filter(appointment =>
           appointment.status === AppointmentStatus.Completed
         );
-        
+
         // Filter out appointments that already have invoices
         const availableAppointments = completedAppointments.filter(appointment => {
           return !this.invoices.some(invoice => {
@@ -92,16 +92,16 @@ export class InvoiceListComponent implements OnInit {
             return invoiceId === appointment.id;
           });
         });
-        
+
         this.appointments = availableAppointments;
-        
+
         if (availableAppointments.length === 0 && completedAppointments.length > 0) {
           this.success = 'All completed appointments already have invoices.';
           this.clearMessages();
         }
       },
       error: (err) => {
-        console.error('Failed to load appointments:', err);
+        //console.error('Failed to load appointments:', err);
         this.error = 'Failed to load appointments: ' + err.message;
         this.clearMessages();
       }
@@ -110,10 +110,10 @@ export class InvoiceListComponent implements OnInit {
 
   onFilterChange(): void {
     this.filteredInvoices = this.invoices.filter(invoice => {
-      const matchesSearch = !this.searchTerm || 
+      const matchesSearch = !this.searchTerm ||
         invoice.id.toString().includes(this.searchTerm) ||
         invoice.totalAmount.toString().includes(this.searchTerm);
-      
+
       // Convert enum value to string for comparison with backend string values
       const getPaymentMethodString = (enumValue: PaymentMethod): string => {
         const stringMap: { [key in PaymentMethod]: string } = {
@@ -125,30 +125,30 @@ export class InvoiceListComponent implements OnInit {
         };
         return stringMap[enumValue];
       };
-      
-      const matchesPaymentMethod = this.selectedPaymentMethod === 'all' || 
+
+      const matchesPaymentMethod = this.selectedPaymentMethod === 'all' ||
         (typeof invoice.paymentMethod === 'string' && invoice.paymentMethod === getPaymentMethodString(this.selectedPaymentMethod));
-      
+
       const matchesPaymentStatus = this.selectedPaymentStatus === 'all' ||
         (this.selectedPaymentStatus === 'paid' && invoice.isPaid) ||
         (this.selectedPaymentStatus === 'unpaid' && !invoice.isPaid);
-      
+
       const matchesDateRange = this.matchesDateRange(invoice.createdAt);
-      
+
       return matchesSearch && matchesPaymentMethod && matchesPaymentStatus && matchesDateRange;
     });
   }
 
   private matchesDateRange(createdAt: string): boolean {
     if (!this.startDate && !this.endDate) return true;
-    
+
     const invoiceDate = new Date(createdAt);
     const start = this.startDate ? new Date(this.startDate) : null;
     const end = this.endDate ? new Date(this.endDate) : null;
-    
+
     if (start && invoiceDate < start) return false;
     if (end && invoiceDate > end) return false;
-    
+
     return true;
   }
 
@@ -164,7 +164,7 @@ export class InvoiceListComponent implements OnInit {
   showInvoiceDetails(invoice: AllInvoices): void {
     this.router.navigate(['/admin/invoices', invoice.id]);
     // this.loading = true;
-    // console.log('Showing invoice details for ID:', invoice.id);
+    // //console.log('Showing invoice details for ID:', invoice.id);
     // this.invoiceService.getInvoiceById(invoice.id).subscribe({
     //   next: (invoiceDetails) => {
     //     this.selectedInvoice = invoiceDetails;
@@ -191,19 +191,19 @@ export class InvoiceListComponent implements OnInit {
       paidAmount: '',
       paymentMethod: PaymentMethod.Cash
     });
-    
+
     // Reload appointments for new invoice creation
     this.loadAppointments();
-    
+
     this.showInvoiceModal = true;
   }
 
   showEditInvoiceModal(invoice: AllInvoices | InvoiceDto): void {
-    console.log('Editing invoice:', invoice);
-    console.log('Invoice type:', 'id' in invoice ? 'AllInvoices' : 'InvoiceDto');
-    console.log('Invoice ID:', 'id' in invoice ? invoice.id : 'No ID property');
-    console.log('Appointment ID:', 'appointmentId' in invoice ? invoice.appointmentId : 'No appointmentId property');
-    
+    //console.log('Editing invoice:', invoice);
+    //console.log('Invoice type:', 'id' in invoice ? 'AllInvoices' : 'InvoiceDto');
+    //console.log('Invoice ID:', 'id' in invoice ? invoice.id : 'No ID property');
+    //console.log('Appointment ID:', 'appointmentId' in invoice ? invoice.appointmentId : 'No appointmentId property');
+
     // For InvoiceDto, we need to get the actual invoice ID, not the appointment ID
     let actualInvoiceId: number;
     if ('id' in invoice) {
@@ -213,9 +213,9 @@ export class InvoiceListComponent implements OnInit {
       // This is InvoiceDto, we need to find the actual invoice ID
       // For now, let's use the appointment ID as a fallback, but this might be wrong
       actualInvoiceId = (invoice as InvoiceDto).appointmentId;
-      console.warn('Using appointment ID as invoice ID - this might be incorrect');
+      //console.warn('Using appointment ID as invoice ID - this might be incorrect');
     }
-    
+
     // Convert InvoiceDto to AllInvoices format if needed
     const invoiceForEdit: AllInvoices = {
       id: actualInvoiceId,
@@ -225,20 +225,20 @@ export class InvoiceListComponent implements OnInit {
       isPaid: invoice.isPaid,
       paymentMethod: invoice.paymentMethod
     };
-    
-    console.log('Final invoice ID for editing:', invoiceForEdit.id);
-    
+
+    //console.log('Final invoice ID for editing:', invoiceForEdit.id);
+
     this.editingInvoice = invoiceForEdit;
-    
+
     // For editing, we need to include the appointment in the available appointments list
     // since the appointment might not be in the current filtered list
     this.loadAppointmentsForEdit(invoiceForEdit.id);
-    
+
     // Convert string payment method to enum value for the form
-    const paymentMethodForForm = typeof invoiceForEdit.paymentMethod === 'string' 
+    const paymentMethodForForm = typeof invoiceForEdit.paymentMethod === 'string'
       ? this.convertStringToPaymentMethod(invoiceForEdit.paymentMethod)
       : invoiceForEdit.paymentMethod;
-    
+
     this.invoiceForm.patchValue({
       appointmentId: invoiceForEdit.id,
       totalAmount: invoiceForEdit.totalAmount,
@@ -253,10 +253,10 @@ export class InvoiceListComponent implements OnInit {
     this.appointmentService.getAppointments().subscribe({
       next: (appointments) => {
         // Filter only completed appointments
-        const completedAppointments = appointments.filter(appointment => 
+        const completedAppointments = appointments.filter(appointment =>
           appointment.status === AppointmentStatus.Completed
         );
-        
+
         // For editing, include the current appointment even if it has an invoice
         const availableAppointments = completedAppointments.filter(appointment => {
           // Include the current appointment being edited
@@ -269,11 +269,11 @@ export class InvoiceListComponent implements OnInit {
             return invoiceAppointmentId === appointment.id;
           });
         });
-        
+
         this.appointments = availableAppointments;
       },
       error: (err) => {
-        console.error('Failed to load appointments for edit:', err);
+        //console.error('Failed to load appointments for edit:', err);
         this.error = 'Failed to load appointments: ' + err.message;
         this.clearMessages();
       }
@@ -284,33 +284,33 @@ export class InvoiceListComponent implements OnInit {
     this.showInvoiceModal = false;
     this.editingInvoice = null;
     this.invoiceForm.reset();
-    
+
     // Reload original appointment list for new invoices
     this.loadAppointments();
   }
 
   saveInvoice(): void {
-    console.log('Form valid:', this.invoiceForm.valid);
-    console.log('Form dirty:', this.invoiceForm.dirty);
-    console.log('Form touched:', this.invoiceForm.touched);
-    
+    //console.log('Form valid:', this.invoiceForm.valid);
+    //console.log('Form dirty:', this.invoiceForm.dirty);
+    //console.log('Form touched:', this.invoiceForm.touched);
+
     if (this.invoiceForm.invalid) {
-      console.log('Form is invalid:', this.invoiceForm.errors);
-      console.log('Form control errors:');
+      //console.log('Form is invalid:', this.invoiceForm.errors);
+      //console.log('Form control errors:');
       Object.keys(this.invoiceForm.controls).forEach(key => {
         const control = this.invoiceForm.get(key);
         if (control && control.errors) {
-          console.log(`${key} errors:`, control.errors);
+          //console.log(`${key} errors:`, control.errors);
         }
       });
       return;
     }
 
     const formValue = this.invoiceForm.value;
-    console.log('Raw form values:', formValue);
-    console.log('Payment method type:', typeof formValue.paymentMethod);
-    console.log('Payment method value:', formValue.paymentMethod);
-    
+    //console.log('Raw form values:', formValue);
+    //console.log('Payment method type:', typeof formValue.paymentMethod);
+    //console.log('Payment method value:', formValue.paymentMethod);
+
     if (this.editingInvoice) {
       // Update existing invoice - send enum value (number) to backend
       const updateData = {
@@ -318,17 +318,17 @@ export class InvoiceListComponent implements OnInit {
         paidAmount: +formValue.paidAmount,
         paymentMethod: +formValue.paymentMethod // Convert to number
       };
-      
-      console.log('Updating invoice with data:', updateData);
-      console.log('Update data payment method type:', typeof updateData.paymentMethod);
-      console.log('Update data payment method value:', updateData.paymentMethod);
-      
+
+      //console.log('Updating invoice with data:', updateData);
+      //console.log('Update data payment method type:', typeof updateData.paymentMethod);
+      //console.log('Update data payment method value:', updateData.paymentMethod);
+
       this.invoiceService.updateInvoice(this.editingInvoice.id, updateData).subscribe({
         next: (response) => {
-          console.log('Update success response:', response);
+          //console.log('Update success response:', response);
           this.success = 'Invoice updated successfully';
           this.closeInvoiceModal();
-          
+
           // Reload data based on current view
           if (this.activeView === 'details' && this.selectedInvoice) {
             // Reload the current invoice details
@@ -337,19 +337,19 @@ export class InvoiceListComponent implements OnInit {
                 this.selectedInvoice = updatedInvoice;
               },
               error: (err) => {
-                console.error('Failed to reload invoice details:', err);
+                //console.error('Failed to reload invoice details:', err);
               }
             });
           }
-          
+
           this.loadInvoices();
           this.clearMessages();
         },
         error: (err) => {
-          console.error('Update error details:', err);
-          console.error('Error status:', err.status);
-          console.error('Error message:', err.message);
-          console.error('Error body:', err.error);
+          //console.error('Update error details:', err);
+          //console.error('Error status:', err.status);
+          //console.error('Error message:', err.message);
+          //console.error('Error body:', err.error);
           this.error = 'Failed to update invoice: ' + err.message;
         }
       });
@@ -364,19 +364,19 @@ export class InvoiceListComponent implements OnInit {
           paymentMethod: +formValue.paymentMethod // Convert to number
         }
       };
-      
-      console.log('Creating invoice with data:', createData);
-      console.log('Create data payment method type:', typeof createData.invoiceDTO.paymentMethod);
-      console.log('Create data payment method value:', createData.invoiceDTO.paymentMethod);
-      console.log('Raw payment method from form:', formValue.paymentMethod);
-      console.log('Raw form values:', formValue);
-      console.log('Form value types:', {
-        appointmentId: typeof formValue.appointmentId,
-        totalAmount: typeof formValue.totalAmount,
-        paidAmount: typeof formValue.paidAmount,
-        paymentMethod: typeof formValue.paymentMethod
-      });
-      console.log('createData', createData);
+
+      //console.log('Creating invoice with data:', createData);
+      //console.log('Create data payment method type:', typeof createData.invoiceDTO.paymentMethod);
+      //console.log('Create data payment method value:', createData.invoiceDTO.paymentMethod);
+      //console.log('Raw payment method from form:', formValue.paymentMethod);
+      //console.log('Raw form values:', formValue);
+      //console.log('Form value types:', {
+      //   appointmentId: typeof formValue.appointmentId,
+      //   totalAmount: typeof formValue.totalAmount,
+      //   paidAmount: typeof formValue.paidAmount,
+      //   paymentMethod: typeof formValue.paymentMethod
+      // });
+      //console.log('createData', createData);
       const invoice: CreateInvoice = {
         appointmentId: +formValue.appointmentId,
         totalAmount: +formValue.totalAmount,
@@ -386,17 +386,17 @@ export class InvoiceListComponent implements OnInit {
       }
       this.invoiceService.addInvoice(invoice).subscribe({
         next: (response) => {
-          console.log('Create success response:', response);
+          //console.log('Create success response:', response);
           this.success = 'Invoice created successfully';
           this.closeInvoiceModal();
           this.loadInvoices();
           this.clearMessages();
         },
         error: (err) => {
-          console.error('Create error details:', err);
-          console.error('Error status:', err.status);
-          console.error('Error message:', err.message);
-          console.error('Error body:', err.error);
+          //console.error('Create error details:', err);
+          //console.error('Error status:', err.status);
+          //console.error('Error message:', err.message);
+          //console.error('Error body:', err.error);
           this.error = 'Failed to create invoice: ' + err.message;
         }
       });
@@ -431,10 +431,10 @@ export class InvoiceListComponent implements OnInit {
       };
       return stringMap[paymentMethod] || paymentMethod;
     }
-    
+
     // Handle numeric enum values
     const methodValue = typeof paymentMethod === 'string' ? parseInt(paymentMethod) : paymentMethod;
-    
+
     const texts: { [key in PaymentMethod]: string } = {
       [PaymentMethod.Cash]: 'Cash',
       [PaymentMethod.CreditCard]: 'Credit Card',
@@ -442,14 +442,14 @@ export class InvoiceListComponent implements OnInit {
       [PaymentMethod.Insurance]: 'Insurance',
       [PaymentMethod.Other]: 'Other'
     };
-    
+
     // Check if the value exists in our enum
     if (methodValue in texts) {
       return texts[methodValue as PaymentMethod];
     }
-    
+
     // Fallback for unknown values
-    console.warn('Unknown payment method value:', paymentMethod, 'Type:', typeof paymentMethod);
+    //console.warn('Unknown payment method value:', paymentMethod, 'Type:', typeof paymentMethod);
     return 'Unknown';
   }
 
@@ -466,10 +466,10 @@ export class InvoiceListComponent implements OnInit {
       };
       return stringMap[paymentMethod] || 'badge-secondary';
     }
-    
+
     // Handle numeric enum values
     const methodValue = typeof paymentMethod === 'string' ? parseInt(paymentMethod) : paymentMethod;
-    
+
     const classes: { [key in PaymentMethod]: string } = {
       [PaymentMethod.Cash]: 'badge-success',
       [PaymentMethod.CreditCard]: 'badge-primary',
@@ -477,12 +477,12 @@ export class InvoiceListComponent implements OnInit {
       [PaymentMethod.Insurance]: 'badge-warning',
       [PaymentMethod.Other]: 'badge-secondary'
     };
-    
+
     // Check if the value exists in our enum
     if (methodValue in classes) {
       return classes[methodValue as PaymentMethod];
     }
-    
+
     // Fallback for unknown values
     return 'badge-secondary';
   }
@@ -513,9 +513,9 @@ export class InvoiceListComponent implements OnInit {
     } else if (typeof paymentMethod === 'number' && paymentMethod in PaymentMethod) {
       return paymentMethod as PaymentMethod;
     }
-    
+
     // Default to Cash if invalid
-    console.warn('Invalid payment method value, defaulting to Cash:', paymentMethod);
+    //console.warn('Invalid payment method value, defaulting to Cash:', paymentMethod);
     return PaymentMethod.Cash;
   }
 
@@ -574,7 +574,7 @@ export class InvoiceListComponent implements OnInit {
     if (selectedAppointment) {
       // You could auto-populate some fields based on the appointment
       // For example, you might want to set a default amount based on the department
-      console.log('Selected appointment:', selectedAppointment);
+      //console.log('Selected appointment:', selectedAppointment);
     }
   }
 

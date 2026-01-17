@@ -70,10 +70,10 @@ export class InvoiceService {
    * Create new invoice
    */
   addInvoice(invoice: CreateInvoice): Observable<any> {
-    console.log('Sending create invoice request with data:', invoice);
-    console.log('Request data type:', typeof invoice);
+    // console.log('Sending create invoice request with data:', invoice);
+    // console.log('Request data type:', typeof invoice);
     // console.log('Payment method in request:', invoice.invoiceDTO?.paymentMethod, 'Type:', typeof invoice.invoiceDTO?.paymentMethod);
-    
+
     return this.http.post(`${this.InvoiceEndPoint}`, invoice)
       .pipe(
         catchError(this.handleError)
@@ -84,10 +84,10 @@ export class InvoiceService {
    * Update existing invoice
    */
   updateInvoice(id: number, invoice: any): Observable<any> {
-    console.log('Sending update invoice request for ID:', id);
-    console.log('Update data:', invoice);
-    console.log('Update data payment method:', invoice.paymentMethod, 'Type:', typeof invoice.paymentMethod);
-    
+    // console.log('Sending update invoice request for ID:', id);
+    // console.log('Update data:', invoice);
+    // console.log('Update data payment method:', invoice.paymentMethod, 'Type:', typeof invoice.paymentMethod);
+
     return this.http.put(`${this.InvoiceEndPoint}/${id}`, invoice)
       .pipe(
         catchError(this.handleError)
@@ -211,16 +211,16 @@ export class InvoiceService {
         errorMessage = error.error.message;
       }
       // Log the full error response for debugging
-      console.error('Full error response:', error);
-      console.error('Error status:', error.status);
-      console.error('Error statusText:', error.statusText);
-      console.error('Error url:', error.url);
-      console.error('Error error:', error.error);
-      console.error('Error headers:', error.headers);
-      
+      // console.error('Full error response:', error);
+      // console.error('Error status:', error.status);
+      // console.error('Error statusText:', error.statusText);
+      // console.error('Error url:', error.url);
+      // console.error('Error error:', error.error);
+      // console.error('Error headers:', error.headers);
+
       // Extract validation errors if they exist
       if (error.error && error.error.errors) {
-        console.error('Validation errors:', error.error.errors);
+      ///  console.error('Validation errors:', error.error.errors);
         const validationErrors = error.error.errors;
         const errorDetails = Object.keys(validationErrors).map(key => {
           return `${key}: ${validationErrors[key].join(', ')}`;
@@ -228,7 +228,7 @@ export class InvoiceService {
         errorMessage = `Validation errors:\n${errorDetails}`;
       }
     }
-    console.error('Invoice Service Error:', errorMessage);
+    //console.error('Invoice Service Error:', errorMessage);
     return throwError(() => new Error(errorMessage));
   }
 }

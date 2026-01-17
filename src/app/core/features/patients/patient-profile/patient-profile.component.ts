@@ -69,7 +69,7 @@ export class PatientProfileComponent implements OnInit {
         this.loadAdditionalData();
       },
       error: (err) => {
-        console.error('Error loading patient data:', err);
+        // console.error('Error loading patient data:', err);
         this.error = 'Failed to load patient data';
         this.loading = false;
       }
@@ -92,7 +92,7 @@ export class PatientProfileComponent implements OnInit {
         this.labTests = data.labTests || [];
         this.appointments = data.appointments || [];
 
-        console.log(data,"AllData");
+        // console.log(data,"AllData");
         // Update summary stats
         this.totalMedicalHistories = this.medicalHistories.length;
         this.totalMedicalRecords = this.medicalRecords.length;
@@ -103,9 +103,9 @@ export class PatientProfileComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-                console.log(err,"AllData");
+                // console.log(err,"AllData");
 
-        console.error('Error loading additional patient data:', err);
+        // console.error('Error loading additional patient data:', err);
         // Don't show error for additional data, just log it
         this.loading = false;
       }
@@ -117,11 +117,11 @@ export class PatientProfileComponent implements OnInit {
     const birthDate = new Date(dateOfBirth);
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
-    
+
     return age;
   }
 

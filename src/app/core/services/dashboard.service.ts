@@ -15,6 +15,8 @@ import { PositionService } from './employees/position.service';
 import { DepartmentService } from './clinics/department.service';
 import { AppointmentStatus } from '../Interfaces/all';
 import { MedicalrecordService } from './patients/medicalrecord.service';
+import { TransactionSearchDto, TransactionSortBy, SortDirection } from '../Models/transactions/transactions.model';
+import { PagedResult } from '../Models/Helpers/helperModels.model';
 
 export interface DashboardStats {
   totalPatients: number;
@@ -82,14 +84,23 @@ export class DashboardService {
     private departmentService: DepartmentService
   ) {}
 
-  // Get comprehensive dashboard statistics for all users
+  // ------------------ DASHBOARD STATS ------------------
   getDashboardStats(): Observable<DashboardStats> {
+    const transactionSearchDto: TransactionSearchDto = {
+      clinicId: 1,
+      pageNumber: 1,
+      pageSize: 100,
+      sortBy: TransactionSortBy.Date,
+      sortDirection: SortDirection.Desc
+    };
+
     return forkJoin({
       patients: this.patientService.getAllPatients().pipe(catchError(() => of([]))),
       doctors: this.accountService.getAllDoctors().pipe(catchError(() => of([]))),
       employees: this.employeeService.getAllEmployees().pipe(catchError(() => of([]))),
       appointments: this.appointmentService.getAppointments().pipe(catchError(() => of([]))),
-      transactions: this.transactionService.getAllTransactions().pipe(catchError(() => of([]))),
+      transactions: this.transactionService.getAllTransactions(transactionSearchDto)
+        .pipe(catchError(() => of({ items: [], totalCount: 0 }))),
       invoices: this.invoiceService.getAllInvoices().pipe(catchError(() => of([]))),
       medicalRecords: this.medicalRecordService.getAllMedicalRecords().pipe(catchError(() => of([]))),
       surgeries: this.surgeryService.getAllSurgeries().pipe(catchError(() => of([]))),
@@ -101,23 +112,15 @@ export class DashboardService {
       map(data => {
         const appointments = data.appointments as any[];
         const invoices = data.invoices as any[];
-        const transactions = data.transactions as any[];
-
-        console.log('Dashboard Data:', {
-          patients: data.patients.length,
-          doctors: data.doctors.length,
-          employees: data.employees.length,
-          appointments: appointments.length,
-          transactions: transactions.length,
-          invoices: invoices.length
-        });
+        const transactionsPaged = data.transactions as PagedResult<any>;
+        const transactions = transactionsPaged.items;
 
         return {
           totalPatients: data.patients.length,
           totalDoctors: data.doctors.length,
           totalEmployees: data.employees.length,
           totalAppointments: appointments.length,
-          totalTransactions: transactions.length,
+          totalTransactions: transactionsPaged.totalCount,
           totalInvoices: invoices.length,
           totalRevenue: this.calculateTotalRevenue(transactions, invoices),
           totalMedicalRecords: data.medicalRecords.length,
@@ -142,19 +145,11 @@ export class DashboardService {
     );
   }
 
-  // Get role-based statistics for specific user types
+  // ------------------ ROLE BASED STATS ------------------
   getRoleBasedStats(): Observable<RoleBasedStats> {
-    const userData = this.authService.getUserFullData();
     const isDoctor = this.authService.isDoctor();
     const isEmployee = this.authService.isEmployee();
     const highestRole = this.authService.getHighestRole();
-
-    console.log('Role Based Stats - User Data:', {
-      userData,
-      isDoctor,
-      isEmployee,
-      highestRole
-    });
 
     const baseStats: RoleBasedStats = {
       role: highestRole || 'USER',
@@ -162,31 +157,22 @@ export class DashboardService {
       isEmployee
     };
 
-    if (isDoctor) {
-      return this.getDoctorStats(baseStats);
-    } else if (isEmployee) {
-      return this.getEmployeeStats(baseStats);
-    } else {
-      return of(baseStats);
-    }
+    if (isDoctor) return this.getDoctorStats(baseStats);
+    if (isEmployee) return this.getEmployeeStats(baseStats);
+    return of(baseStats);
   }
 
-  // Get doctor-specific statistics
   private getDoctorStats(baseStats: RoleBasedStats): Observable<RoleBasedStats> {
     const userId = this.authService.getUserId();
-    if (!userId) {
-      return of(baseStats);
-    }
+    if (!userId) return of(baseStats);
 
     return this.accountService.getDoctoridByUserid(userId).pipe(
       switchMap(data => {
         const doctorId = data.doctorid;
-        if (!doctorId) {
-          return of(baseStats);
-        }
+        if (!doctorId) return of(baseStats);
 
         baseStats.doctorId = doctorId;
-        
+
         return forkJoin({
           patients: this.patientService.getPatientsByDoctorId(doctorId).pipe(catchError(() => of([]))),
           appointments: this.appointmentService.getDoctorAppointments(doctorId).pipe(catchError(() => of([]))),
@@ -207,9 +193,7 @@ export class DashboardService {
     );
   }
 
-  // Get employee-specific statistics
   private getEmployeeStats(baseStats: RoleBasedStats): Observable<RoleBasedStats> {
-    // For now, return basic stats. You can implement employee-specific logic later
     return of({
       ...baseStats,
       employeeStats: {
@@ -220,7 +204,6 @@ export class DashboardService {
     });
   }
 
-  // Get dashboard data for specific role
   getRoleDashboardData(): Observable<{ general: DashboardStats; role: RoleBasedStats }> {
     return forkJoin({
       general: this.getDashboardStats(),
@@ -228,32 +211,39 @@ export class DashboardService {
     });
   }
 
-  // Get quick statistics for specific entity
+  // ------------------ QUICK STATS ------------------
   getQuickStats(entity: string): Observable<number> {
     switch (entity) {
       case 'patients':
         return this.patientService.getAllPatients().pipe(
-          map(patients => patients.length),
+          map(p => p.length),
           catchError(() => of(0))
         );
       case 'doctors':
         return this.accountService.getAllDoctors().pipe(
-          map(doctors => doctors.length),
+          map(d => d.length),
           catchError(() => of(0))
         );
       case 'appointments':
         return this.appointmentService.getAppointments().pipe(
-          map(appointments => appointments.length),
+          map(a => a.length),
           catchError(() => of(0))
         );
       case 'invoices':
         return this.invoiceService.getAllInvoices().pipe(
-          map(invoices => invoices.length),
+          map(i => i.length),
           catchError(() => of(0))
         );
       case 'transactions':
-        return this.transactionService.getAllTransactions().pipe(
-          map(transactions => transactions.length),
+        const searchDto: TransactionSearchDto = {
+          clinicId: 1,
+          pageNumber: 1,
+          pageSize: 5,
+          sortBy: TransactionSortBy.Date,
+          sortDirection: SortDirection.Desc
+        };
+        return this.transactionService.getAllTransactions(searchDto).pipe(
+          map(result => result.totalCount),
           catchError(() => of(0))
         );
       default:
@@ -261,32 +251,38 @@ export class DashboardService {
     }
   }
 
-  // Get recent data for specific entity
   getRecentData(entity: string, limit: number = 5): Observable<any[]> {
     switch (entity) {
       case 'patients':
         return this.patientService.getAllPatients().pipe(
-          map(patients => this.getRecentItems(patients, limit)),
+          map(p => this.getRecentItems(p, limit)),
           catchError(() => of([]))
         );
       case 'doctors':
         return this.accountService.getAllDoctors().pipe(
-          map(doctors => this.getRecentItems(doctors, limit)),
+          map(d => this.getRecentItems(d, limit)),
           catchError(() => of([]))
         );
       case 'appointments':
         return this.appointmentService.getAppointments().pipe(
-          map(appointments => this.getRecentItems(appointments, limit)),
+          map(a => this.getRecentItems(a, limit)),
           catchError(() => of([]))
         );
       case 'invoices':
         return this.invoiceService.getAllInvoices().pipe(
-          map(invoices => this.getRecentItems(invoices, limit)),
+          map(i => this.getRecentItems(i, limit)),
           catchError(() => of([]))
         );
       case 'transactions':
-        return this.transactionService.getAllTransactions().pipe(
-          map(transactions => this.getRecentItems(transactions, limit)),
+        const searchDto: TransactionSearchDto = {
+          clinicId: 1,
+          pageNumber: 1,
+          pageSize: limit,
+          sortBy: TransactionSortBy.Date,
+          sortDirection: SortDirection.Desc
+        };
+        return this.transactionService.getAllTransactions(searchDto).pipe(
+          map(result => this.getRecentItems(result.items, limit)),
           catchError(() => of([]))
         );
       default:
@@ -294,21 +290,18 @@ export class DashboardService {
     }
   }
 
-  // Helper methods
+  // ------------------ HELPERS ------------------
   private calculateTotalRevenue(transactions: any[], invoices: any[]): number {
     const transactionRevenue = transactions.reduce((sum, t) => sum + (t.amount || 0), 0);
-    const invoiceRevenue = 0;
-    //invoices.reduce((sum, i) => sum + (i.paidAmount || 0), 0);
-    return transactionRevenue + invoiceRevenue;
+    return transactionRevenue; // يمكن إضافة إيرادات الفواتير لو حابب
   }
 
   private countAppointmentsByStatus(appointments: any[], status: AppointmentStatus): number {
-    console.log('Counting appointments by status:', status, 'Appointments:', appointments);
-    return appointments.filter(apt => apt.status === status).length;
+    return appointments.filter(a => a.status === status).length;
   }
 
   private countInvoicesByStatus(invoices: any[], isPaid: boolean): number {
-    return invoices.filter(inv => inv.isPaid === isPaid).length;
+    return invoices.filter(i => i.isPaid === isPaid).length;
   }
 
   private getRecentItems(items: any[], limit: number): any[] {
@@ -316,113 +309,4 @@ export class DashboardService {
       .sort((a, b) => new Date(b.createdAt || b.createdDate || 0).getTime() - new Date(a.createdAt || a.createdDate || 0).getTime())
       .slice(0, limit);
   }
-
-  // Get financial summary
-  getFinancialSummary(): Observable<{
-    totalRevenue: number;
-    totalExpenses: number;
-    netProfit: number;
-    monthlyRevenue: number;
-    monthlyExpenses: number;
-  }> {
-    return forkJoin({
-      transactions: this.transactionService.getAllTransactions().pipe(catchError(() => of([]))),
-      invoices: this.invoiceService.getAllInvoices().pipe(catchError(() => of([])))
-    }).pipe(
-      map(data => {
-        const transactions = data.transactions as any[];
-        const invoices = data.invoices as any[];
-
-        const totalRevenue = transactions
-          .filter(t => t.type === 1) // Income
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const totalExpenses = transactions
-          .filter(t => t.type === 2) // Expense
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const invoiceRevenue = invoices
-          .filter(i => i.isPaid)
-          .reduce((sum, i) => sum + (i.paidAmount || 0), 0);
-
-        const totalTotalRevenue = totalRevenue + invoiceRevenue;
-        const netProfit = totalTotalRevenue - totalExpenses;
-
-        // Calculate monthly figures (simplified)
-        const currentMonth = new Date().getMonth();
-        const monthlyRevenue = transactions
-          .filter(t => t.type === 1 && new Date(t.date).getMonth() === currentMonth)
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        const monthlyExpenses = transactions
-          .filter(t => t.type === 2 && new Date(t.date).getMonth() === currentMonth)
-          .reduce((sum, t) => sum + (t.amount || 0), 0);
-
-        return {
-          totalRevenue: totalTotalRevenue,
-          totalExpenses,
-          netProfit,
-          monthlyRevenue,
-          monthlyExpenses
-        };
-      })
-    );
-  }
-
-  // Get appointment statistics
-  getAppointmentStats(): Observable<{
-    total: number;
-    pending: number;
-    completed: number;
-    cancelled: number;
-    today: number;
-    thisWeek: number;
-    thisMonth: number;
-  }> {
-    return this.appointmentService.getAppointments().pipe(
-      map(appointments => {
-        const total = appointments.length;
-        console.log('Appointment Stats - All appointments:', appointments);
-        
-        const pending = appointments.filter(apt => apt.status === AppointmentStatus.Scheduled).length;
-        const completed = appointments.filter(apt => apt.status === AppointmentStatus.Completed).length;
-        const cancelled = appointments.filter(apt => apt.status === AppointmentStatus.Cancelled).length;
-
-        const today = new Date();
-        const thisWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-        const todayCount = appointments.filter(apt => 
-          new Date(apt.appointmentDate).toDateString() === today.toDateString()
-        ).length;
-
-        const weekCount = appointments.filter(apt => 
-          new Date(apt.appointmentDate) >= thisWeek
-        ).length;
-
-        const monthCount = appointments.filter(apt => 
-          new Date(apt.appointmentDate) >= thisMonth
-        ).length;
-
-        return {
-          total,
-          pending,
-          completed,
-          cancelled,
-          today: todayCount,
-          thisWeek: weekCount,
-          thisMonth: monthCount
-        };
-      }),
-      catchError(() => of({
-        total: 0,
-        pending: 0,
-        completed: 0,
-        cancelled: 0,
-        today: 0,
-        thisWeek: 0,
-        thisMonth: 0
-      }))
-    );
-  }
-} 
+}

@@ -58,17 +58,15 @@
   </div>
 
   <!-- Navigation Tabs -->
-  <div class="nav-tabs-container">
+  <!-- <div class="nav-tabs-container">
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <button
-          class="nav-link active"
-          (click)="setActiveTab('transactions')">
+        <button class="nav-link active" (click)="setActiveTab('transactions')">
           <i class="fas fa-exchange-alt"></i> Transactions
         </button>
       </li>
     </ul>
-  </div>
+  </div> -->
 
   <!-- Tab Content -->
   <div class="tab-content">
@@ -154,10 +152,20 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Date</th>
+                <th (click)="changeSort(TransactionSortBy.Date)" class="sortable">
+                  Date
+                  <i *ngIf="sortBy === TransactionSortBy.Date" class="fas"
+                    [class.fa-sort-up]="sortDirection === SortDirection.Asc"
+                    [class.fa-sort-down]="sortDirection === SortDirection.Desc"></i>
+                </th>
                 <th>Description</th>
                 <th>Type</th>
-                <th>Amount</th>
+                <th (click)="changeSort(TransactionSortBy.Amount)" class="sortable">
+                  Amount
+                  <i *ngIf="sortBy === TransactionSortBy.Amount" class="fas"
+                    [class.fa-sort-up]="sortDirection === SortDirection.Asc"
+                    [class.fa-sort-down]="sortDirection === SortDirection.Desc"></i>
+                </th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -171,7 +179,8 @@
                     {{ getTransactionTypeText(transaction.type) }}
                   </span>
                 </td>
-                <td class="amount" [class.income]="transaction.type === TransactionType.Income" [class.expense]="transaction.type === TransactionType.Expense">
+                <td class="amount" [class.income]="transaction.type === TransactionType.Income"
+                  [class.expense]="transaction.type === TransactionType.Expense">
                   ${{ transaction.amount.toFixed(2) }}
                 </td>
                 <td>
@@ -187,6 +196,31 @@
               </tr>
             </tbody>
           </table>
+
+
+          <!-- __________________________Pagination__________________________________ -->
+          <div class="pagination-container" *ngIf="totalPages > 1">
+            <nav>
+              <ul class="pagination justify-content-center">
+
+                <li class="page-item" [class.disabled]="pageNo === 1">
+                  <button class="page-link" (click)="prevPage()">Previous</button>
+                </li>
+
+                <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                  [class.active]="pageNo === i + 1">
+                  <button class="page-link" (click)="goToPage(i + 1)">
+                    {{ i + 1 }}
+                  </button>
+                </li>
+
+                <li class="page-item" [class.disabled]="pageNo === totalPages">
+                  <button class="page-link" (click)="nextPage()">Next</button>
+                </li>
+
+              </ul>
+            </nav>
+          </div>
         </div>
       </div>
     </div>
@@ -211,13 +245,8 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label">Amount *</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="amount"
-                  [class.is-invalid]="isFieldInvalid(transactionForm, 'amount')"
-                  min="0.01"
-                  step="0.01"
+                <input type="number" class="form-control" formControlName="amount"
+                  [class.is-invalid]="isFieldInvalid(transactionForm, 'amount')" min="0.01" step="0.01"
                   placeholder="0.00">
                 <div *ngIf="isFieldInvalid(transactionForm, 'amount')" class="invalid-feedback">
                   {{ getFieldError(transactionForm, 'amount') }}
@@ -228,9 +257,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label">Type *</label>
-                <select
-                  class="form-select"
-                  formControlName="type"
+                <select class="form-select" formControlName="type"
                   [class.is-invalid]="isFieldInvalid(transactionForm, 'type')">
                   <option [value]="TransactionType.Income">Income</option>
                   <option [value]="TransactionType.Expense">Expense</option>
@@ -248,10 +275,7 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label">Date *</label>
-                <input
-                  type="date"
-                  class="form-control"
-                  formControlName="date"
+                <input type="date" class="form-control" formControlName="date"
                   [class.is-invalid]="isFieldInvalid(transactionForm, 'date')">
                 <div *ngIf="isFieldInvalid(transactionForm, 'date')" class="invalid-feedback">
                   {{ getFieldError(transactionForm, 'date') }}
@@ -262,10 +286,7 @@
 
           <div class="form-group">
             <label class="form-label">Description</label>
-            <textarea
-              class="form-control"
-              formControlName="description"
-              rows="3"
+            <textarea class="form-control" formControlName="description" rows="3"
               placeholder="Enter transaction description (optional)"></textarea>
           </div>
         </div>
@@ -274,10 +295,7 @@
           <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">
             <i class="fas fa-times"></i> Cancel
           </button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="transactionForm.invalid">
+          <button type="submit" class="btn btn-primary" [disabled]="transactionForm.invalid">
             <i class="fas fa-save"></i>
             {{ editingTransaction ? 'Update' : 'Create' }}
           </button>

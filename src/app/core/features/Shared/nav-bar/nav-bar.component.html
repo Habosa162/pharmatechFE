@@ -75,6 +75,8 @@
 
             <li *ngIf="canManageInventory()"><a class="dropdown-item" routerLink="/inventory">Inventory</a></li>
             <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/transactions">Financial Reports</a></li>
+            <li *ngIf="canAccessAdmin()"><a class="dropdown-item" routerLink="/departments">العيادات</a></li>
+
           </ul>
         </li>
 

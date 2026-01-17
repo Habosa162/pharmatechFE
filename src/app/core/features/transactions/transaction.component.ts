@@ -6,7 +6,9 @@ import {
   Transaction, 
   TransactionType,
   CreateTransactionDTO,
-  UpdateTransactionDTO
+  TransactionSearchDto,
+  TransactionSortBy,
+  SortDirection
 } from '../../Models/transactions/transactions.model';
 import { AuthService } from '../../services/auth.service';
 
@@ -20,7 +22,15 @@ export class TransactionComponent implements OnInit {
   // Data properties
   transactions: Transaction[] = [];
   filteredTransactions: Transaction[] = [];
-  
+  totalCount = 0; 
+  pageSize = 10; 
+  pageNo = 1;   
+  totalPages = 0;
+
+  // Sorting
+  sortBy: TransactionSortBy = TransactionSortBy.Date;
+  sortDirection: SortDirection = SortDirection.Desc;
+
   // UI state
   loading = false;
   error: string | null = null;
@@ -42,16 +52,20 @@ export class TransactionComponent implements OnInit {
 
   // Enums for template
   TransactionType = TransactionType;
+  TransactionSortBy = TransactionSortBy;
+  SortDirection = SortDirection;
+
+  userid: string | null = null;
 
   constructor(
     private transactionService: TransactionService,
     private formBuilder: FormBuilder,
-    private authservice:AuthService
+    private authservice: AuthService
   ) {
     this.transactionForm = this.formBuilder.group({
       amount: [0, [Validators.required, Validators.min(0.01)]],
       description: [''],
-      type: [TransactionType.Income, [Validators.required]], // This will now be numeric
+      type: [TransactionType.Income, [Validators.required]],
       date: [new Date().toISOString().split('T')[0], [Validators.required]]
     });
   }
@@ -59,19 +73,34 @@ export class TransactionComponent implements OnInit {
   ngOnInit(): void {
     this.loadAllData();
   }
-userid:string|null=null;
+
   loadAllData(): void {
-    this.userid=this.authservice.getUserId();
+    this.userid = this.authservice.getUserId();
     this.loadTransactions();
   }
 
   loadTransactions(): void {
     this.loading = true;
-    this.transactionService.getAllTransactions().subscribe({
-      next: (transactions) => {
-        this.transactions = transactions;
-        console.log(this.transactions,'all transac');
-        this.applyFilters();
+    const searchDto: TransactionSearchDto = {
+      clinicId: this.authservice.getUserData().ClinicId ? this.authservice.getUserData().ClinicId : 1,
+      pageNumber: this.pageNo,
+      pageSize: this.pageSize,
+      fromDate: this.dateFrom ? new Date(this.dateFrom) : undefined,
+      toDate: this.dateTo ? new Date(this.dateTo) : undefined,
+      transcationType: this.selectedType !== 'all' ? +this.selectedType : undefined,
+      sortBy: this.sortBy,
+      sortDirection: this.sortDirection
+    };
+    console.log("___________________________________________")
+    console.log(searchDto) ; 
+    console.log("___________________________________________")
+
+    this.transactionService.getAllTransactions(searchDto).subscribe({
+      next: (result) => {
+        this.transactions = result.items;
+        this.filteredTransactions = result.items; // لأن الفلاتر كلها Backend
+        this.totalCount = result.totalCount;
+        this.totalPages = result.totalPages;
         this.loading = false;
       },
       error: (error) => {
@@ -82,43 +111,53 @@ userid:string|null=null;
     });
   }
 
-  // Filter methods
-  applyFilters(): void {
-    let filtered = [...this.transactions];
-
-    // Filter by type
-    if (this.selectedType !== 'all') {
-      filtered = filtered.filter(t => t.type === +this.selectedType);
+  // Pagination
+  nextPage(): void {
+    if (this.pageNo < this.totalPages) {
+      this.pageNo++;
+      this.loadTransactions();
     }
-
-    // Filter by date range
-    if (this.dateFrom) {
-      filtered = filtered.filter(t => new Date(t.date) >= new Date(this.dateFrom));
-    }
-    if (this.dateTo) {
-      filtered = filtered.filter(t => new Date(t.date) <= new Date(this.dateTo));
-    }
-
-    this.filteredTransactions = filtered.sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
   }
 
+  prevPage(): void {
+    if (this.pageNo > 1) {
+      this.pageNo--;
+      this.loadTransactions();
+    }
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.pageNo = page;
+      this.loadTransactions();
+    }
+  }
+
+  // Filter methods
   onFilterChange(): void {
-    this.applyFilters();
+    this.pageNo = 1;
+    this.loadTransactions();
   }
 
   clearFilters(): void {
     this.selectedType = 'all';
     this.dateFrom = '';
     this.dateTo = '';
-    this.applyFilters();
+    this.pageNo = 1;
+    this.loadTransactions();
   }
 
-  // Tab management
-  setActiveTab(tab: 'transactions' | 'categories'): void {
-    // This method is no longer needed as categories are removed
-  }
+changeSort(field: TransactionSortBy): void {
+  this.sortDirection =
+    this.sortBy === field
+      ? this.sortDirection === SortDirection.Asc
+        ? SortDirection.Desc
+        : SortDirection.Asc
+      : SortDirection.Desc;
+
+  this.sortBy = field;
+  this.loadTransactions();
+}
 
   // Transaction management
   showAddTransactionModal(): void {
@@ -148,66 +187,56 @@ userid:string|null=null;
   }
 
   saveTransaction(): void {
-    if (this.transactionForm.valid) {
-      if (this.editingTransaction) {
-        // Update existing transaction
-        const updateData: CreateTransactionDTO = {
-          amount: this.transactionForm.value.amount,
-          date: new Date(this.transactionForm.value.date),
-          description: this.transactionForm.value.description,
-          type: Number(this.transactionForm.value.type), // Ensure it's numeric
-          userId: this.userid! // You might want to get this from auth service
-        };
+    if (!this.transactionForm.valid) return;
 
-        this.transactionService.updateTransaction(this.editingTransaction.id!, updateData).subscribe({
-          next: () => {
-            this.success = 'Transaction updated successfully!';
-            this.closeTransactionModal();
-            this.loadTransactions();
-          },
-          error: (error) => {
-            console.error('Error updating transaction:', error);
-            this.error = 'Failed to update transaction';
-          }
-        });
-      } else {
-        // Create new transaction
-        const createData: CreateTransactionDTO = {
-          amount: this.transactionForm.value.amount,
-          date: new Date(this.transactionForm.value.date),
-          description: this.transactionForm.value.description,
-          type: Number(this.transactionForm.value.type), // Ensure it's numeric
-          userId: this.userid! // You might want to get this from auth service
-        };
+    const dto: CreateTransactionDTO = {
+      amount: this.transactionForm.value.amount,
+      date: new Date(this.transactionForm.value.date),
+      description: this.transactionForm.value.description,
+      type: Number(this.transactionForm.value.type),
+      userId: this.userid!
+    };
 
-        this.transactionService.createTransaction(createData).subscribe({
-          next: () => {
-            this.success = 'Transaction created successfully!';
-            this.closeTransactionModal();
-            this.loadTransactions();
-          },
-          error: (error) => {
-            console.error('Error creating transaction:', error);
-            this.error = 'Failed to create transaction';
-          }
-        });
-      }
+    if (this.editingTransaction) {
+      this.transactionService.updateTransaction(this.editingTransaction.id!, dto).subscribe({
+        next: () => {
+          this.success = 'Transaction updated successfully!';
+          this.closeTransactionModal();
+          this.loadTransactions();
+        },
+        error: (error) => {
+          console.error('Error updating transaction:', error);
+          this.error = 'Failed to update transaction';
+        }
+      });
+    } else {
+      this.transactionService.createTransaction(dto).subscribe({
+        next: () => {
+          this.success = 'Transaction created successfully!';
+          this.closeTransactionModal();
+          this.loadTransactions();
+        },
+        error: (error) => {
+          console.error('Error creating transaction:', error);
+          this.error = 'Failed to create transaction';
+        }
+      });
     }
   }
 
   deleteTransaction(transactionId: number): void {
-    if (confirm('Are you sure you want to delete this transaction?')) {
-      this.transactionService.deleteTransaction(transactionId).subscribe({
-        next: () => {
-          this.success = 'Transaction deleted successfully!';
-          this.loadTransactions();
-        },
-        error: (error) => {
-          console.error('Error deleting transaction:', error);
-          this.error = 'Failed to delete transaction';
-        }
-      });
-    }
+    if (!confirm('Are you sure you want to delete this transaction?')) return;
+
+    this.transactionService.deleteTransaction(transactionId).subscribe({
+      next: () => {
+        this.success = 'Transaction deleted successfully!';
+        this.loadTransactions();
+      },
+      error: (error) => {
+        console.error('Error deleting transaction:', error);
+        this.error = 'Failed to delete transaction';
+      }
+    });
   }
 
   // Utility methods
@@ -296,4 +325,4 @@ userid:string|null=null;
     }
     return '';
   }
-} 
+}

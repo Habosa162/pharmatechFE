@@ -14,7 +14,7 @@ export const headerInterceptor: HttpInterceptorFn = (req, next) => {
     const authService = inject(AuthService);
 
     const token = authService.getToken();
-console.log("Token in interceptor:", token);
+  //console.log("Token in interceptor:", token);
     let headers: Record<string, string> = {
       Authorization: `Bearer ${token}`,
       'X-Requested-With': 'XMLHttpRequest'
@@ -31,7 +31,7 @@ console.log("Token in interceptor:", token);
 
     return next(cloned);
   } catch (error) {
-    console.error('Interceptor error:', error);
+    //console.error('Interceptor error:', error);
     // toastr.error('An error occurred while processing the request.', 'Error');
     return next(req);
   }

@@ -42,15 +42,15 @@ export class RoleService {
   getHighestRole(): string | null {
     const userData = this.getUserFullData();
     if (!userData || !userData.roles) return null;
-    
+
     const roleHierarchy = ['MASTER', 'OWNER', 'ADMIN', 'ACCOUNTANT', 'USER'];
-    
+
     for (const role of roleHierarchy) {
       if (userData.roles.includes(role)) {
         return role;
       }
     }
-    
+
     return null;
   }
 
@@ -111,7 +111,7 @@ export class RoleService {
           observer.complete();
         },
         error: (error) => {
-          console.error('Error getting doctor ID:', error);
+          //console.error('Error getting doctor ID:', error);
           observer.next(null);
           observer.complete();
         }
@@ -174,4 +174,4 @@ export class RoleService {
   loadUserFullData(): void {
     this.authService.loadUserFullData();
   }
-} 
+}
