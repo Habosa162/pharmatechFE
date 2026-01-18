@@ -44,7 +44,7 @@ export class TransactionService {
 
   // Transactions
   getAllTransactions(transactionSearchDto : TransactionSearchDto): Observable<PagedResult<Transaction>> {
-    return this.http.post<PagedResult<Transaction>>(`${this.apiUrl}`, transactionSearchDto);
+    return this.http.post<PagedResult<Transaction>>(`${this.apiUrl}/GetAll`, transactionSearchDto);
   }
 
   getTransactionById(transactionId: number): Observable<Transaction> {
