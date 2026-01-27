@@ -662,11 +662,13 @@ export class PatientAppointmentsComponent implements OnInit {
           if (appointmentId) {
             // Create invoice for the appointment
             const invoiceData: CreateInvoice = {
-              appointmentId: appointmentId,
+              doctorId: doctorDepartment.doctorId,
+              departmentId: doctorDepartment.departmentId,
+              description: formValue.notes,
+              serviceId: formValue.serviceId,
               totalAmount: +formValue.totalAmount,
-              paidAmount: +formValue.paidAmount,
-              isPaid: +formValue.paidAmount >= +formValue.totalAmount,
-              paymentMethod: +formValue.paymentMethod
+              paymentMethod: +formValue.paymentMethod,
+
             };
 
             this.invoiceService.addInvoice(invoiceData).subscribe({

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -7,11 +7,12 @@ import { DepartmentService } from '../../../services/clinics/department.service'
 import { CreatePatient, PatientDto } from '../../../Interfaces/patient/patients/patient';
 import { DepartmentViewDTO } from '../../../Interfaces/all';
 import { Gender } from '../../../Interfaces/all';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-patient-list',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, TranslateModule],
   templateUrl: './patient-list.component.html',
   styleUrl: './patient-list.component.css'
 })
@@ -39,6 +40,7 @@ export class PatientListComponent implements OnInit {
  formErrors: { [key: string]: string } = {};
   editMode: boolean = false;
   editingPatientId: number | null = null;
+  protected translateService = inject(TranslateService);
 
 @ViewChild('patientForm') patientForm!: NgForm;
   

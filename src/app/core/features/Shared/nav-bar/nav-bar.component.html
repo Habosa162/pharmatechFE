@@ -25,7 +25,7 @@
   </div> -->
 
   <div class="container">
-    <a class="navbar-brand" routerLink="/">PharmaTech</a>
+    <a class="navbar-brand" routerLink="/">{{ 'NAVBAR.PHARMATECH' | translate }}</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
       data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
       aria-label="Toggle navigation">
@@ -38,44 +38,44 @@
         <!-- Master-specific navigation -->
         <li *ngIf="canAccessMaster()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Master Panel
+            {{ 'NAVBAR.MASTER_PANEL' | translate }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/master/masterdashboard">Master Dashboard</a></li>
-            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">System Settings (coming Soon)</a></li>
-            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">Audit Logs (coming Soon)</a></li>
-            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">Global Configuration (coming Soon)</a></li>
+            <li><a class="dropdown-item" routerLink="/master/masterdashboard">{{ 'NAVBAR.DASHBOARD' | translate }}</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">{{ 'NAVBAR.SYSTEM_SETTINGS_NAV' | translate }} ({{ 'NAVBAR.COMING_SOON' | translate }})</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">{{ 'NAVBAR.AUDIT_LOGS' | translate }} ({{ 'NAVBAR.COMING_SOON' | translate }})</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">{{ 'NAVBAR.GLOBAL_CONFIGURATION' | translate }} ({{ 'NAVBAR.COMING_SOON' | translate }})</a></li>
           </ul>
         </li>
 
         <!-- Owner-specific navigation -->
         <li *ngIf="canAccessOwner()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Owner Panel
+            {{ 'NAVBAR.OWNER_PANEL' | translate }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/master">Owner Dashboard</a></li>
-            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">business analytics (coming Soon)</a></li>
-            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">Strategic reports (coming Soon)</a></li>
+            <li><a class="dropdown-item" routerLink="/master">{{ 'NAVBAR.DASHBOARD' | translate }}</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">{{ 'NAVBAR.BUSINESS_ANALYTICS' | translate }} ({{ 'NAVBAR.COMING_SOON' | translate }})</a></li>
+            <li class="disabled"><a class="dropdown-item disabled" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;">{{ 'NAVBAR.STRATEGIC_REPORTS' | translate }} ({{ 'NAVBAR.COMING_SOON' | translate }})</a></li>
           </ul>
         </li>
 
         <!-- Admin navigation -->
         <li *ngIf="canAccessAdmin()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Admin Panel
+            {{ 'NAVBAR.ADMIN_PANEL' | translate }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/master/masterdashboard">Dashboard</a></li>
-            <li *ngIf="canManageUsers()"><a class="dropdown-item" routerLink="/admin/users">User Management</a></li>
-            <li><a class="dropdown-item" routerLink="/admin/doctors">Doctor Management</a></li>
-            <li><a class="dropdown-item" routerLink="/admin/patients">Patient Management</a></li>
-            <li><a class="dropdown-item" routerLink="/my-appointments-clinic">Appointment Management</a></li>
-            <li><a class="dropdown-item" routerLink="accountant/invoices">Invoices</a></li>
-
-            <li *ngIf="canManageInventory()"><a class="dropdown-item" routerLink="/inventory">Inventory</a></li>
-            <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/transactions">Financial Reports</a></li>
-            <li *ngIf="canAccessAdmin()"><a class="dropdown-item" routerLink="/departments">العيادات</a></li>
+            <li><a class="dropdown-item" routerLink="/master/masterdashboard">{{ 'NAVBAR.DASHBOARD' | translate }}</a></li>
+            <li *ngIf="canManageUsers()"><a class="dropdown-item" routerLink="/admin/users">{{ 'NAVBAR.USER_MANAGEMENT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/doctors">{{ 'NAVBAR.DOCTOR_MANAGEMENT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/patients">{{ 'NAVBAR.PATIENT_MANAGEMENT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/my-appointments-clinic">{{ 'NAVBAR.APPOINTMENT_MANAGEMENT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="accountant/invoices">{{ 'NAVBAR.INVOICES' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/admin/services">{{ 'NAVBAR.SERVICES' | translate }}</a></li>
+            <li *ngIf="canManageInventory()"><a class="dropdown-item" routerLink="/inventory">{{ 'NAVBAR.INVENTORY' | translate }}</a></li>
+            <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/transactions">{{ 'NAVBAR.FINANCIAL_REPORTS' | translate }}</a></li>
+            <li *ngIf="canAccessAdmin()"><a class="dropdown-item" routerLink="/departments">{{ 'NAVBAR.DEPARTMENTS' | translate }}</a></li>
 
           </ul>
         </li>
@@ -83,63 +83,72 @@
         <!-- Doctor-specific navigation -->
         <li *ngIf="shouldShowRolePanel('DOCTOR')" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Doctor Panel
-            <span *ngIf="shouldShowMultiplePanels()" class="badge bg-info ms-1">Secondary</span>
+            {{ 'NAVBAR.DOCTOR_PANEL' | translate }}
+            <span *ngIf="shouldShowMultiplePanels()" class="badge bg-info ms-1">{{ 'NAVBAR.SECONDARY' | translate }}</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/doctor">Doctor Dashboard</a></li>
-            <li><a class="dropdown-item" routerLink="/doctor/appointments">My Appointments</a></li>
-              <li><a class="dropdown-item" routerLink="/doctor/schedule">Schedule</a></li>
+            <li><a class="dropdown-item" routerLink="/doctor">{{ 'NAVBAR.DASHBOARD' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/doctor/appointments">{{ 'NAVBAR.MY_APPOINTMENTS' | translate }}</a></li>
+              <li><a class="dropdown-item" routerLink="/doctor/schedule">{{ 'NAVBAR.SCHEDULE' | translate }}</a></li>
           </ul>
         </li>
 
         <!-- Employee-specific navigation -->
         <li *ngIf="shouldShowRolePanel('EMPLOYEE')" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Employee Panel
-            <span *ngIf="shouldShowMultiplePanels() && getPrimaryRole() !== 'EMPLOYEE'" class="badge bg-info ms-1">Secondary</span>
+            {{ 'NAVBAR.EMPLOYEE_PANEL' | translate }}
+            <span *ngIf="shouldShowMultiplePanels() && getPrimaryRole() !== 'EMPLOYEE'" class="badge bg-info ms-1">{{ 'NAVBAR.SECONDARY' | translate }}</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/employee/dashboard">Employee Dashboard</a></li>
-            <li><a class="dropdown-item" routerLink="/employee/payments">Payments</a></li>
-            <li><a class="dropdown-item" routerLink="/employee/transactions">Transactions</a></li>
-            <li><a class="dropdown-item" routerLink="/employee/invoices">Invoices</a></li>
-            <li><a class="dropdown-item" routerLink="/employee/customer-service">Customer Service</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/dashboard">{{ 'NAVBAR.DASHBOARD' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/payments">{{ 'NAVBAR.PAYMENTS' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/transactions">{{ 'NAVBAR.TRANSACTIONS' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/invoices">{{ 'NAVBAR.INVOICES' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/employee/customer-service">{{ 'NAVBAR.CUSTOMER_SERVICE' | translate }}</a></li>
           </ul>
         </li>
 
         <!-- Accountant-specific navigation -->
         <li *ngIf="canAccessAccountant()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Financial Panel
+            {{ 'NAVBAR.FINANCIAL_PANEL' | translate }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/accountant/dashboard">Financial Dashboard</a></li>
-            <li><a class="dropdown-item" routerLink="/accountant/reports">Financial Reports</a></li>
-            <li><a class="dropdown-item" routerLink="/accountant/transactions">All Transactions</a></li>
-            <li><a class="dropdown-item" routerLink="/accountant/invoices">Invoice Management</a></li>
-            <li><a class="dropdown-item" routerLink="/accountant/tax-reports">Tax Reports</a></li>
-            <li><a class="dropdown-item" routerLink="/accountant/budget-planning">Budget Planning</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/dashboard">{{ 'NAVBAR.FINANCIAL_DASHBOARD' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/reports">{{ 'NAVBAR.FINANCIAL_REPORTS' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/transactions">{{ 'NAVBAR.ALL_TRANSACTIONS' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/invoices">{{ 'NAVBAR.INVOICE_MANAGEMENT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/tax-reports">{{ 'NAVBAR.TAX_REPORTS' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/accountant/budget-planning">{{ 'NAVBAR.BUDGET_PLANNING' | translate }}</a></li>
           </ul>
         </li>
 
         <!-- User-specific navigation (for regular users) -->
         <li *ngIf="!canAccessAdmin() && !canAccessDoctor() && !canAccessEmployee() && !canAccessAccountant() && !canAccessMaster() && !canAccessOwner() && isLoggedIn()" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            User Panel
+            {{ 'NAVBAR.USER_PANEL' | translate }}
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/user/dashboard">User Dashboard</a></li>
-            <li><a class="dropdown-item" routerLink="/user/appointments">My Appointments</a></li>
-            <li><a class="dropdown-item" routerLink="/user/profile">Profile</a></li>
-            <li><a class="dropdown-item" routerLink="/user/settings">Settings</a></li>
+            <li><a class="dropdown-item" routerLink="/user/dashboard">{{ 'NAVBAR.DASHBOARD' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/user/appointments">{{ 'NAVBAR.MY_APPOINTMENTS_USER' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/user/profile">{{ 'NAVBAR.PROFILE_USER' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/user/settings">{{ 'NAVBAR.SETTINGS_USER' | translate }}</a></li>
           </ul>
         </li>
       </ul>
 
       <ul class="navbar-nav mb-2 mb-lg-0">
+        <!-- Language Toggle -->
+        <li class="nav-item">
+          <button class="btn btn-outline-light language-toggle-btn" (click)="toggleLanguage()" [title]="'NAVBAR.LANGUAGE' | translate">
+            <i class="fas fa-language"></i>
+            <span *ngIf="getCurrentLanguage() === 'ar'">English</span>
+            <span *ngIf="getCurrentLanguage() === 'en'">العربية</span>
+          </button>
+        </li>
+
         <li *ngIf="!authService.isLoggedIn()" class="nav-item">
-          <a class="nav-link" routerLink="/login">Login</a>
+          <a class="nav-link" routerLink="/login">{{ 'NAVBAR.LOGIN' | translate }}</a>
         </li>
 
         <!-- User creation - only for high-level roles -->
@@ -154,11 +163,11 @@
             <span *ngIf="authService.getHighestRole()" class="badge bg-secondary ms-1">{{ authService.getHighestRole() }}</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
-            <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
-            <li *ngIf="canAccessSystemSettings()"><a class="dropdown-item" routerLink="/system-settings">System Settings</a></li>
+            <li><a class="dropdown-item" routerLink="/profile">{{ 'NAVBAR.PROFILE' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/settings">{{ 'NAVBAR.SETTINGS' | translate }}</a></li>
+            <li *ngIf="canAccessSystemSettings()"><a class="dropdown-item" routerLink="/system-settings">{{ 'NAVBAR.SYSTEM_SETTINGS' | translate }}</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;">Logout</a></li>
+            <li><a class="dropdown-item" (click)="logout()" style="cursor: pointer;">{{ 'NAVBAR.LOGOUT' | translate }}</a></li>
           </ul>
         </li>
       </ul>

@@ -40,8 +40,8 @@
         <p class="clinic-name">{{ invoice.clinicName }}</p>
       </div>
       <div class="invoice-status">
-        <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
-          {{ getPaymentStatusText(invoice.isPaid) }}
+        <span class="badge" [ngClass]="getPaymentStatusClass(true)">
+          {{ getPaymentStatusText(true) }}
         </span>
       </div>
     </div>
@@ -61,11 +61,11 @@
           </div>
           <div class="info-item">
             <label>Paid Amount</label>
-            <span class="amount">{{ formatCurrency(invoice.paidAmount) }}</span>
+            <span class="amount">{{ formatCurrency(invoice.totalAmount) }}</span>
           </div>
           <div class="info-item">
             <label>Balance</label>
-            <span class="amount balance">{{ formatCurrency(invoice.totalAmount - invoice.paidAmount) }}</span>
+            <span class="amount balance">{{ formatCurrency(invoice.totalAmount) }}</span>
           </div>
           <div class="info-item">
             <label>Payment Method</label>
@@ -75,8 +75,8 @@
           </div>
           <div class="info-item">
             <label>Payment Status</label>
-            <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
-              {{ getPaymentStatusText(invoice.isPaid) }}
+            <span class="badge" [ngClass]="getPaymentStatusClass(true)">
+              {{ getPaymentStatusText(true) }}
             </span>
           </div>
         </div>
@@ -95,7 +95,19 @@
           </div>
           <div class="info-item">
             <label>Appointment ID</label>
-            <span>{{ invoice.appointmentId }}</span>
+            <span>{{ invoice.id }}</span>
+          </div>
+          <div class="info-item">
+            <label>Doctor ID</label>
+            <span>{{ invoice.doctorId }}</span>
+          </div>
+          <div class="info-item">
+            <label>Department ID</label>
+            <span>{{ invoice.departmentId }}</span>
+          </div>
+          <div class="info-item">
+            <label>Service ID</label>
+            <span>{{ invoice.serviceId }}</span>
           </div>
         </div>
       </div>
@@ -111,12 +123,12 @@
         </div>
         <div class="summary-item">
           <span class="label">Amount Paid</span>
-          <span class="value paid">{{ formatCurrency(invoice.paidAmount) }}</span>
+          <span class="value paid">{{ formatCurrency(invoice.totalAmount) }}</span>
         </div>
         <div class="summary-item total">
           <span class="label">Balance Due</span>
-          <span class="value" [ngClass]="{'unpaid': !invoice.isPaid, 'paid': invoice.isPaid}">
-            {{ formatCurrency(invoice.totalAmount - invoice.paidAmount) }}
+          <span class="value" [ngClass]="'paid'">
+            {{ formatCurrency(invoice.totalAmount)}}
           </span>
         </div>
       </div>

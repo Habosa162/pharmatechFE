@@ -1,16 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { InvoiceService } from '../../../services/appintments/invoice.service';
 import { AppointmentService } from '../../../services/appintments/appointment.service';
 import { AllInvoices, CreateInvoice, InvoiceDto, UpdateInvoice } from '../../../Interfaces/appointment/invoices/invoice';
-import { PaymentMethod, AppointmentDetails, AppointmentStatus } from '../../../Interfaces/all';
+import { PaymentMethod, AppointmentDetails, AppointmentStatus, DepartmentViewDTO, DoctorDepartmentViewDTO } from '../../../Interfaces/all';
 import { Router, RouterModule } from '@angular/router';
+import { DepartmentService } from '../../../services/clinics/department.service';
+import { ServiceService } from '../../../services/clinics/services.service';
+import { CreateServiceDto, ServiceDto } from '../../../Interfaces/clinic/medications/services';
+import { AuthService } from '../../../services/auth.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslationService } from '../../../services/translation.service';
 
 @Component({
   selector: 'app-invoice-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule,RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, TranslateModule],
   templateUrl: './invoice-list.component.html',
   styleUrl: './invoice-list.component.css'
 })
@@ -43,39 +49,177 @@ export class InvoiceListComponent implements OnInit {
   // Payment methods for dropdown
   paymentMethods: PaymentMethod[] = [PaymentMethod.Cash, PaymentMethod.CreditCard, PaymentMethod.Wallet, PaymentMethod.Insurance, PaymentMethod.Other];
 
+  // Translation service
+  private translateService = inject(TranslateService);
+  protected translationService = inject(TranslationService);
+
   constructor(
     private invoiceService: InvoiceService,
     private appointmentService: AppointmentService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private departmentService: DepartmentService,
+    private servicesservice: ServiceService,
+    private authService: AuthService,
+    // private doctorService: DoctordepartmentService,
   ) {
     this.invoiceForm = this.fb.group({
-      appointmentId: ['', [Validators.required]],
+      doctorId: ['', [Validators.required]],
+      departmentId: ['', [Validators.required]],
+      serviceId: ['', [Validators.required]],
       totalAmount: ['', [Validators.required, Validators.min(0)]],
-      paidAmount: ['', [Validators.required, Validators.min(0)]],
-      paymentMethod: [PaymentMethod.Cash, Validators.required]
+      paymentMethod: [PaymentMethod.Cash, Validators.required],
+      description: ['', ]
+
     });
   }
+  getdepartmentnamebyid(id: number): string {
+    return this.departments.find(department => department.id === id)?.name || '';
+  }
+  getinvoicenamebyid(id: number): string {
+    return this.services.find(service => service.id === id)?.name || '';
+  }
+  getdoctornamebyid(id: number): string {
+    return this.alldoctorsdepartments().find(doctor => +doctor.doctorId === + id)?.doctorName || '';
+  }
+  alldoctorsdepartments= signal<DoctorDepartmentViewDTO[]>([]);
 
   ngOnInit(): void {
     this.loadInvoices();
     this.loadAppointments();
+    this.loadDepartments();
+    this.loaddoctordepartments();
+    this.loadServices();
   }
+  departments: DepartmentViewDTO[] = [];
+  loadDepartments(): void {
+    this.departmentService.getAllDepartments().subscribe({
+      next: (departments) => {
+        this.departments = departments;
+      },
+      error: (err) => {
+        this.translateService.get(['INVOICES.FAILED_LOAD', 'INVOICES.DEPARTMENT']).subscribe(translations => {
+          this.error = translations['INVOICES.FAILED_LOAD'] + ' ' + translations['INVOICES.DEPARTMENT'].toLowerCase() + ': ' + err.message;
+        });
+      }
+    });
+  }
+  selectedDepartment: DepartmentViewDTO | undefined = undefined;
+  availableDoctors= signal<DoctorDepartmentViewDTO[]>([]);
+  loaddoctordepartments(): void {
+    this.departmentService.getalldoctordepartments().subscribe({
+      next: (doctorDepartments) => {
+        console.log(doctorDepartments,'doctorDepartments');
+        console.log(this.selectedDepartment?.id,'this.selectedDepartment?.id');
+        this.availableDoctors.set( doctorDepartments.filter(doctorDepartment => +doctorDepartment.departmentId === +this.selectedDepartment?.id!));
 
+        this.alldoctorsdepartments.set( doctorDepartments);
+        console.log(this.availableDoctors(),'this.availableDoctors');
+      },
+      error: (err) => {
+        this.translateService.get(['INVOICES.FAILED_LOAD', 'INVOICES.DOCTOR']).subscribe(translations => {
+          this.error = translations['INVOICES.FAILED_LOAD'] + ' ' + translations['INVOICES.DOCTOR'].toLowerCase() + ': ' + err.message;
+        });
+      }
+    });
+  }
+  onDepartmentChange(): void {
+    console.log(this.invoiceForm.value.departmentId,'department has changed');
+    this.selectedDepartment = this.departments.find(department => department.id == +this.invoiceForm.value.departmentId);
+    console.log(this.departments,'this.departments');
+    console.log(this.selectedDepartment,'this.selectedDepartment');
+    this.loaddoctordepartments();
+  }
+  services: ServiceDto[] = [];
+  loadServices(): void {
+    this.servicesservice.getAllServices().subscribe({
+      next: (services) => {
+        this.services = services;
+      },
+      error: (err) => {
+        this.translateService.get(['INVOICES.FAILED_LOAD', 'INVOICES.SERVICE']).subscribe(translations => {
+          this.error = translations['INVOICES.FAILED_LOAD'] + ' ' + translations['INVOICES.SERVICE'].toLowerCase() + ': ' + err.message;
+        });
+      }
+    });
+  }
+  
+  createservice(name: string): void {
+    console.log(name,'name');
+    const createServiceDto: CreateServiceDto = {
+      name: name!,
+      clinicId: this.authService.getUserData().ClinicId
+    }
+    this.servicesservice.createService(createServiceDto).subscribe({
+      next: (service) => {
+        this.services.push(service);
+        this.loadServices();
+      },
+      error: (err) => {
+        this.translateService.get('SERVICES.FAILED_CREATE').subscribe(translation => {
+          this.error = translation + ': ' + err.message;
+        });
+      }
+    });
+  }
+  
+  // loadDoctors(): void {
+  //   this.doctorService.getAllDoctors().subscribe({
+  //     next: (doctors) => {
+  //       this.doctors = doctors;
+  //     },
+  //     error: (err) => {
+  //       this.error = 'Failed to load doctors: ' + err.message;
+  //     }
+  //   });
+  // }
+
+  newServiceName = signal<string>('');
+
+  createservicebutton(): void {
+    this.createservice(this.newServiceName());
+    this.newServiceName.set('');
+  }
   loadInvoices(): void {
     this.loading = true;
     this.invoiceService.getAllInvoices().subscribe({
       next: (invoices) => {
         this.invoices = invoices;
+        console.log(this.getcurrentmonthandyer(),'this.getcurrentmonthandyer()');
+        console.log(invoices,'invoices')
+        this.monthlyinvoices.set(
+          invoices
+            .filter(invoice => invoice.createdAt.includes(this.getcurrentmonthandyer()))
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .map(invoice => ({
+              AllInvoice: invoice,
+              monthlycount: 0 // start count at 0
+            }))
+        );        
         this.filteredInvoices = invoices;
         this.loading = false;
       },
       error: (err) => {
-        this.error = 'Failed to load invoices: ' + err.message;
+        this.translateService.get(['INVOICES.FAILED_LOAD', 'INVOICES.INVOICES']).subscribe(translations => {
+          this.error = translations['INVOICES.FAILED_LOAD'] + ' ' + translations['INVOICES.INVOICES'].toLowerCase() + ': ' + err.message;
+        });
         this.loading = false;
       }
     });
   }
+
+  x=signal(0);
+  getcurrentmonthandyer(): string {
+    const currentDate = new Date();
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+    if(month<10)
+    {
+      return `${year}-0${month}`;
+    }
+    return `${year}-${month}`;
+  }
+  monthlyinvoices= signal<{AllInvoice:AllInvoices,monthlycount:number}[]>([]);
 
   loadAppointments(): void {
     this.appointmentService.getAppointments().subscribe({
@@ -96,13 +240,17 @@ export class InvoiceListComponent implements OnInit {
         this.appointments = availableAppointments;
 
         if (availableAppointments.length === 0 && completedAppointments.length > 0) {
-          this.success = 'All completed appointments already have invoices.';
+          this.translateService.get('INVOICES.ALL_COMPLETED_HAVE_INVOICES').subscribe(translation => {
+            this.success = translation;
+          });
           this.clearMessages();
         }
       },
       error: (err) => {
         //console.error('Failed to load appointments:', err);
-        this.error = 'Failed to load appointments: ' + err.message;
+        this.translateService.get('INVOICES.FAILED_LOAD').subscribe(translation => {
+          this.error = translation + ' appointments: ' + err.message;
+        });
         this.clearMessages();
       }
     });
@@ -130,8 +278,8 @@ export class InvoiceListComponent implements OnInit {
         (typeof invoice.paymentMethod === 'string' && invoice.paymentMethod === getPaymentMethodString(this.selectedPaymentMethod));
 
       const matchesPaymentStatus = this.selectedPaymentStatus === 'all' ||
-        (this.selectedPaymentStatus === 'paid' && invoice.isPaid) ||
-        (this.selectedPaymentStatus === 'unpaid' && !invoice.isPaid);
+        (this.selectedPaymentStatus === 'paid' && invoice.paymentMethod === PaymentMethod.Cash) ||
+        (this.selectedPaymentStatus === 'unpaid' && invoice.paymentMethod !== PaymentMethod.Cash);
 
       const matchesDateRange = this.matchesDateRange(invoice.createdAt);
 
@@ -212,7 +360,7 @@ export class InvoiceListComponent implements OnInit {
     } else {
       // This is InvoiceDto, we need to find the actual invoice ID
       // For now, let's use the appointment ID as a fallback, but this might be wrong
-      actualInvoiceId = (invoice as InvoiceDto).appointmentId;
+      actualInvoiceId = (invoice as InvoiceDto).id;
       //console.warn('Using appointment ID as invoice ID - this might be incorrect');
     }
 
@@ -221,9 +369,10 @@ export class InvoiceListComponent implements OnInit {
       id: actualInvoiceId,
       createdAt: invoice.createdAt,
       totalAmount: invoice.totalAmount,
-      paidAmount: invoice.paidAmount,
-      isPaid: invoice.isPaid,
-      paymentMethod: invoice.paymentMethod
+      paymentMethod: invoice.paymentMethod,
+      doctorId: invoice.doctorId,
+      departmentId: invoice.departmentId,
+      serviceId: invoice.serviceId
     };
 
     //console.log('Final invoice ID for editing:', invoiceForEdit.id);
@@ -242,7 +391,7 @@ export class InvoiceListComponent implements OnInit {
     this.invoiceForm.patchValue({
       appointmentId: invoiceForEdit.id,
       totalAmount: invoiceForEdit.totalAmount,
-      paidAmount: invoiceForEdit.paidAmount,
+      // paidAmount: invoiceForEdit.paidAmount,
       paymentMethod: paymentMethodForForm
     });
     this.showInvoiceModal = true;
@@ -274,7 +423,9 @@ export class InvoiceListComponent implements OnInit {
       },
       error: (err) => {
         //console.error('Failed to load appointments for edit:', err);
-        this.error = 'Failed to load appointments: ' + err.message;
+        this.translateService.get('INVOICES.FAILED_LOAD').subscribe(translation => {
+          this.error = translation + ' appointments: ' + err.message;
+        });
         this.clearMessages();
       }
     });
@@ -326,13 +477,15 @@ export class InvoiceListComponent implements OnInit {
       this.invoiceService.updateInvoice(this.editingInvoice.id, updateData).subscribe({
         next: (response) => {
           //console.log('Update success response:', response);
-          this.success = 'Invoice updated successfully';
+          this.translateService.get('INVOICES.INVOICE_UPDATED').subscribe(translation => {
+            this.success = translation;
+          });
           this.closeInvoiceModal();
 
           // Reload data based on current view
           if (this.activeView === 'details' && this.selectedInvoice) {
             // Reload the current invoice details
-            this.invoiceService.getInvoiceById(this.selectedInvoice.appointmentId).subscribe({
+            this.invoiceService.getInvoiceById(this.selectedInvoice.id).subscribe({
               next: (updatedInvoice) => {
                 this.selectedInvoice = updatedInvoice;
               },
@@ -350,7 +503,9 @@ export class InvoiceListComponent implements OnInit {
           //console.error('Error status:', err.status);
           //console.error('Error message:', err.message);
           //console.error('Error body:', err.error);
-          this.error = 'Failed to update invoice: ' + err.message;
+          this.translateService.get('INVOICES.FAILED_UPDATE').subscribe(translation => {
+            this.error = translation + ': ' + err.message;
+          });
         }
       });
     } else {
@@ -378,16 +533,23 @@ export class InvoiceListComponent implements OnInit {
       // });
       //console.log('createData', createData);
       const invoice: CreateInvoice = {
-        appointmentId: +formValue.appointmentId,
+        // patientId: +formValue.patientId,
+
+        doctorId: +formValue.doctorId,
+        departmentId: +formValue.departmentId,
+        description: formValue.description,
+        serviceId: +formValue.serviceId,
         totalAmount: +formValue.totalAmount,
-        paidAmount: +formValue.paidAmount,
-        isPaid: +formValue.paidAmount >= +formValue.totalAmount,
+        // paidAmount: +formValue.paidAmount,
+        // isPaid: +formValue.paidAmount >= +formValue.totalAmount,
         paymentMethod: +formValue.paymentMethod
       }
       this.invoiceService.addInvoice(invoice).subscribe({
         next: (response) => {
           //console.log('Create success response:', response);
-          this.success = 'Invoice created successfully';
+          this.translateService.get('INVOICES.INVOICE_CREATED').subscribe(translation => {
+            this.success = translation;
+          });
           this.closeInvoiceModal();
           this.loadInvoices();
           this.clearMessages();
@@ -397,37 +559,54 @@ export class InvoiceListComponent implements OnInit {
           //console.error('Error status:', err.status);
           //console.error('Error message:', err.message);
           //console.error('Error body:', err.error);
-          this.error = 'Failed to create invoice: ' + err.message;
+          this.translateService.get('INVOICES.FAILED_CREATE').subscribe(translation => {
+            this.error = translation + ': ' + err.message;
+          });
         }
       });
     }
   }
 
   deleteInvoice(id: number): void {
-    if (confirm('Are you sure you want to delete this invoice?')) {
-      this.invoiceService.deleteInvoice(id).subscribe({
-        next: () => {
-          this.success = 'Invoice deleted successfully';
-          this.loadInvoices();
-          this.clearMessages();
-        },
-        error: (err) => {
-          this.error = 'Failed to delete invoice: ' + err.message;
-        }
-      });
-    }
+    this.translateService.get('INVOICES.DELETE_CONFIRM').subscribe(confirmMsg => {
+      if (confirm(confirmMsg)) {
+        this.invoiceService.deleteInvoice(id).subscribe({
+          next: () => {
+            this.translateService.get('INVOICES.INVOICE_DELETED').subscribe(translation => {
+              this.success = translation;
+            });
+            this.loadInvoices();
+            this.clearMessages();
+          },
+          error: (err) => {
+            this.translateService.get('INVOICES.FAILED_DELETE').subscribe(translation => {
+              this.error = translation + ': ' + err.message;
+            });
+          }
+        });
+      }
+    });
   }
 
   getPaymentMethodText(paymentMethod: PaymentMethod | string): string {
+    const currentLang = this.translationService.getCurrentLanguage();
+    const translations: { [key: string]: string } = {};
+    
+    // Get translations synchronously using instant
+    translations['CASH'] = this.translateService.instant('INVOICES.CASH');
+    translations['CREDIT_CARD'] = this.translateService.instant('INVOICES.CREDIT_CARD');
+    translations['WALLET'] = this.translateService.instant('INVOICES.WALLET');
+    translations['INSURANCE'] = this.translateService.instant('INVOICES.INSURANCE');
+    translations['OTHER'] = this.translateService.instant('INVOICES.OTHER');
+    
     // Handle string values from backend
     if (typeof paymentMethod === 'string') {
-      // Map string values to display text
       const stringMap: { [key: string]: string } = {
-        'Cash': 'Cash',
-        'CreditCard': 'Credit Card',
-        'Wallet': 'Wallet',
-        'Insurance': 'Insurance',
-        'Other': 'Other'
+        'Cash': translations['CASH'],
+        'CreditCard': translations['CREDIT_CARD'],
+        'Wallet': translations['WALLET'],
+        'Insurance': translations['INSURANCE'],
+        'Other': translations['OTHER']
       };
       return stringMap[paymentMethod] || paymentMethod;
     }
@@ -436,11 +615,11 @@ export class InvoiceListComponent implements OnInit {
     const methodValue = typeof paymentMethod === 'string' ? parseInt(paymentMethod) : paymentMethod;
 
     const texts: { [key in PaymentMethod]: string } = {
-      [PaymentMethod.Cash]: 'Cash',
-      [PaymentMethod.CreditCard]: 'Credit Card',
-      [PaymentMethod.Wallet]: 'Wallet',
-      [PaymentMethod.Insurance]: 'Insurance',
-      [PaymentMethod.Other]: 'Other'
+      [PaymentMethod.Cash]: translations['CASH'],
+      [PaymentMethod.CreditCard]: translations['CREDIT_CARD'],
+      [PaymentMethod.Wallet]: translations['WALLET'],
+      [PaymentMethod.Insurance]: translations['INSURANCE'],
+      [PaymentMethod.Other]: translations['OTHER']
     };
 
     // Check if the value exists in our enum
@@ -449,8 +628,7 @@ export class InvoiceListComponent implements OnInit {
     }
 
     // Fallback for unknown values
-    //console.warn('Unknown payment method value:', paymentMethod, 'Type:', typeof paymentMethod);
-    return 'Unknown';
+    return currentLang === 'ar' ? 'غير معروف' : 'Unknown';
   }
 
   getPaymentMethodClass(paymentMethod: PaymentMethod | string): string {
@@ -524,17 +702,18 @@ export class InvoiceListComponent implements OnInit {
   }
 
   getPaymentStatusText(isPaid: boolean): string {
-    return isPaid ? 'Paid' : 'Unpaid';
+    return isPaid ? this.translateService.instant('INVOICES.PAID') : this.translateService.instant('INVOICES.UNPAID');
   }
 
   getAppointmentStatusText(status: AppointmentStatus): string {
+    const currentLang = this.translationService.getCurrentLanguage();
     const statusTexts: { [key in AppointmentStatus]: string } = {
-      [AppointmentStatus.Scheduled]: 'Scheduled',
-      [AppointmentStatus.Completed]: 'Completed',
-      [AppointmentStatus.Cancelled]: 'Cancelled',
-      [AppointmentStatus.NoShow]: 'No Show'
+      [AppointmentStatus.Scheduled]: this.translateService.instant('INVOICES.SCHEDULED'),
+      [AppointmentStatus.Completed]: this.translateService.instant('INVOICES.COMPLETED'),
+      [AppointmentStatus.Cancelled]: this.translateService.instant('INVOICES.CANCELLED'),
+      [AppointmentStatus.NoShow]: this.translateService.instant('INVOICES.NO_SHOW')
     };
-    return statusTexts[status] || 'Unknown';
+    return statusTexts[status] || (currentLang === 'ar' ? 'غير معروف' : 'Unknown');
   }
 
   getAppointmentStatusClass(status: AppointmentStatus): string {
@@ -548,15 +727,29 @@ export class InvoiceListComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
+    const currentLang = this.translationService.getCurrentLanguage();
+    if (currentLang === 'ar') {
+      return `${amount.toFixed(2)} ر.س`;
+    }
     return `$${amount.toFixed(2)}`;
   }
 
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString();
+    const date = new Date(dateString);
+    const currentLang = this.translationService.getCurrentLanguage();
+    if (currentLang === 'ar') {
+      return date.toLocaleDateString('en-US');
+    }
+    return date.toLocaleDateString('en-US');
   }
 
   formatDateTime(dateString: string): string {
-    return new Date(dateString).toLocaleString();
+    const date = new Date(dateString);
+    const currentLang = this.translationService.getCurrentLanguage();
+    if (currentLang === 'ar') {
+      return date.toLocaleString('en-US');
+    }
+    return date.toLocaleString('en-US');
   }
 
   getAppointmentDisplayText(appointment: AppointmentDetails): string {
@@ -586,10 +779,30 @@ export class InvoiceListComponent implements OnInit {
   getFieldError(form: FormGroup, fieldName: string): string {
     const field = form.get(fieldName);
     if (field && field.errors) {
-      if (field.errors['required']) return `${fieldName} is required`;
-      if (field.errors['min']) return `${fieldName} must be at least ${field.errors['min'].min}`;
+      if (field.errors['required']) {
+        const fieldLabel = this.getFieldLabel(fieldName);
+        const requiredText = this.translateService.instant('INVOICES.REQUIRED');
+        return `${fieldLabel} ${requiredText}`;
+      }
+      if (field.errors['min']) {
+        const fieldLabel = this.getFieldLabel(fieldName);
+        const mustBeText = this.translateService.instant('INVOICES.MUST_BE_AT_LEAST');
+        return `${fieldLabel} ${mustBeText} ${field.errors['min'].min}`;
+      }
     }
     return '';
+  }
+
+  getFieldLabel(fieldName: string): string {
+    const labels: { [key: string]: string } = {
+      doctorId: this.translateService.instant('INVOICES.DOCTOR'),
+      departmentId: this.translateService.instant('INVOICES.DEPARTMENT'),
+      serviceId: this.translateService.instant('INVOICES.SERVICE'),
+      totalAmount: this.translateService.instant('INVOICES.TOTAL_AMOUNT'),
+      paymentMethod: this.translateService.instant('INVOICES.PAYMENT_METHOD'),
+      description: this.translateService.instant('INVOICES.DESCRIPTION')
+    };
+    return labels[fieldName] || fieldName;
   }
 
   clearMessages(): void {

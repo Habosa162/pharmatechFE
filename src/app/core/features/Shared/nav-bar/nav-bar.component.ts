@@ -2,16 +2,20 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { TranslationService } from '../../../services/translation.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.css']
 })
 export class NavBarComponent implements OnInit {
   protected authService = inject(AuthService);
+  protected translationService = inject(TranslationService);
+  protected translateService = inject(TranslateService);
 
   // Use signals for reactive data
   public isLoggedIn = this.authService.isLoggedInSignal;
@@ -69,6 +73,14 @@ export class NavBarComponent implements OnInit {
     // If not, you might need to inject it or access it differently
     // For now, commenting out as per original file's structure
     // this.router.navigate(['/login']);
+  }
+
+  toggleLanguage(): void {
+    this.translationService.toggleLanguage();
+  }
+
+  getCurrentLanguage(): 'ar' | 'en' {
+    return this.translationService.getCurrentLanguage();
   }
 
   // Helper methods for template - updated to use new role system

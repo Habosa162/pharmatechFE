@@ -1,14 +1,15 @@
 import { ILoginUser } from './../../../Models/auth.models';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -16,6 +17,7 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
+  private translateService = inject(TranslateService);
 
   constructor(private router: Router, protected authService: AuthService) {}
 
@@ -58,7 +60,9 @@ export class LoginComponent {
       },
       error: (err) => {
        // console.error('Login failed:', err);
-        this.errorMessage = 'Invalid credentials. Please try again.';
+        this.translateService.get('LOGIN.INVALID_CREDENTIALS').subscribe(translation => {
+          this.errorMessage = translation;
+        });
       }
     });
   }

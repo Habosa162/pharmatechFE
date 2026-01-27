@@ -42,8 +42,8 @@
           </div>
           <div class="info-item">
             <label>Payment Status</label>
-            <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
-              {{ getPaymentStatusText(invoice.isPaid) }}
+            <span class="badge" [ngClass]="getPaymentStatusClass(true)">
+              {{ getPaymentStatusText(true) }}
             </span>
           </div>
           <div class="info-item">
@@ -159,10 +159,10 @@
             <span class="label">Original Total</span>
             <span class="value">{{ formatCurrency(invoice.totalAmount) }}</span>
           </div>
-          <div class="summary-item">
+          <!-- <div class="summary-item">
             <span class="label">Original Paid</span>
             <span class="value">{{ formatCurrency(invoice.paidAmount) }}</span>
-          </div>
+          </div> -->
           <div class="summary-item">
             <span class="label">New Total</span>
             <span class="value">{{ formatCurrency(invoiceForm.get('totalAmount')?.value || 0) }}</span>

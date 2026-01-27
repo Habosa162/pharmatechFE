@@ -1,0 +1,139 @@
+<div class="services-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1 class="page-title">
+          <i class="fas fa-concierge-bell"></i>
+          {{ 'SERVICES.TITLE' | translate }}
+        </h1>
+        <p class="page-subtitle">
+          {{ 'SERVICES.SUBTITLE' | translate }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i> {{ success }}
+    <button type="button" class="btn-close" (click)="clearMessages()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+    <button type="button" class="btn-close" (click)="clearMessages()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- Create Service Section -->
+  <div class="create-section">
+    <div class="card">
+        <div class="card-header">
+          <h6 class="card-title">
+            <i class="fas fa-plus-circle"></i>
+            {{ 'SERVICES.CREATE_NEW' | translate }}
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label class="form-label">{{ 'SERVICES.SERVICE_NAME' | translate }} *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="newServiceName"
+                  [placeholder]="'SERVICES.SERVICE_NAME' | translate"
+                  (keyup.enter)="createService(newServiceName)">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button 
+                  class="btn btn-primary w-100" 
+                  (click)="createService(newServiceName)"
+                  [disabled]="loading || !newServiceName || newServiceName.trim() === ''">
+                  <i class="fas fa-plus"></i>
+                  {{ loading ? ('SERVICES.CREATING' | translate) : ('SERVICES.CREATE_SERVICE' | translate) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Services List Section -->
+  <div class="section-header">
+    <h3>
+      <i class="fas fa-list"></i>
+      {{ 'SERVICES.SERVICES_LIST' | translate }} ({{ filteredServices.length }})
+    </h3>
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="searchTerm"
+        [placeholder]="'SERVICES.SEARCH_PLACEHOLDER' | translate">
+    </div>
+  </div>
+
+  <div class="content-card">
+    <!-- Loading State -->
+    <div *ngIf="loading && services().length === 0" class="loading-section">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+      <p>{{ 'SERVICES.LOADING_SERVICES' | translate }}</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredServices.length === 0" class="empty-state">
+      <i class="fas fa-concierge-bell"></i>
+      <h4>{{ 'SERVICES.NO_SERVICES' | translate }}</h4>
+      <p *ngIf="searchTerm">{{ 'SERVICES.NO_SERVICES_SEARCH' | translate }}</p>
+      <p *ngIf="!searchTerm">{{ 'SERVICES.START_CREATING' | translate }}</p>
+    </div>
+
+    <!-- Services Table -->
+    <div *ngIf="!loading && filteredServices.length > 0" class="services-table-wrapper">
+      <table class="services-table">
+        <thead>
+          <tr>
+            <th>
+              <i class="fas fa-hashtag"></i>
+              {{ 'COMMON.ID' | translate }}
+            </th>
+            <th>
+              <i class="fas fa-tag"></i>
+              {{ 'SERVICES.SERVICE_NAME' | translate }}
+            </th>
+            <th>{{ 'COMMON.ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let service of filteredServices">
+            <td class="service-id">
+              <span class="badge badge-primary">#{{ service.id }}</span>
+            </td>
+            <td class="service-name">
+              <i class="fas fa-concierge-bell"></i>
+              {{ service.name }}
+            </td>
+            <td>
+              <button class="btn btn-danger" (click)="deleteService(service.id)">
+                <i class="fas fa-trash"></i>
+                {{ 'COMMON.DELETE' | translate }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

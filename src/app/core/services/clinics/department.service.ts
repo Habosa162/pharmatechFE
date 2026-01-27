@@ -51,6 +51,9 @@ export class DepartmentService {
       percentage: percentage
     });
   }
+  getalldoctordepartments(): Observable<DoctorDepartmentViewDTO[]> {
+    return this.http.get<DoctorDepartmentViewDTO[]>(`${this.apiUrl}/DoctorDepartments`);
+  }
 
   removeDoctorFromDepartment(DoctorDepartmentId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/remove-doctor/${DoctorDepartmentId}`);

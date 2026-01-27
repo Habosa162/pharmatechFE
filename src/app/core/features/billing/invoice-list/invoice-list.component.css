@@ -5,6 +5,137 @@
   min-height: 100vh;
 }
 
+/* Language Toggle Button */
+.language-toggle {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.language-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+/* RTL Support */
+[dir="rtl"] .invoice-container {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .header-content {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .page-title {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .section-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .invoice-card .card-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .invoice-actions {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .action-buttons {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .details-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .details-actions {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .details-header-info {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-footer {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .detail-item {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .detail-item i {
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+[dir="rtl"] .btn-close {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+[dir="rtl"] .form-control,
+[dir="rtl"] .form-select {
+  text-align: right;
+}
+
+[dir="rtl"] .form-control::placeholder,
+[dir="rtl"] .form-select::placeholder {
+  text-align: right;
+}
+
+[dir="rtl"] .detail-grid .detail-item {
+  text-align: right;
+}
+
+[dir="rtl"] .detail-grid .detail-item label {
+  text-align: right;
+}
+
+[dir="rtl"] .detail-grid .detail-item span {
+  text-align: right;
+}
+
+[dir="rtl"] .selected-appointment-details .detail-item {
+  text-align: right;
+}
+
+[dir="rtl"] .selected-appointment-details .detail-item label {
+  text-align: right;
+}
+
+[dir="rtl"] .selected-appointment-details .detail-item span {
+  text-align: right;
+}
+
+/* LTR Support (for English) */
+[dir="ltr"] .invoice-container {
+  direction: ltr;
+  text-align: left;
+}
+
+[dir="ltr"] .form-control,
+[dir="ltr"] .form-select {
+  text-align: left;
+}
+
+[dir="ltr"] .form-control::placeholder,
+[dir="ltr"] .form-select::placeholder {
+  text-align: left;
+}
+
 /* Page Header */
 .page-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -615,6 +746,14 @@
     flex-direction: column;
     text-align: center;
     gap: 15px;
+  }
+
+  [dir="rtl"] .header-content {
+    flex-direction: column;
+  }
+
+  .language-toggle {
+    align-self: center;
   }
   
   .section-header {

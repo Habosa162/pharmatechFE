@@ -166,7 +166,12 @@ export class InvoiceDetailsComponent implements OnInit {
       doc.setFontSize(12);
       doc.setTextColor(108, 117, 125);
       doc.text(`Name: ${this.invoice!.patientName}`, 20, 105);
-      doc.text(`Appointment ID: ${this.invoice!.appointmentId}`, 20, 115);
+      doc.text(`Patient ID: ${this.invoice!.patientId}`, 20, 115);
+
+      doc.text(`Doctor ID: ${this.invoice!.doctorId}`, 20, 125);
+      doc.text(`Department ID: ${this.invoice!.departmentId}`, 20, 135);
+      doc.text(`Description: ${this.invoice!.description}`, 20, 145);
+      doc.text(`Service ID: ${this.invoice!.serviceId}`, 20, 155);
       
       // Add invoice details
       doc.setFontSize(14);
@@ -206,13 +211,9 @@ export class InvoiceDetailsComponent implements OnInit {
       doc.setTextColor(108, 117, 125);
       doc.text(`Total Amount: ${this.formatCurrency(this.invoice!.totalAmount)}`, 20, currentY);
       currentY += 8;
-      doc.text(`Paid Amount: ${this.formatCurrency(this.invoice!.paidAmount)}`, 20, currentY);
-      currentY += 8;
-      doc.text(`Balance: ${this.formatCurrency(this.invoice!.totalAmount - this.invoice!.paidAmount)}`, 20, currentY);
-      currentY += 8;
       doc.text(`Payment Method: ${this.getPaymentMethodText(this.invoice!.paymentMethod)}`, 20, currentY);
       currentY += 8;
-      doc.text(`Status: ${this.getPaymentStatusText(this.invoice!.isPaid)}`, 20, currentY);
+      
       
       // Add footer
       const pageHeight = doc.internal.pageSize.height;

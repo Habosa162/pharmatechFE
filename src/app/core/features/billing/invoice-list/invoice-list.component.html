@@ -5,10 +5,10 @@
       <div class="header-title">
         <h1 class="page-title">
           <i class="fas fa-file-invoice-dollar"></i>
-          Invoice Management
+          {{ 'INVOICES.TITLE' | translate }}
         </h1>
         <p class="page-subtitle">
-          Manage invoices, track payments, and monitor billing information
+          {{ 'INVOICES.SUBTITLE' | translate }}
         </p>
       </div>
     </div>
@@ -32,27 +32,27 @@
         <div class="card-header">
           <h6 class="card-title">
             <i class="fas fa-filter"></i>
-            Filter Invoices
+            {{ 'INVOICES.FILTER_INVOICES' | translate }}
           </h6>
         </div>
         <div class="card-body">
           <div class="row g-3">
             <div class="col-md-3">
               <div class="form-group">
-                <label class="form-label">Search</label>
+                <label class="form-label">{{ 'COMMON.SEARCH' | translate }}</label>
                 <input
                   type="text"
                   class="form-control"
                   [(ngModel)]="searchTerm"
                   (input)="onFilterChange()"
-                  placeholder="Search by ID or amount">
+                  [placeholder]="'INVOICES.SEARCH_PLACEHOLDER' | translate">
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-group">
-                <label class="form-label">Payment Method</label>
+                <label class="form-label">{{ 'INVOICES.PAYMENT_METHOD' | translate }}</label>
                 <select class="form-select" [(ngModel)]="selectedPaymentMethod" (change)="onFilterChange()">
-                  <option value="all">All Methods</option>
+                  <option value="all">{{ 'INVOICES.ALL_METHODS' | translate }}</option>
                   <option *ngFor="let method of paymentMethods" [value]="method">
                     {{ getPaymentMethodText(method) }}
                   </option>
@@ -61,17 +61,17 @@
             </div>
             <div class="col-md-2">
               <div class="form-group">
-                <label class="form-label">Payment Status</label>
+                <label class="form-label">{{ 'INVOICES.PAYMENT_STATUS' | translate }}</label>
                 <select class="form-select" [(ngModel)]="selectedPaymentStatus" (change)="onFilterChange()">
-                  <option value="all">All Status</option>
-                  <option value="paid">Paid</option>
-                  <option value="unpaid">Unpaid</option>
+                  <option value="all">{{ 'INVOICES.ALL_STATUS' | translate }}</option>
+                  <option value="paid">{{ 'INVOICES.PAID' | translate }}</option>
+                  <option value="unpaid">{{ 'INVOICES.UNPAID' | translate }}</option>
                 </select>
               </div>
             </div>
             <div class="col-md-2">
               <div class="form-group">
-                <label class="form-label">Start Date</label>
+                <label class="form-label">{{ 'INVOICES.START_DATE' | translate }}</label>
                 <input
                   type="date"
                   class="form-control"
@@ -81,7 +81,7 @@
             </div>
             <div class="col-md-2">
               <div class="form-group">
-                <label class="form-label">End Date</label>
+                <label class="form-label">{{ 'INVOICES.END_DATE' | translate }}</label>
                 <input
                   type="date"
                   class="form-control"
@@ -105,34 +105,37 @@
     <div class="section-header">
       <h3>
         <i class="fas fa-file-invoice-dollar"></i>
-        Invoices ({{ filteredInvoices.length }})
+        {{ 'INVOICES.INVOICES' | translate }} ({{ filteredInvoices.length }})
       </h3>
       <button
         class="btn btn-primary"
         (click)="showAddInvoiceModal()"
         [disabled]="appointments.length === 0"
-        [title]="appointments.length === 0 ? 'No completed appointments available for creating invoices' : 'Create new invoice'">
+        [title]="appointments.length === 0 ? ('INVOICES.NO_COMPLETED_APPOINTMENTS' | translate) : ('INVOICES.CREATE_INVOICE' | translate)">
         <i class="fas fa-plus"></i>
-        Create Invoice
+        {{ 'INVOICES.CREATE_INVOICE' | translate }}
       </button>
     </div>
 
     <div class="content-card">
       <div *ngIf="loading" class="loading-section">
         <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+          <span class="visually-hidden">{{ 'COMMON.LOADING' | translate }}</span>
         </div>
-        <p>Loading invoices...</p>
+        <p>{{ 'INVOICES.LOADING' | translate }}</p>
       </div>
 
       <div *ngIf="!loading && filteredInvoices.length === 0" class="empty-state">
         <i class="fas fa-file-invoice-dollar"></i>
-        <h4>No Invoices Found</h4>
-        <p>Start by creating your first invoice.</p>
+        <h4>{{ 'INVOICES.NO_INVOICES' | translate }}</h4>
+        <p>{{ 'INVOICES.START_CREATING' | translate }}</p>
         <button class="btn btn-primary" (click)="showAddInvoiceModal()">
-          <i class="fas fa-plus"></i> Create Invoice
+          <i class="fas fa-plus"></i> {{ 'INVOICES.CREATE_INVOICE' | translate }}
         </button>
       </div>
+      
+
+      
 
       <div *ngIf="!loading && filteredInvoices.length > 0" class="invoices-grid">
         <div *ngFor="let invoice of filteredInvoices" class="invoice-card">
@@ -142,42 +145,56 @@
             </div>
             <div class="invoice-info">
               <h5 class="invoice-id">Invoice #{{ invoice.id }}</h5>
-              <p class="invoice-date">{{ formatDate(invoice.createdAt) }}</p>
+              <!-- <p class="invoice-date">{{ formatDate(invoice.createdAt) | 'dd' }}</p> -->
+              <p class="invoice-date">{{ formatDate(invoice.createdAt) | date:'dd/MM/yyyy' }}</p>
+              <!-- <p class="invoice-date">{{ formatDate(invoice.createdAt) | date:'dd/MM/yyyy' }}</p> -->
             </div>
-            <div class="invoice-status">
+            <!-- <div class="invoice-status">
               <span class="badge" [ngClass]="getPaymentStatusClass(invoice.isPaid)">
                 {{ getPaymentStatusText(invoice.isPaid) }}
               </span>
-            </div>
+            </div> -->
           </div>
           <div class="card-body">
             <div class="invoice-details">
               <div class="detail-item">
                 <i class="fas fa-dollar-sign"></i>
-                <span>Total: {{ formatCurrency(invoice.totalAmount) }}</span>
+                <span>{{ 'INVOICES.TOTAL_AMOUNT' | translate }}: {{ formatCurrency(invoice.totalAmount) }}</span>
+              </div>
+              <div class="detail-item"> 
+                {{ 'INVOICES.DESCRIPTION' | translate }}: {{ invoice.description }}
               </div>
               <div class="detail-item">
+                {{ 'INVOICES.SERVICE' | translate }}: {{ getinvoicenamebyid(invoice.serviceId) }}
+              </div>
+              <div class="detail-item">
+                {{ 'INVOICES.DEPARTMENT' | translate }}: {{ getdepartmentnamebyid(invoice.departmentId) }}
+              </div>
+              <div class="detail-item">
+                {{ 'INVOICES.DOCTOR' | translate }}: {{ getdoctornamebyid(+invoice.doctorId) }}
+              </div>
+              <!-- <div class="detail-item">
                 <i class="fas fa-credit-card"></i>
                 <span>Paid: {{ formatCurrency(invoice.paidAmount) }}</span>
-              </div>
+              </div> -->
               <div class="detail-item">
                 <i class="fas fa-money-bill-wave"></i>
                 <span>{{ getPaymentMethodText(invoice.paymentMethod) }}</span>
               </div>
-              <div class="detail-item">
+              <!-- <div class="detail-item">
                 <i class="fas fa-percentage"></i>
                 <span>Balance: {{ formatCurrency(invoice.totalAmount - invoice.paidAmount) }}</span>
-              </div>
+              </div> -->
             </div>
             <div class="invoice-actions">
               <button class="btn btn-sm btn-outline-primary" (click)="showInvoiceDetails(invoice)">
-                <i class="fas fa-eye"></i> View Details
+                <i class="fas fa-eye"></i> {{ 'INVOICES.VIEW_DETAILS' | translate }}
               </button>
               <div class="action-buttons">
-                <button class="btn btn-sm btn-outline-secondary" (click)="showEditInvoiceModal(invoice)">
+                <button class="btn btn-sm btn-outline-secondary" (click)="showEditInvoiceModal(invoice)" [title]="'COMMON.EDIT' | translate">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteInvoice(invoice.id)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteInvoice(invoice.id)" [title]="'COMMON.DELETE' | translate">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -192,11 +209,11 @@
   <div *ngIf="activeView === 'details' && selectedInvoice" class="invoice-details-view">
     <div class="details-header">
       <button class="btn btn-outline-secondary" (click)="backToList()">
-        <i class="fas fa-arrow-left"></i> Back to List
+        <i class="fas fa-arrow-left"></i> {{ 'INVOICES.BACK_TO_LIST' | translate }}
       </button>
       <div class="details-actions">
         <button class="btn btn-outline-primary" (click)="showEditInvoiceModal(selectedInvoice)">
-          <i class="fas fa-edit"></i> Edit Invoice
+          <i class="fas fa-edit"></i> {{ 'INVOICES.EDIT_INVOICE' | translate }}
         </button>
       </div>
     </div>
@@ -208,10 +225,10 @@
             <i class="fas fa-file-invoice-dollar"></i>
           </div>
           <div class="details-info">
-            <h2 class="details-title">Invoice #{{ selectedInvoice.appointmentId }}</h2>
+            <h2 class="details-title">{{ 'INVOICES.INVOICE' | translate }} #{{ selectedInvoice.id }}</h2>
             <p class="details-subtitle">{{ selectedInvoice.clinicName }}</p>
-            <span class="badge details-status" [ngClass]="getPaymentStatusClass(selectedInvoice.isPaid)">
-              {{ getPaymentStatusText(selectedInvoice.isPaid) }}
+            <span class="badge details-status" [ngClass]="getPaymentStatusClass(true)">
+              {{ getPaymentStatusText(true) }}
             </span>
           </div>
         </div>
@@ -219,53 +236,65 @@
 
       <div class="details-sections">
         <div class="detail-section">
-          <h4><i class="fas fa-info-circle"></i> Invoice Information</h4>
+          <h4><i class="fas fa-info-circle"></i> {{ 'INVOICES.INVOICE_INFORMATION' | translate }}</h4>
           <div class="detail-grid">
             <div class="detail-item">
-              <label>Invoice Date</label>
+              <label>{{ 'INVOICES.INVOICE_DATE' | translate }}</label>
               <span>{{ formatDate(selectedInvoice.createdAt) }}</span>
             </div>
             <div class="detail-item">
-              <label>Total Amount</label>
+              <label>{{ 'INVOICES.TOTAL_AMOUNT' | translate }}</label>
               <span>{{ formatCurrency(selectedInvoice.totalAmount) }}</span>
             </div>
-            <div class="detail-item">
+            <!-- <div class="detail-item">
               <label>Paid Amount</label>
               <span>{{ formatCurrency(selectedInvoice.paidAmount) }}</span>
+            </div> -->
+            <div class="detail-item">
+              <label>{{ 'INVOICES.BALANCE' | translate }}</label>
+              <span>{{ formatCurrency(selectedInvoice.totalAmount ) }}</span>
             </div>
             <div class="detail-item">
-              <label>Balance</label>
-              <span>{{ formatCurrency(selectedInvoice.totalAmount - selectedInvoice.paidAmount) }}</span>
-            </div>
-            <div class="detail-item">
-              <label>Payment Method</label>
+              <label>{{ 'INVOICES.PAYMENT_METHOD' | translate }}</label>
               <span class="badge" [ngClass]="getPaymentMethodClass(selectedInvoice.paymentMethod)">
                 {{ getPaymentMethodText(selectedInvoice.paymentMethod) }}
               </span>
             </div>
             <div class="detail-item">
-              <label>Payment Status</label>
-              <span class="badge" [ngClass]="getPaymentStatusClass(selectedInvoice.isPaid)">
-                {{ getPaymentStatusText(selectedInvoice.isPaid) }}
+              <label>{{ 'INVOICES.PAYMENT_STATUS' | translate }}</label>
+              <span class="badge" [ngClass]="getPaymentStatusClass(true)">
+                {{ getPaymentStatusText(true) }}
               </span>
             </div>
           </div>
         </div>
 
         <div class="detail-section">
-          <h4><i class="fas fa-user"></i> Patient Information</h4>
+          <h4><i class="fas fa-user"></i> {{ 'INVOICES.PATIENT_INFORMATION' | translate }}</h4>
           <div class="detail-grid">
             <div class="detail-item">
-              <label>Patient Name</label>
+              <label>{{ 'INVOICES.PATIENT_NAME' | translate }}</label>
               <span>{{ selectedInvoice.patientName }}</span>
             </div>
             <div class="detail-item">
-              <label>Clinic</label>
+              <label>{{ 'INVOICES.CLINIC' | translate }}</label>
               <span>{{ selectedInvoice.clinicName }}</span>
             </div>
             <div class="detail-item">
-              <label>Appointment ID</label>
-              <span>{{ selectedInvoice.appointmentId }}</span>
+              <label>{{ 'INVOICES.APPOINTMENT_ID' | translate }}</label>
+              <span>{{ selectedInvoice.id }}</span>
+            </div>
+            <div class="detail-item">
+              <label>{{ 'INVOICES.DOCTOR_ID' | translate }}</label>
+              <span>{{ selectedInvoice.doctorId }}</span>
+            </div>
+            <div class="detail-item">
+              <label>{{ 'INVOICES.DEPARTMENT_ID' | translate }}</label>
+              <span>{{ selectedInvoice.departmentId }}</span>
+            </div>
+            <div class="detail-item">
+              <label>{{ 'INVOICES.SERVICE_ID' | translate }}</label>
+              <span>{{ selectedInvoice.serviceId }}</span>
             </div>
           </div>
         </div>
@@ -279,7 +308,7 @@
       <div class="modal-header">
         <h4 class="modal-title">
           <i class="fas fa-file-invoice-dollar"></i>
-          {{ editingInvoice ? 'Edit Invoice' : 'Create Invoice' }}
+          {{ editingInvoice ? ('INVOICES.EDIT_INVOICE' | translate) : ('INVOICES.CREATE_INVOICE' | translate) }}
         </h4>
         <button type="button" class="btn-close" (click)="closeInvoiceModal()">
           <i class="fas fa-times"></i>
@@ -289,9 +318,9 @@
       <form [formGroup]="invoiceForm" (ngSubmit)="saveInvoice()">
         <div class="modal-body">
           <div class="row">
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">Appointment *</label>
+                <label class="form-label">Appointment</label>
                 <select
                   class="form-select"
                   formControlName="appointmentId"
@@ -313,16 +342,83 @@
                   No completed appointments available for creating invoices. All appointments either have invoices or are not completed.
                 </div>
               </div>
+            </div> -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">{{ 'INVOICES.DEPARTMENT' | translate }} *</label>
+                <select
+                  class="form-select"
+                  formControlName="departmentId"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'departmentId')"
+                  (change)="onDepartmentChange()"
+                  >
+                  <option value="">{{ 'INVOICES.SELECT_DEPARTMENT' | translate }}</option>
+                  <option *ngFor="let department of departments" [value]="department.id">
+                    {{ department.name }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(invoiceForm, 'departmentId')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'departmentId') }}
+                </div>
+              </div>
+            </div>
+
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">{{ 'INVOICES.DOCTOR' | translate }} *</label>
+                <select
+                  class="form-select"
+                  formControlName="doctorId"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'doctorId')"
+                  [disabled]="!selectedDepartment">
+                  >
+                  <option value="">{{ 'INVOICES.SELECT_DOCTOR' | translate }}</option>
+                  <option *ngFor="let doctor of availableDoctors()" [value]="doctor.doctorId">
+                    {{ doctor.doctorName }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(invoiceForm, 'doctorId')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'doctorId') }}
+                </div>
+              </div>
             </div>
 
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">Payment Method *</label>
+                <label class="form-label">{{ 'INVOICES.SERVICE' | translate }} *</label>
+                <select
+                  class="form-select"
+                  formControlName="serviceId"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'serviceId')"
+                  [disabled]="!selectedDepartment">
+                  >
+                  <option value="">{{ 'INVOICES.SELECT_SERVICE' | translate }}</option>
+                  <option *ngFor="let service of services" [value]="service.id">
+                    {{ service.name }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid(invoiceForm, 'serviceId')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'serviceId') }}
+                </div>
+              </div>
+
+
+              <!-- <textarea class="form-control" [(ngModel)]="newServiceName"  placeholder="Enter new service name"></textarea>
+              <button class="btn btn-primary" (click)="createservice(newServiceName())">Create Service</button>
+                <div *ngIf="isFieldInvalid(invoiceForm, 'serviceId')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'serviceId') }}
+                </div> -->
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">{{ 'INVOICES.PAYMENT_METHOD' | translate }} *</label>
                 <select
                   class="form-select"
                   formControlName="paymentMethod"
                   [class.is-invalid]="isFieldInvalid(invoiceForm, 'paymentMethod')">
-                  <option value="">Select payment method</option>
+                  <option value="">{{ 'INVOICES.SELECT_PAYMENT_METHOD' | translate }}</option>
                   <option *ngFor="let method of paymentMethods" [value]="method">
                     {{ getPaymentMethodText(method) }}
                   </option>
@@ -337,7 +433,7 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
-                <label class="form-label">Total Amount *</label>
+                <label class="form-label">{{ 'INVOICES.TOTAL_AMOUNT' | translate }} *</label>
                 <input
                   type="number"
                   class="form-control"
@@ -352,7 +448,7 @@
               </div>
             </div>
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <div class="form-group">
                 <label class="form-label">Paid Amount *</label>
                 <input
@@ -367,7 +463,42 @@
                   {{ getFieldError(invoiceForm, 'paidAmount') }}
                 </div>
               </div>
+            </div> -->
+          </div>
+
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">{{ 'INVOICES.DESCRIPTION' | translate }} *</label>
+                <textarea
+                  class="form-control"
+                  formControlName="description"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'description')"
+                  [placeholder]="'INVOICES.ENTER_DESCRIPTION' | translate">
+                </textarea>
+                <div *ngIf="isFieldInvalid(invoiceForm, 'description')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'description') }}
+                </div>
+              </div>
             </div>
+
+            <!-- <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Paid Amount *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="paidAmount"
+                  [class.is-invalid]="isFieldInvalid(invoiceForm, 'paidAmount')"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00">
+                <div *ngIf="isFieldInvalid(invoiceForm, 'paidAmount')" class="invalid-feedback">
+                  {{ getFieldError(invoiceForm, 'paidAmount') }}
+                </div>
+              </div>
+            </div> -->
           </div>
 
           <!-- Selected Appointment Details -->
@@ -376,38 +507,38 @@
               <div class="card-header">
                 <h6 class="card-title">
                   <i class="fas fa-calendar-check"></i>
-                  Selected Appointment Details
+                  {{ 'INVOICES.SELECTED_APPOINTMENT_DETAILS' | translate }}
                 </h6>
               </div>
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-6">
                     <div class="detail-item">
-                      <label>Patient Name:</label>
+                      <label>{{ 'INVOICES.PATIENT_NAME' | translate }}:</label>
                       <span>{{ getSelectedAppointment()?.name }}</span>
                     </div>
                     <div class="detail-item">
-                      <label>Doctor:</label>
+                      <label>{{ 'INVOICES.DOCTOR' | translate }}:</label>
                       <span>{{ getSelectedAppointment()?.doctorName }}</span>
                     </div>
                     <div class="detail-item">
-                      <label>Department:</label>
+                      <label>{{ 'INVOICES.DEPARTMENT' | translate }}:</label>
                       <span>{{ getSelectedAppointment()?.departmentName }}</span>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="detail-item">
-                      <label>Appointment Date:</label>
+                      <label>{{ 'INVOICES.APPOINTMENT_DATE' | translate }}:</label>
                       <span>{{ formatDateTime(getSelectedAppointment()?.appointmentDate || '') }}</span>
                     </div>
                     <div class="detail-item">
-                      <label>Status:</label>
+                      <label>{{ 'COMMON.STATUS' | translate }}:</label>
                       <span class="badge" [ngClass]="getAppointmentStatusClass(getSelectedAppointment()?.status || 0)">
                         {{ getAppointmentStatusText(getSelectedAppointment()?.status || 0) }}
                       </span>
                     </div>
                     <div class="detail-item" *ngIf="getSelectedAppointment()?.notes">
-                      <label>Notes:</label>
+                      <label>{{ 'INVOICES.NOTES' | translate }}:</label>
                       <span>{{ getSelectedAppointment()?.notes }}</span>
                     </div>
                   </div>
@@ -419,14 +550,14 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeInvoiceModal()">
-            <i class="fas fa-times"></i> Cancel
+            <i class="fas fa-times"></i> {{ 'COMMON.CANCEL' | translate }}
           </button>
           <button
             type="submit"
             class="btn btn-primary"
             [disabled]="invoiceForm.invalid">
             <i class="fas fa-save"></i>
-            {{ editingInvoice ? 'Update' : 'Create' }}
+            {{ editingInvoice ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}
           </button>
         </div>
       </form>

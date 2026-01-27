@@ -81,7 +81,7 @@ export class InvoiceEditComponent implements OnInit {
       
       this.invoiceForm.patchValue({
         totalAmount: this.invoice.totalAmount,
-        paidAmount: this.invoice.paidAmount,
+        // paidAmount: this.invoice.paidAmount,
         paymentMethod: normalizedPaymentMethod
       });
       
@@ -107,7 +107,7 @@ export class InvoiceEditComponent implements OnInit {
     
     const updateData: UpdateInvoice = {
       totalAmount: formValue.totalAmount,
-      paidAmount: formValue.paidAmount,
+      // paidAmount: formValue.paidAmount,
       paymentMethod: normalizedPaymentMethod
     };
     

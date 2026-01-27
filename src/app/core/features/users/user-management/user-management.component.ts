@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../services/account.service';
@@ -12,11 +12,12 @@ import {
   CreateDoctorDTO
 } from '../../../Interfaces/all';
 import { environment } from '../../../services/enviroment';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.css'
 })
@@ -48,6 +49,7 @@ export class UserManagementComponent implements OnInit {
 
   // Filters
   searchTerm = '';
+  protected translateService = inject(TranslateService);
   selectedRole: string = 'all';
   selectedStatus: string = 'all';
 

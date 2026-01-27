@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,11 +7,12 @@ import { DepartmentService } from '../../../services/clinics/department.service'
 import { DoctorViewDTO, CreateDoctorDTO, DepartmentViewDTO, UserViewDTO } from '../../../Interfaces/all';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../../services/enviroment';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-doctor-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './doctor-list.component.html',
   styleUrl: './doctor-list.component.css',
 })
@@ -48,6 +49,7 @@ export class DoctorListComponent implements OnInit {
   selectedUser: UserViewDTO | null = null;
   showUserSelection = false;
   userSearchTerm = '';
+  protected translateService = inject(TranslateService);
   filteredUsers: UserViewDTO[] = [];
 
   // New User Creation properties

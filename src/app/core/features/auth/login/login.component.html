@@ -77,43 +77,43 @@
                 </div>
                 <div class="col-md-12 col-lg-6 login-right">
                   <div class="login-header">
-                    <h3>Login <span>Doccure</span></h3>
+                    <h3>{{ 'LOGIN.TITLE' | translate }} <span>Doccure</span></h3>
                   </div>
                   <form (ngSubmit)="onLogin()" #loginForm="ngForm" novalidate>
                     <div class="form-group form-focus mb-1">
-                      <label for="username" class="focus-label">Username</label>
+                      <label for="username" class="focus-label">{{ 'LOGIN.USERNAME' | translate }}</label>
                       <input
                         type="text"
                         id="username"
                         name="username"
                         [(ngModel)]="username"
                         class="form-control floating"
-                        placeholder="Enter username"
+                        [placeholder]="'LOGIN.ENTER_USERNAME' | translate"
                         required
                       />
                     </div>
 
                     <div class="form-group form-focus mb-1">
-                      <label for="password" class="focus-label">Password</label>
+                      <label for="password" class="focus-label">{{ 'LOGIN.PASSWORD' | translate }}</label>
                       <input
                         type="password"
                         id="password"
                         name="password"
                         [(ngModel)]="password"
                         class="form-control floating"
-                        placeholder="Enter password"
+                        [placeholder]="'LOGIN.ENTER_PASSWORD' | translate"
                         required
                       />
                     </div>
                     <!-- <div class="text-right">
-												<a class="forgot-link" href="forgot-password.html">Forgot Password ?</a>
+												<a class="forgot-link" href="forgot-password.html">{{ 'LOGIN.FORGOT_PASSWORD' | translate }}</a>
 											</div> -->
                     <button
                       type="submit"
                       class="btn btn-primary w-100 mt-3"
                       [disabled]="!loginForm.valid"
                     >
-                      Login
+                      {{ 'LOGIN.LOGIN_BUTTON' | translate }}
                     </button>
 
                     <!-- <div class="login-or">

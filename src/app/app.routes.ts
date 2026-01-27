@@ -38,6 +38,7 @@ import { UserManagementComponent } from './core/features/users/user-management/u
 import { MyAppointmentsClinicComponent } from './core/features/appointments/my-appointments-clinic/my-appointments-clinic.component';
 import { AdminLayoutComponent } from './core/layouts/admin-layout/admin-layout.component';
 import { MedicalRecordDetailsComponent } from './core/features/patients/medical-record-details/medical-record-details.component';
+import { ServicesComponent } from './core/features/appointments/services/services.component';
 
 
 export const routes: Routes = [
@@ -61,6 +62,7 @@ export const routes: Routes = [
         path: 'dashboard',
         component:AdminDashboardComponent
       },
+      { path: 'services', component: ServicesComponent },
       { path: 'doctors', component: DoctorListComponent },
       { path: 'patients', component: PatientListComponent },
       { path: 'invoices', component: InvoiceListComponent },
@@ -108,6 +110,7 @@ export const routes: Routes = [
       { path: 'transactions', component: TransactionComponent },
       { path: 'invoices', component: InvoiceListComponent },
       { path: 'customer-service', component: EmployeeComponent },
+      { path: 'departments', component: DepartmentManagementComponent },
     ]
   },
 
