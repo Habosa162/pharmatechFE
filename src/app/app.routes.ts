@@ -39,6 +39,7 @@ import { MyAppointmentsClinicComponent } from './core/features/appointments/my-a
 import { AdminLayoutComponent } from './core/layouts/admin-layout/admin-layout.component';
 import { MedicalRecordDetailsComponent } from './core/features/patients/medical-record-details/medical-record-details.component';
 import { ServicesComponent } from './core/features/appointments/services/services.component';
+import { MonthlyReportComponent } from './core/features/reports/monthly-report/monthly-report.component';
 
 
 export const routes: Routes = [
@@ -72,6 +73,8 @@ export const routes: Routes = [
       { path: 'admin-data-management', component: AdminDataManagementComponent },
       { path: 'prescriptions/:id', component: PrescriptionDetailsComponent },
       { path: 'medical-record-details/:id', component: MedicalRecordDetailsComponent },
+      { path: 'monthlyReport', component: MonthlyReportComponent },
+
     ]
   },
 
@@ -184,6 +187,8 @@ export const routes: Routes = [
   {path:'my-appointments-clinic', component: MyAppointmentsClinicComponent},
   { path: 'users', component: UserManagementComponent },
   { path: 'aa', component: DoctorListComponent },
+
+        { path: 'monthlyReport', component: MonthlyReportComponent },
 
   { path: '**', component: NotFoundComponent },
 ];
