@@ -103,7 +103,7 @@ getcurrentuserroles(): void {
       dateOfBirth: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(8), this.complexPasswordValidator()]],
       confirmPassword: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^[1-9][\d]{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9][\d]{10}$/)]],
       clinicId: [undefined, ],
       // Individual role controls instead of array
       roleMaster: [false],
