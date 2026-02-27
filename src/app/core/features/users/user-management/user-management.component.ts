@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../services/account.service';
@@ -9,10 +9,13 @@ import {
   UpdateUserDTO,
   ChangePasswordDTO,
   DoctorViewDTO,
-  CreateDoctorDTO
+  CreateDoctorDTO,
+  ClinicViewDTO
 } from '../../../Interfaces/all';
 import { environment } from '../../../services/enviroment';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../services/auth.service';
+import { ClinicService } from '../../../services/clinics/clinic.service';
 
 @Component({
   selector: 'app-user-management',
@@ -62,14 +65,35 @@ export class UserManagementComponent implements OnInit {
   // Available roles
   availableRoles = ['Master', 'Owner', 'Admin', 'User', 'Accountant'];
 
+  currentuserroles= signal<string[]>([]);
+getcurrentuserroles(): void {
+  this.currentuserroles.set(this.authService.getroles().map(role => role.toUpperCase()));
+  console.log(this.currentuserroles(),'currentuserroles');
+  // return this.currentuserroles;
+}
   // File handling
   selectedFile: File | null = null;
   previewUrl: string | null = null;
+  clinics: ClinicViewDTO[] = [];
 
+  loadclinics(): void {
+    var clinicIds = this.authService.getUserClinicId();
+    this.clinicService.getAllClinics().subscribe({
+      next: (clinics) => {
+        if(this.authService.getroles().includes('MASTER') || this.authService.getroles().includes('Master')){
+          this.clinics = clinics;
+        }else{
+          this.clinics = clinics.map(clinic =>  clinicIds?.includes(clinic.id) ? clinic : null).filter(clinic => clinic !== null);
+        }
+      },
+    });
+  }
   constructor(
     private accountService: AccountService,
     private fb: FormBuilder,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private authService: AuthService,
+    private clinicService: ClinicService
   ) {
     this.userForm = this.fb.group({
       userName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
@@ -80,6 +104,7 @@ export class UserManagementComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(8), this.complexPasswordValidator()]],
       confirmPassword: ['', [Validators.required]],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^[1-9][\d]{10}$/)]],
+      clinicId: [undefined, ],
       // Individual role controls instead of array
       roleMaster: [false],
       roleOwner: [false],
@@ -108,6 +133,8 @@ export class UserManagementComponent implements OnInit {
   ngOnInit(): void {
     this.loadUsers();
     this.loadDoctors();
+    this.loadclinics();
+    this.getcurrentuserroles();
   }
 
   // Password match validator
@@ -388,7 +415,7 @@ export class UserManagementComponent implements OnInit {
     formData.append('password', formValue.password);
     formData.append('confirmPassword', formValue.confirmPassword);
     formData.append('phoneNumber', formValue.phoneNumber);
-
+    if (formValue.clinicId) formData.append('clinicId', formValue.clinicId.toString());
     // Append each role individually instead of as JSON string
     if (formValue.roleMaster) formData.append('roles', 'Master');
     if (formValue.roleOwner) formData.append('roles', 'Owner');

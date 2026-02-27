@@ -118,6 +118,11 @@ export class AuthService {
   };
   return userData;
   }
+  getUserClinicId(): number[] | null {
+    const decodedToken = this.getDecodedToken();
+    if (!decodedToken) return null;
+    return decodedToken['ClinicId'] || [];
+  }
 
   getUserId(): string | null {
     const decodedToken = this.getDecodedToken();
@@ -163,6 +168,13 @@ export class AuthService {
     return result;
   }
 
+  getroles(): string[] {
+    const userData = this._userFullData();
+    if (!userData || !userData.roles) {
+      return [];
+    }
+    return userData.roles;
+  }
   getHighestRole(): string | null {
     const userData = this._userFullData();
     //console.log('AuthService - getHighestRole called, User data:', userData);
