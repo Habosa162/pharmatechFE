@@ -25,6 +25,8 @@ export interface AllInvoices {
   description?:string;
   serviceId:number;
   paymentMethod: PaymentMethod | string; // Backend returns string, frontend displays
+  clinicId?:number;
+  clinicName?: string;
 }
 
 export interface CreateInvoice {

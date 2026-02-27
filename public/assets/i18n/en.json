@@ -108,6 +108,7 @@
     "PAYMENT_STATUS": "Payment Status",
     "ALL_STATUS": "All Status",
     "DESCRIPTION": "Description",
+    "CLINIC_NAME": "Clinic Name",
     "PAID": "Paid",
     "UNPAID": "Unpaid",
     "START_DATE": "Start Date",

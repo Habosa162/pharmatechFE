@@ -162,6 +162,9 @@
                 <span>{{ 'INVOICES.TOTAL_AMOUNT' | translate }}: {{ formatCurrency(invoice.totalAmount) }}</span>
               </div>
               <div class="detail-item"> 
+                {{ 'INVOICES.CLINIC_NAME' | translate }}: {{ invoice.clinicName }}
+              </div>
+              <div class="detail-item"> 
                 {{ 'INVOICES.DESCRIPTION' | translate }}: {{ invoice.description }}
               </div>
               <div class="detail-item">

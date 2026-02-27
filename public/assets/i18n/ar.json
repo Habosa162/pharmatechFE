@@ -104,6 +104,7 @@
     "FILTER_INVOICES": "تصفية الفواتير",
     "DESCRIPTION": "الوصف",
     "SEARCH_PLACEHOLDER": "البحث بالرقم أو المبلغ",
+    "CLINIC_NAME": "اسم العيادة",
     "PAYMENT_METHOD": "طريقة الدفع",
     "ALL_METHODS": "جميع الطرق",
     "PAYMENT_STATUS": "حالة الدفع",

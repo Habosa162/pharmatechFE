@@ -372,7 +372,8 @@ export class InvoiceListComponent implements OnInit {
       paymentMethod: invoice.paymentMethod,
       doctorId: invoice.doctorId,
       departmentId: invoice.departmentId,
-      serviceId: invoice.serviceId
+      serviceId: invoice.serviceId,
+   
     };
 
     //console.log('Final invoice ID for editing:', invoiceForEdit.id);
