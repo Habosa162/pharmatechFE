@@ -1,0 +1,151 @@
+<!-- doctor-department-report.component.html -->
+<div class="report-page">
+
+  <!-- Header -->
+  <div class="report-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h2 class="report-title mb-0">👨‍⚕️ Doctors &amp; Departments Report</h2>
+      <p class="text-muted small mb-0" *ngIf="report">
+        {{ report.clinicName }} &mdash; Generated {{ formatDate(report.generatedAt) }}
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary btn-sm px-3" (click)="loadReport()" [disabled]="isLoading">
+        <span *ngIf="!isLoading"><i class="bi bi-arrow-clockwise me-1"></i> Refresh</span>
+        <span *ngIf="isLoading"><span class="spinner-border spinner-border-sm me-1"></span> Loading...</span>
+      </button>
+      <button class="btn btn-outline-danger btn-sm px-3" (click)="exportPdf()" [disabled]="isExporting || !report">
+        <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</span>
+        <span *ngIf="isExporting"><span class="spinner-border spinner-border-sm me-1"></span> Exporting...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMessage }}
+    <button class="btn-close ms-auto" (click)="errorMessage = null"></button>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="isLoading" class="row g-3">
+    <div class="col-md-4" *ngFor="let _ of [1,2,3]"><div class="skeleton-card"></div></div>
+    <div class="col-12"><div class="skeleton-card tall"></div></div>
+  </div>
+
+  <ng-container *ngIf="report && !isLoading">
+
+    <!-- KPI Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-4">
+        <div class="kpi-card kpi-primary">
+          <div class="kpi-label">Total Doctors</div>
+          <div class="kpi-value">{{ report.totalDoctors }}</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="kpi-card kpi-income">
+          <div class="kpi-label">Active</div>
+          <div class="kpi-value">{{ report.activeDoctors }}</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="kpi-card kpi-expense">
+          <div class="kpi-label">Inactive</div>
+          <div class="kpi-value">{{ report.inactiveDoctors }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Departments -->
+    <div class="report-card mb-4">
+      <div class="report-card-header">🏥 Departments</div>
+      <div class="report-card-body p-0">
+        <div *ngFor="let dept of report.departments" class="dept-block">
+
+          <!-- Dept Row (clickable to expand) -->
+          <div class="dept-row" (click)="toggleDept(dept.departmentName)">
+            <div class="dept-left">
+              <span class="dept-toggle">{{ isDeptExpanded(dept.departmentName) ? '▾' : '▸' }}</span>
+              <span class="dept-name">{{ dept.departmentName }}</span>
+              <span class="badge ms-2" [ngClass]="dept.isActive ? 'badge-active' : 'badge-inactive'">
+                {{ dept.isActive ? 'Active' : 'Inactive' }}
+              </span>
+              <span *ngIf="dept.topDoctor" class="top-doc-badge ms-2">
+                ⭐ {{ dept.topDoctor.name }}
+              </span>
+            </div>
+            <div class="dept-right">
+              <span class="dept-stat"><i class="bi bi-calendar-check me-1"></i>{{ dept.totalAppointments }}</span>
+              <span class="dept-stat"><i class="bi bi-people me-1"></i>{{ dept.totalDoctors }}</span>
+              <span class="dept-stat text-success fw-semibold">{{ formatCurrency(dept.totalRevenue) }}</span>
+            </div>
+          </div>
+
+          <!-- Expanded Doctors Table -->
+          <div *ngIf="isDeptExpanded(dept.departmentName)" class="dept-expanded">
+            <table class="table table-sm report-table mb-0">
+              <thead>
+                <tr>
+                  <th>Doctor</th>
+                  <th>Specialization</th>
+                  <th>Status</th>
+                  <th class="text-center">Appointments</th>
+                  <th class="text-center">Rev %</th>
+                  <th class="text-end">Contribution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let doc of dept.doctors">
+                  <td class="fw-semibold">{{ doc.name }}</td>
+                  <td>{{ doc.specialization }}</td>
+                  <td>
+                    <span class="status-dot" [ngClass]="doc.isActive ? 'dot-active' : 'dot-inactive'"></span>
+                    {{ doc.isActive ? 'Active' : 'Inactive' }}
+                  </td>
+                  <td class="text-center fw-bold">{{ doc.appointmentCount }}</td>
+                  <td class="text-center">{{ doc.revenuePercentage.toFixed(1) }}%</td>
+                  <td class="text-end fw-bold text-success">{{ formatCurrency(doc.revenueContribution) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- All Doctors Performance -->
+    <div class="report-card">
+      <div class="report-card-header">📋 All Doctors Performance</div>
+      <div class="report-card-body">
+        <div *ngFor="let doc of report.allDoctors" class="doctor-row">
+          <div class="doctor-info">
+            <div class="d-flex align-items-center gap-2">
+              <span class="status-dot" [ngClass]="doc.isActive ? 'dot-active' : 'dot-inactive'"></span>
+              <span class="doctor-name">{{ doc.name }}</span>
+            </div>
+            <div class="doctor-meta">
+              {{ doc.specialization }}
+              <span class="dept-tags">
+                <span *ngFor="let d of doc.departments" class="dept-tag">{{ d }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="doctor-stats">
+            <div class="doctor-bar-wrap">
+              <div class="doctor-bar" [style.width.%]="doctorBarWidth(doc.appointmentCount)"></div>
+            </div>
+            <div class="doctor-numbers">
+              <span class="appt-count">{{ doc.appointmentCount }} appts</span>
+              <span class="rev-pct">{{ doc.revenuePercentage.toFixed(1) }}%</span>
+              <span class="rev-contrib">{{ formatCurrency(doc.revenueContribution) }}</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="report.allDoctors.length === 0" class="empty-state">No doctors found.</div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
