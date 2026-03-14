@@ -1,0 +1,249 @@
+<!-- half-month-report.component.html -->
+<div class="report-page">
+
+  <!-- Header -->
+  <div class="report-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h2 class="report-title mb-0">📅 Half-Month Report</h2>
+      <p class="text-muted small mb-0" *ngIf="report">
+        {{ report.clinicName }} &mdash; <strong>{{ report.periodLabel }}</strong>
+        &mdash; {{ formatDate(report.periodFrom) }} to {{ formatDate(report.periodTo) }}
+      </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <!-- Half selector -->
+      <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn"
+                [ngClass]="selectedHalf === 1 ? 'btn-primary' : 'btn-outline-primary'"
+                (click)="selectedHalf = 1">1–15</button>
+        <button type="button" class="btn"
+                [ngClass]="selectedHalf === 2 ? 'btn-primary' : 'btn-outline-primary'"
+                (click)="selectedHalf = 2">16–End</button>
+      </div>
+
+      <select class="form-select form-select-sm report-select" [(ngModel)]="selectedMonth">
+        <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
+      </select>
+
+      <select class="form-select form-select-sm report-select" [(ngModel)]="selectedYear">
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+
+      <button class="btn btn-primary btn-sm px-3" (click)="loadReport()" [disabled]="isLoading">
+        <span *ngIf="!isLoading"><i class="bi bi-search me-1"></i> Generate</span>
+        <span *ngIf="isLoading"><span class="spinner-border spinner-border-sm me-1"></span> Loading...</span>
+      </button>
+
+      <button class="btn btn-outline-danger btn-sm px-3" (click)="exportPdf()" [disabled]="isExporting || !report">
+        <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</span>
+        <span *ngIf="isExporting"><span class="spinner-border spinner-border-sm me-1"></span> Exporting...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMessage }}
+    <button class="btn-close ms-auto" (click)="errorMessage = null"></button>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="isLoading" class="row g-3">
+    <div class="col-md-4" *ngFor="let _ of [1,2,3]"><div class="skeleton-card"></div></div>
+    <div class="col-12"><div class="skeleton-card tall"></div></div>
+  </div>
+
+  <ng-container *ngIf="report && !isLoading">
+
+    <!-- Period banner -->
+    <div class="half-banner mb-4">
+      <div class="half-banner-left">
+        <span class="half-pill">{{ report.periodLabel }}</span>
+      </div>
+      <div class="half-banner-right">
+        {{ formatDate(report.periodFrom) }} &rarr; {{ formatDate(report.periodTo) }}
+      </div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-income">
+          <div class="kpi-label">Total Income</div>
+          <div class="kpi-value">{{ formatCurrency(report.financial.totalIncome) }}</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-expense">
+          <div class="kpi-label">Total Expenses</div>
+          <div class="kpi-value">{{ formatCurrency(report.financial.totalExpenses) }}</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card" [ngClass]="report.financial.netProfit >= 0 ? 'kpi-profit' : 'kpi-loss'">
+          <div class="kpi-label">Net Profit / Loss</div>
+          <div class="kpi-value">{{ netProfitIcon }} {{ formatCurrency(report.financial.netProfit) }}</div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-invoices">
+          <div class="kpi-label">Total Invoices</div>
+          <div class="kpi-value">{{ report.financial.invoiceSummary.totalInvoices }}</div>
+          <div class="kpi-sub">{{ formatCurrency(report.financial.invoiceSummary.totalInvoiceAmount) }} billed</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6">
+        <div class="report-card h-100">
+          <div class="report-card-header income-header">💰 Income by Category</div>
+          <div class="report-card-body">
+            <div *ngIf="incomeCategories(report.financial.categoryBreakdown).length === 0" class="empty-state">No income this period.</div>
+            <div *ngFor="let cat of incomeCategories(report.financial.categoryBreakdown)" class="category-row">
+              <div class="category-name">{{ cat.categoryName }}</div>
+              <div class="category-bar-wrap">
+                <div class="category-bar income-bar"
+                     [style.width.%]="barWidth(cat.totalAmount, incomeCategories(report.financial.categoryBreakdown))">
+                </div>
+              </div>
+              <div class="category-amount text-success">{{ formatCurrency(cat.totalAmount) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="report-card h-100">
+          <div class="report-card-header expense-header">📤 Expenses by Category</div>
+          <div class="report-card-body">
+            <div *ngIf="expenseCategories(report.financial.categoryBreakdown).length === 0" class="empty-state">No expenses this period.</div>
+            <div *ngFor="let cat of expenseCategories(report.financial.categoryBreakdown)" class="category-row">
+              <div class="category-name">{{ cat.categoryName }}</div>
+              <div class="category-bar-wrap">
+                <div class="category-bar expense-bar"
+                     [style.width.%]="barWidth(cat.totalAmount, expenseCategories(report.financial.categoryBreakdown))">
+                </div>
+              </div>
+              <div class="category-amount text-danger">{{ formatCurrency(cat.totalAmount) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoice + Payment -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-4">
+        <div class="report-card h-100">
+          <div class="report-card-header">💳 Payment Methods</div>
+          <div class="report-card-body">
+            <div class="payment-item">
+              <div class="payment-label">Cash</div>
+              <div class="payment-bar-wrap">
+                <div class="payment-bar cash-bar"
+                     [style.width.%]="report.financial.invoiceSummary.totalInvoiceAmount > 0
+                       ? (report.financial.invoiceSummary.cashAmount / report.financial.invoiceSummary.totalInvoiceAmount * 100) : 0">
+                </div>
+              </div>
+              <div class="payment-amount">{{ formatCurrency(report.financial.invoiceSummary.cashAmount) }}</div>
+            </div>
+            <div class="payment-item mt-3">
+              <div class="payment-label">Other</div>
+              <div class="payment-bar-wrap">
+                <div class="payment-bar other-bar"
+                     [style.width.%]="report.financial.invoiceSummary.totalInvoiceAmount > 0
+                       ? (report.financial.invoiceSummary.otherAmount / report.financial.invoiceSummary.totalInvoiceAmount * 100) : 0">
+                </div>
+              </div>
+              <div class="payment-amount">{{ formatCurrency(report.financial.invoiceSummary.otherAmount) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="report-card h-100">
+          <div class="report-card-header">🧾 Top 10 Invoices</div>
+          <div class="report-card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm report-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Patient</th><th>Service</th><th>Doctor</th>
+                    <th>Method</th><th class="text-end">Amount</th><th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let inv of report.financial.invoiceSummary.topInvoices">
+                    <td>{{ inv.patientName }}</td>
+                    <td>{{ inv.serviceName }}</td>
+                    <td>{{ inv.doctorName }}</td>
+                    <td><span class="badge-method">{{ inv.paymentMethod }}</span></td>
+                    <td class="text-end fw-semibold">{{ formatCurrency(inv.amount) }}</td>
+                    <td class="text-muted small">{{ formatDate(inv.date) }}</td>
+                  </tr>
+                  <tr *ngIf="!report.financial.invoiceSummary.topInvoices.length">
+                    <td colspan="6" class="text-center text-muted py-3">No invoices this period.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doctor Activity -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-3">
+        <div class="report-card h-100">
+          <div class="report-card-header">👨‍⚕️ Doctor Overview</div>
+          <div class="report-card-body d-flex flex-column gap-3">
+            <div class="doctor-kpi">
+              <div class="doctor-kpi-label">Active Doctors</div>
+              <div class="doctor-kpi-value">{{ report.doctorActivity.totalActiveDoctors }}</div>
+            </div>
+            <div class="doctor-kpi">
+              <div class="doctor-kpi-label">Total Appointments</div>
+              <div class="doctor-kpi-value">{{ report.doctorActivity.totalAppointments }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-9">
+        <div class="report-card h-100">
+          <div class="report-card-header">📋 Doctor Performance</div>
+          <div class="report-card-body">
+            <div *ngIf="!report.doctorActivity.doctors.length" class="empty-state">No activity this period.</div>
+            <div *ngFor="let doc of report.doctorActivity.doctors" class="doctor-row">
+              <div class="doctor-info">
+                <div class="doctor-name">{{ doc.name }}</div>
+                <div class="doctor-meta">
+                  {{ doc.specialization }}
+                  <span class="dept-tags">
+                    <span *ngFor="let d of doc.departments" class="dept-tag">{{ d }}</span>
+                  </span>
+                </div>
+              </div>
+              <div class="doctor-stats">
+                <div class="doctor-bar-wrap">
+                  <div class="doctor-bar" [style.width.%]="doctorBarWidth(doc.appointmentCount)"></div>
+                </div>
+                <div class="doctor-numbers">
+                  <span class="appt-count">{{ doc.appointmentCount }} appts</span>
+                  <span class="rev-pct">{{ doc.revenuePercentage.toFixed(1) }}%</span>
+                  <span class="rev-contrib">{{ formatCurrency(doc.revenueContribution) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
