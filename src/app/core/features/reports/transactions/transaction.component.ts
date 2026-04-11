@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TransactionService } from '../../services/transactions/transaction.service';
+import { TransactionService } from '../../../services/transactions/transaction.service';
 import { 
   Transaction, 
   TransactionType,
@@ -9,8 +9,8 @@ import {
   TransactionSearchDto,
   TransactionSortBy,
   SortDirection
-} from '../../Models/transactions/transactions.model';
-import { AuthService } from '../../services/auth.service';
+} from '../../../Models/transactions/transactions.model';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-transaction',

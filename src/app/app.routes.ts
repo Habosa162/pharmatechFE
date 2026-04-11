@@ -31,7 +31,7 @@ import { PatientSurgeriesComponent } from './core/features/patients/patient-surg
 import { PatientPrescriptionsComponent } from './core/features/patients/patient-prescriptions/patient-prescriptions.component';
 import { DoctorProfileComponent } from './core/features/doctors/doctor-profile/doctor-profile.component';
 import { InventoryComponent } from './core/features/inventory/inventory.component';
-import { TransactionComponent } from './core/features/transactions/transaction.component';
+import { TransactionComponent } from './core/features/reports/transactions/transaction.component';
 import { DepartmentManagementComponent } from './core/features/departments/department-management/department-management.component';
 import { PrescriptionDetailsComponent } from './core/features/patients/prescription-details/prescription-details.component';
 import { UserManagementComponent } from './core/features/users/user-management/user-management.component';

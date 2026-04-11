@@ -1,47 +1,67 @@
 <!-- half-month-report.component.html -->
 <div class="report-page">
 
-  <!-- Header -->
-  <div class="report-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-    <div>
-      <h2 class="report-title mb-0">📅 Half-Month Report</h2>
-      <p class="text-muted small mb-0" *ngIf="report">
-        {{ report.clinicName }} &mdash; <strong>{{ report.periodLabel }}</strong>
-        &mdash; {{ formatDate(report.periodFrom) }} to {{ formatDate(report.periodTo) }}
-      </p>
-    </div>
-
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <!-- Half selector -->
-      <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn"
-                [ngClass]="selectedHalf === 1 ? 'btn-primary' : 'btn-outline-primary'"
-                (click)="selectedHalf = 1">1–15</button>
-        <button type="button" class="btn"
-                [ngClass]="selectedHalf === 2 ? 'btn-primary' : 'btn-outline-primary'"
-                (click)="selectedHalf = 2">16–End</button>
-      </div>
-
-      <select class="form-select form-select-sm report-select" [(ngModel)]="selectedMonth">
-        <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
-      </select>
-
-      <select class="form-select form-select-sm report-select" [(ngModel)]="selectedYear">
-        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-      </select>
-
-      <button class="btn btn-primary btn-sm px-3" (click)="loadReport()" [disabled]="isLoading">
-        <span *ngIf="!isLoading"><i class="bi bi-search me-1"></i> Generate</span>
-        <span *ngIf="isLoading"><span class="spinner-border spinner-border-sm me-1"></span> Loading...</span>
-      </button>
-
-      <button class="btn btn-outline-danger btn-sm px-3" (click)="exportPdf()" [disabled]="isExporting || !report">
-        <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</span>
-        <span *ngIf="isExporting"><span class="spinner-border spinner-border-sm me-1"></span> Exporting...</span>
-      </button>
-    </div>
+<!-- Header -->
+<div class="report-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div>
+    <h2 class="report-title mb-0">📅 Half-Month Report</h2>
+    <p class="text-muted small mb-0" *ngIf="report">
+      {{ report.clinicName }} &mdash; <strong>{{ report.periodLabel }}</strong>
+      &mdash; {{ formatDate(report.periodFrom) }} to {{ formatDate(report.periodTo) }}
+    </p>
   </div>
 
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+
+    <!-- Owner: clinic dropdown -->
+    <div *ngIf="isOwner && clinics.length > 0" class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        {{ report?.clinicName || 'Select Clinic' }}
+      </button>
+      <ul class="dropdown-menu">
+        <li *ngFor="let clinic of clinics">
+          <a class="dropdown-item" (click)="onPickUpClinic(clinic.id)">
+            {{ clinic.name }}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Half selector -->
+    <div class="btn-group btn-group-sm" role="group">
+      <button type="button" class="btn"
+              [ngClass]="selectedHalf === 1 ? 'btn-primary' : 'btn-outline-primary'"
+              (click)="selectedHalf = 1">1–15</button>
+      <button type="button" class="btn"
+              [ngClass]="selectedHalf === 2 ? 'btn-primary' : 'btn-outline-primary'"
+              (click)="selectedHalf = 2">16–End</button>
+    </div>
+
+    <select class="form-select form-select-sm report-select" [(ngModel)]="selectedMonth">
+      <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
+    </select>
+
+    <select class="form-select form-select-sm report-select" [(ngModel)]="selectedYear">
+      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+    </select>
+
+    <!-- Generate button calls regenerateReport() -->
+    <button class="btn btn-primary btn-sm px-3"
+            (click)="regenerateReport()"
+            [disabled]="isLoading || !selectedClinicId">
+      <span *ngIf="!isLoading"><i class="bi bi-search me-1"></i> Generate</span>
+      <span *ngIf="isLoading"><span class="spinner-border spinner-border-sm me-1"></span> Loading...</span>
+    </button>
+
+    <button class="btn btn-outline-danger btn-sm px-3"
+            (click)="exportPdf()"
+            [disabled]="isExporting || !report">
+      <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf me-1"></i> Export PDF</span>
+      <span *ngIf="isExporting"><span class="spinner-border spinner-border-sm me-1"></span> Exporting...</span>
+    </button>
+
+  </div>
+</div>
   <!-- Error -->
   <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2">
     <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMessage }}
