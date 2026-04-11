@@ -79,6 +79,19 @@
 
           </ul>
         </li>
+         <!-- Admin navigation -->
+        <li *ngIf="canAccessAdmin()" class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ 'NAVBAR.REPORTS' | translate }}
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" routerLink="/monthly-report">{{ 'NAVBAR.MONTHLY_REPORT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/half-month-report">{{ 'NAVBAR.HALF_MONTH_REPORT' | translate }}</a></li>
+            <li><a class="dropdown-item" routerLink="/doctors-report">{{ 'NAVBAR.DOCTORS_REPORT' | translate }}</a></li>
+            <li *ngIf="canAccessFinancial()"><a class="dropdown-item" routerLink="/transactions">{{ 'NAVBAR.FINANCIAL_REPORTS' | translate }}</a></li>
+          </ul>
+        </li>
+
 
         <!-- Doctor-specific navigation -->
         <li *ngIf="shouldShowRolePanel('DOCTOR')" class="nav-item dropdown">
@@ -139,13 +152,13 @@
 
       <ul class="navbar-nav mb-2 mb-lg-0">
         <!-- Language Toggle -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <button class="btn btn-outline-light language-toggle-btn" (click)="toggleLanguage()" [title]="'NAVBAR.LANGUAGE' | translate">
             <i class="fas fa-language"></i>
             <span *ngIf="getCurrentLanguage() === 'ar'">English</span>
             <span *ngIf="getCurrentLanguage() === 'en'">العربية</span>
           </button>
-        </li>
+        </li> -->
 
         <li *ngIf="!authService.isLoggedIn()" class="nav-item">
           <a class="nav-link" routerLink="/login">{{ 'NAVBAR.LOGIN' | translate }}</a>

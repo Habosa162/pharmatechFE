@@ -37,8 +37,8 @@ export class ClinicService {
     return this.http.get<ClinicViewDTO[]>(`${this.apiUrl}/getByspeciality/${speciality}`);
   }
 
-  getClinicsByOwnerName(ownerName: string): Observable<ClinicViewDTO[]> {
-    return this.http.get<ClinicViewDTO[]>(`${this.apiUrl}/getbyOwner/${ownerName}`);
+  getClinicsByOwner(): Observable<ClinicViewDTO[]> {
+    return this.http.get<ClinicViewDTO[]>(`${this.apiUrl}/getbyOwner`);
   }
 
   createClinic(dto: CreateClinicDTO): Observable<any> {

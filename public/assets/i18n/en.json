@@ -76,7 +76,11 @@
     "GLOBAL_CONFIGURATION": "Global Configuration",
     "BUSINESS_ANALYTICS": "Business Analytics",
     "STRATEGIC_REPORTS": "Strategic Reports",
-    "SECONDARY": "Secondary"
+    "SECONDARY": "Secondary",
+    "REPORTS": "Reports",
+    "MONTHLY_REPORT": "Monthly Report",
+    "HALF_MONTH_REPORT": "Half-Month Report",
+    "DOCTORS_REPORT": "Doctors Report"
   },
   "SERVICES": {
     "TITLE": "Services Management",

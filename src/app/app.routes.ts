@@ -36,7 +36,6 @@ import { DepartmentManagementComponent } from './core/features/departments/depar
 import { PrescriptionDetailsComponent } from './core/features/patients/prescription-details/prescription-details.component';
 import { UserManagementComponent } from './core/features/users/user-management/user-management.component';
 import { MyAppointmentsClinicComponent } from './core/features/appointments/my-appointments-clinic/my-appointments-clinic.component';
-import { AdminLayoutComponent } from './core/layouts/admin-layout/admin-layout.component';
 import { MedicalRecordDetailsComponent } from './core/features/patients/medical-record-details/medical-record-details.component';
 import { ServicesComponent } from './core/features/appointments/services/services.component';
 import { MonthlyReportComponent } from './core/features/reports/monthly-report/monthly-report.component';
@@ -191,7 +190,7 @@ export const routes: Routes = [
   { path: 'aa', component: DoctorListComponent },
 
   //Reports
-  { path: 'monthlyReport', component: MonthlyReportComponent },
+  { path: 'monthly-report', component: MonthlyReportComponent },
   { path: 'doctors-report', component: DoctorDepartmentReportComponent },
   { path: 'half-month-report', component: HalfMonthReportComponent },
 

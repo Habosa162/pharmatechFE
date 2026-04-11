@@ -76,7 +76,11 @@
     "GLOBAL_CONFIGURATION": "الإعدادات العامة",
     "BUSINESS_ANALYTICS": "التحليلات التجارية",
     "STRATEGIC_REPORTS": "التقارير الاستراتيجية",
-    "SECONDARY": "ثانوي"
+    "SECONDARY": "ثانوي",
+    "REPORTS": "التقارير",
+    "MONTHLY_REPORT": "التقرير الشهري",
+    "HALF_MONTH_REPORT": "تقرير نصف شهري",
+    "DOCTORS_REPORT": "تقرير الأطباء"
   },
   "SERVICES": {
     "TITLE": "إدارة الخدمات",

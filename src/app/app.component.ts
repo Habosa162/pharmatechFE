@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { MainLayoutComponent } from "./core/layouts/main-layout/main-layout.component";
 import { UserLayoutComponent } from "./core/layouts/user-layout/user-layout.component";
-import { AdminLayoutComponent } from "./core/layouts/admin-layout/admin-layout.component";
 import { OwnerLayoutComponent } from "./core/layouts/owner-layout/owner-layout.component";
 import { MasterLayoutComponent } from "./core/layouts/master-layout/master-layout.component";
 import { TranslateService } from '@ngx-translate/core';
@@ -12,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, MainLayoutComponent, UserLayoutComponent, AdminLayoutComponent, OwnerLayoutComponent, MasterLayoutComponent],
+  imports: [CommonModule, RouterModule, MainLayoutComponent, UserLayoutComponent, OwnerLayoutComponent, MasterLayoutComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
@@ -27,13 +26,13 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     // Initialize translations
     this.initializeTranslations();
-    
-    console.log('AppComponent - ngOnInit called');
-    console.log('AppComponent - Is logged in:', this.isLoggedIn());
-    
+
+    // console.log('AppComponent - ngOnInit called');
+    // console.log('AppComponent - Is logged in:', this.isLoggedIn());
+
     // Load user data if logged in
     if (this.isLoggedIn()) {
-      console.log('AppComponent - Loading user full data...');
+      // console.log('AppComponent - Loading user full data...');
       this.authService.loadUserFullData();
     }
   }
