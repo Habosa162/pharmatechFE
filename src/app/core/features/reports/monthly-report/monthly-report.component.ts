@@ -47,10 +47,10 @@ export class MonthlyReportComponent implements OnInit {
     if (this.isOwner) {
       this.loadClinicsByOwner();
     } else {
-      const clinicId = this.LoggedInUser?.ClinicId;
+      const clinicId = this.authService.getUserClinicId();
       if (clinicId) {
-        this.selectedClinicId = clinicId;
-        this.loadReport(clinicId);
+        this.selectedClinicId = clinicId[0];
+        this.loadReport(clinicId[0]);
       }
     }
   }

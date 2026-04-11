@@ -37,9 +37,9 @@ export class DoctorDepartmentReportComponent implements OnInit {
     if (this.isOwner) {
       this.loadClinicsByOwner();
     } else {
-      const clinicId = this.LoggedInUser?.ClinicId;
+      const clinicId = this.authService.getUserClinicId();
       if (clinicId) {
-        this.loadReport(clinicId);
+        this.loadReport(clinicId[0]);
       }
     }
   }
@@ -52,6 +52,7 @@ export class DoctorDepartmentReportComponent implements OnInit {
     this.isLoading    = true;
     this.errorMessage = null;
     this.report       = null;
+    console.log('clinicId', clinicId);
     this.reportService.getReport(clinicId).subscribe({
       next:  (data) => { this.report = data; this.isLoading = false; },
       error: ()     => { this.errorMessage = 'Failed to load report.'; this.isLoading = false; }
