@@ -1,52 +1,60 @@
 <!-- monthly-report.component.html -->
 <div class="report-page">
 
-  <!-- ── Page Header ───────────────────────────────────────────────────────── -->
-  <div class="report-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-    <div>
-      <h2 class="report-title mb-0">
-        <span class="report-title-icon">📊</span>
-        Monthly Report
-      </h2>
-      <p class="text-muted small mb-0" *ngIf="report">
-        {{ report.clinicName }} &mdash; Generated {{ formatDate(report.generatedAt) }}
-      </p>
-    </div>
-
-    <!-- Controls -->
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <select class="form-select form-select-sm report-select" [(ngModel)]="selectedMonth">
-        <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
-      </select>
-
-      <select class="form-select form-select-sm report-select" [(ngModel)]="selectedYear">
-        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-      </select>
-
-      <button class="btn btn-primary btn-sm px-3"
-              (click)="loadReport()"
-              [disabled]="isLoadingData">
-        <span *ngIf="!isLoadingData">
-          <i class="bi bi-search me-1"></i> Generate
-        </span>
-        <span *ngIf="isLoadingData">
-          <span class="spinner-border spinner-border-sm me-1"></span> Loading...
-        </span>
-      </button>
-
-      <button class="btn btn-outline-danger btn-sm px-3"
-              (click)="exportPdf()"
-              [disabled]="isExporting || !report">
-        <span *ngIf="!isExporting">
-          <i class="bi bi-file-earmark-pdf me-1"></i> PDF
-        </span>
-        <span *ngIf="isExporting">
-          <span class="spinner-border spinner-border-sm me-1"></span> Exporting...
-        </span>
-      </button>
-    </div>
+<!-- ── Page Header ───────────────────────────────────────────────────────── -->
+<div class="report-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div>
+    <h2 class="report-title mb-0">
+      <span class="report-title-icon">📊</span>
+      Monthly Report
+    </h2>
+    <p class="text-muted small mb-0" *ngIf="report">
+      {{ report.clinicName }} &mdash; Generated {{ formatDate(report.generatedAt) }}
+    </p>
   </div>
 
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+
+    <!-- Owner: clinic dropdown -->
+    <div *ngIf="isOwner && clinics.length > 0" class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        {{ report?.clinicName || 'Select Clinic' }}
+      </button>
+      <ul class="dropdown-menu">
+        <li *ngFor="let clinic of clinics">
+          <a class="dropdown-item" (click)="onPickUpClinic(clinic.id)">
+            {{ clinic.name }}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Month / Year selectors -->
+    <select class="form-select form-select-sm report-select" [(ngModel)]="selectedMonth">
+      <option *ngFor="let m of months" [value]="m.value">{{ m.label }}</option>
+    </select>
+
+    <select class="form-select form-select-sm report-select" [(ngModel)]="selectedYear">
+      <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+    </select>
+
+    <!-- Generate button now calls regenerateReport() -->
+    <button class="btn btn-primary btn-sm px-3"
+            (click)="regenerateReport()"
+            [disabled]="isLoadingData || !selectedClinicId">
+      <span *ngIf="!isLoadingData"><i class="bi bi-search me-1"></i> Generate</span>
+      <span *ngIf="isLoadingData"><span class="spinner-border spinner-border-sm me-1"></span> Loading...</span>
+    </button>
+
+    <button class="btn btn-outline-danger btn-sm px-3"
+            (click)="exportPdf()"
+            [disabled]="isExporting || !report">
+      <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf me-1"></i> PDF</span>
+      <span *ngIf="isExporting"><span class="spinner-border spinner-border-sm me-1"></span> Exporting...</span>
+    </button>
+
+  </div>
+</div>
   <!-- ── Error ─────────────────────────────────────────────────────────────── -->
   <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2">
     <i class="bi bi-exclamation-triangle-fill"></i>
