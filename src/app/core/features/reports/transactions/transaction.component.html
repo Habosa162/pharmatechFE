@@ -1,18 +1,36 @@
 <div class="transaction-container">
   <!-- Header Section -->
-  <div class="page-header">
-    <div class="header-content">
-      <div class="header-title">
-        <h1 class="page-title">
-          <i class="fas fa-money-bill-wave"></i>
-          Transaction Management
-        </h1>
-        <p class="page-subtitle">
-          Track income, expenses, and manage transaction categories
-        </p>
-      </div>
+ <!-- Header Section -->
+<div class="page-header">
+  <div class="header-content">
+    <div class="header-title">
+      <h1 class="page-title">
+        <i class="fas fa-money-bill-wave"></i>
+        Transaction Management
+      </h1>
+      <p class="page-subtitle">
+        Track income, expenses, and manage transaction categories
+      </p>
     </div>
+
+   <!-- Owner: clinic dropdown -->
+<div *ngIf="isOwner && clinics.length > 0" class="dropdown ms-auto">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    {{ selectedClinicName }}
+  </button>
+  <ul class="dropdown-menu">
+    <li *ngFor="let clinic of clinics">
+      <a class="dropdown-item"
+         [class.active]="selectedClinicId === clinic.id"
+         (click)="onPickUpClinic(clinic.id)">
+        {{ clinic.name }}
+      </a>
+    </li>
+  </ul>
+</div>
+
   </div>
+</div>
 
   <!-- Messages -->
   <div *ngIf="success" class="alert alert-success alert-dismissible fade show" role="alert">
