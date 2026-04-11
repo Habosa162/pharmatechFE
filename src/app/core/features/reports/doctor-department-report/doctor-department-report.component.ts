@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DoctorDepartmentReportDto } from '../../../Models/reports/doctor-department-report.models';
 import { DoctorDepartmentReportService } from '../../../services/reports/doctor-department-report.service';
 import { CommonModule } from '@angular/common';
@@ -8,55 +8,70 @@ import { ClinicService } from '../../../services/clinics/clinic.service';
 
 @Component({
   selector: 'app-doctor-department-report',
-  imports: [ CommonModule ,FormsModule ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './doctor-department-report.component.html',
   styleUrls: ['./doctor-department-report.component.css']
 })
 export class DoctorDepartmentReportComponent implements OnInit {
 
   report: DoctorDepartmentReportDto | null = null;
-  isLoading   = false;
-  isExporting = false;
+  isLoading    = false;
+  isExporting  = false;
   errorMessage: string | null = null;
   expandedDept: string | null = null;
   LoggedInUser: any | null = null;
-  clinidIDs: number[] = [];
+  clinics: any[] = [];
+  isOwner = false;
+
   constructor(
-    private reportService: DoctorDepartmentReportService
-    ,private authService : AuthService
-    ,private clinincService : ClinicService
+    private reportService: DoctorDepartmentReportService,
+    private authService: AuthService,
+    private clinincService: ClinicService
   ) {}
 
   ngOnInit(): void {
-
     this.LoggedInUser = this.authService.getDecodedToken();
-    this.clinidIDs = this.LoggedInUser?.ClinicId || [];
-    this.loadReport(this.clinidIDs[0]);
-    console.log(this.clinidIDs);
-   }
+    this.isOwner = this.LoggedInUser?.roles?.includes('Owner') ?? false;
+    console.log(this.LoggedInUser);
+    
+    if (this.isOwner) {
+      this.loadClinicsByOwner();
+    } else {
+      const clinicId = this.LoggedInUser?.ClinicId;
+      if (clinicId) {
+        this.loadReport(clinicId);
+      }
+    }
+  }
 
-   onPickUpClinic(clinicId: number): void { 
+  onPickUpClinic(clinicId: number): void {
     this.loadReport(clinicId);
-   } 
+  }
 
-  loadReport(clinicId : number): void {
-    this.isLoading   = true;
+  loadReport(clinicId: number): void {
+    this.isLoading    = true;
     this.errorMessage = null;
-    this.report      = null;
+    this.report       = null;
     this.reportService.getReport(clinicId).subscribe({
       next:  (data) => { this.report = data; this.isLoading = false; },
       error: ()     => { this.errorMessage = 'Failed to load report.'; this.isLoading = false; }
     });
   }
 
-  loadClinicsByOwner(){
-    this.clinincService.getClinicsByOwner().subscribe(
-      {
-        next: (data) => {console.log(data);
-        },
-        error: (err) => { this.errorMessage = 'Failed to load clinincs.'; this.isLoading = false;}
+  loadClinicsByOwner(): void {
+    this.clinincService.getClinicsByOwner().subscribe({
+      next: (data) => {
+        this.clinics = data;
+        console.log(data);
+        if (this.clinics.length > 0) {
+          this.loadReport(this.clinics[0].id);
+        }
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load clinics.';
+        this.isLoading = false;
       }
-    )
+    });
   }
 
   exportPdf(): void {
@@ -67,7 +82,7 @@ export class DoctorDepartmentReportComponent implements OnInit {
 
   toggleDept(name: string): void {
     this.expandedDept = this.expandedDept === name ? null : name;
-  };
+  }
 
   isDeptExpanded(name: string): boolean {
     return this.expandedDept === name;
