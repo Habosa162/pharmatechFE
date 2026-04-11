@@ -74,17 +74,26 @@ getcurrentuserroles(): void {
   // File handling
   selectedFile: File | null = null;
   previewUrl: string | null = null;
-  clinics: ClinicViewDTO[] = [];
+  clinics= signal<ClinicViewDTO[]>([]) ;
 
   loadclinics(): void {
-    var clinicIds = this.authService.getUserClinicId();
+    var clinicIds =this.authService.getUserClinicId();
+    console.log(clinicIds,'clinicIds');
     this.clinicService.getAllClinics().subscribe({
       next: (clinics) => {
         if(this.authService.getroles().includes('MASTER') || this.authService.getroles().includes('Master')){
-          this.clinics = clinics;
+          this.clinics.set(clinics);
         }else{
-          this.clinics = clinics.map(clinic =>  clinicIds?.includes(clinic.id) ? clinic : null).filter(clinic => clinic !== null);
+
+          const ids = clinicIds?.map(Number) ?? [];
+
+          this.clinics.set(
+            clinics
+              .filter(clinic => ids.includes(Number(clinic.id)))
+          );
         }
+        console.log(clinics,'clinics');
+        console.log(this.clinics(),'this.clinics()');
       },
     });
   }
