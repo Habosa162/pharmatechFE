@@ -394,7 +394,10 @@ export enum Gender {
 
 
 
-
+export interface Role{
+    id: string;
+    name: string;
+}
 
 export interface Transaction {
     id: number;

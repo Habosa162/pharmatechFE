@@ -6,6 +6,7 @@ import { environment } from './enviroment';
 import {  Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { AccountService } from './account.service';
+import { Role } from '../Interfaces/all';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,9 @@ export class AuthService {
     });
   }
 
+  getAllRoles(): Observable<Role[]> {
+    return this.http.get<Role[]>(`${this.AuthEndPoint}/AllRoles`)
+  }
   // Set login state after successful login
   setLoginState(token: string): void {
     localStorage.setItem('token', token);
@@ -167,6 +171,7 @@ export class AuthService {
     //console.log('AuthService - hasAnyRole result:', result, 'Roles:', userData.roles);
     return result;
   }
+
 
   getroles(): string[] {
     const userData = this._userFullData();

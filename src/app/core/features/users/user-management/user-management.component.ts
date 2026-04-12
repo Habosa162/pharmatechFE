@@ -10,7 +10,8 @@ import {
   ChangePasswordDTO,
   DoctorViewDTO,
   CreateDoctorDTO,
-  ClinicViewDTO
+  ClinicViewDTO,
+  Role
 } from '../../../Interfaces/all';
 import { environment } from '../../../services/enviroment';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -63,12 +64,24 @@ export class UserManagementComponent implements OnInit {
   makeDoctorForm: FormGroup;
 
   // Available roles
-  availableRoles = ['Master', 'Owner', 'Admin', 'User', 'Accountant'];
+  availableRoles :  Role[] = [];
 
   currentuserroles= signal<string[]>([]);
 getcurrentuserroles(): void {
   this.currentuserroles.set(this.authService.getroles().map(role => role.toUpperCase()));
   console.log(this.currentuserroles(),'currentuserroles');
+  // return this.currentuserroles;
+}
+getAllroles(): void {
+ this.authService.getAllRoles().subscribe({
+  next: (roles) => {
+    this.availableRoles = roles;
+    console.log('Available roles from API:', roles);
+  },
+error: (err) => {
+console.error(err);
+}
+});
   // return this.currentuserroles;
 }
   // File handling
@@ -119,7 +132,8 @@ getcurrentuserroles(): void {
       roleOwner: [false],
       roleAdmin: [false],
       roleUser: [false],
-      roleAccountant: [false]
+      roleAccountant: [false],
+      roleReceptionist: [false]
     }, { validators: this.passwordMatchValidator });
 
     this.changePasswordForm = this.fb.group({
@@ -144,6 +158,7 @@ getcurrentuserroles(): void {
     this.loadDoctors();
     this.loadclinics();
     this.getcurrentuserroles();
+      this.getAllroles() ; 
   }
 
   // Password match validator
@@ -431,6 +446,8 @@ getcurrentuserroles(): void {
     if (formValue.roleAdmin) formData.append('roles', 'Admin');
     if (formValue.roleUser) formData.append('roles', 'User');
     if (formValue.roleAccountant) formData.append('roles', 'Accountant');
+    if (formValue.roleReceptionist) formData.append('roles', 'Receptionist');
+
 
     if (this.selectedFile) {
       formData.append('profilePicture', this.selectedFile);
@@ -762,7 +779,8 @@ getcurrentuserroles(): void {
   // Check if at least one role is selected
   hasSelectedRoles(): boolean {
     const formValue = this.userForm.value;
-    return formValue.roleMaster || formValue.roleOwner || formValue.roleAdmin || formValue.roleUser || formValue.roleAccountant;
+    return formValue.roleMaster || formValue.roleOwner || formValue.roleAdmin || formValue.roleUser || formValue.roleAccountant 
+  || formValue.roleReceptionist;
   }
 
   isFieldInvalid(form: FormGroup, fieldName: string): boolean {

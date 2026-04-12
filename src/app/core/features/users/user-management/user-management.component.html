@@ -45,7 +45,7 @@
           class="form-select"
         >
           <option value="all">All Roles</option>
-          <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+          <option *ngFor="let role of availableRoles" [value]="role.name">{{ role.name }}</option>
         </select>
 
         <select
@@ -406,6 +406,17 @@
             >
             <label for="role-Accountant" class="form-check-label">
               Accountant
+            </label>
+          </div>
+          <div class="role-checkbox">
+            <input
+              type="checkbox"
+              id="role-Receptionist"
+              formControlName="roleReceptionist"
+              class="form-check-input"
+            >
+            <label for="role-Receptionist" class="form-check-label">
+              Receptionist
             </label>
           </div>
         </div>
@@ -842,7 +853,7 @@
           [class.is-invalid]="isFieldInvalid(assignRoleForm, 'role')"
         >
           <option value="">Choose a role...</option>
-          <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+          <option *ngFor="let role of availableRoles" [value]="role.name">{{ role.name }}</option>
         </select>
         <div class="invalid-feedback" *ngIf="isFieldInvalid(assignRoleForm, 'role')">
           {{ getFieldError(assignRoleForm, 'role') }}
