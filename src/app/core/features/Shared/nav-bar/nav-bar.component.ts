@@ -131,7 +131,9 @@ export class NavBarComponent implements OnInit {
     // console.log('Main Navbar - canAccessFinancial:', result);
     return result;
   }
-
+  canAccessReceptionist(): boolean {
+  return this.authService.hasRole('RECEPTIONIST');
+}
   canManageUsers(): boolean {
     const result = this.authService.hasAnyRole(['MASTER', 'OWNER', 'ADMIN']);
     // console.log('Main Navbar - canManageUsers:', result);
